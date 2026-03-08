@@ -53,20 +53,22 @@ infra/
 
 - Each environment should keep its own remote state key and should not share mutable state with other environments
 - S3 remote state is acceptable for the current staging phase, but serialized operation is only a temporary control
-- A formal locking mechanism such as a dedicated lock table should be decided before production infrastructure changes are made by more than one operator or workflow
+- A formal locking mechanism should be decided before production infrastructure changes are made by more than one operator or workflow; native S3 lockfile and a dedicated lock table are both valid options depending on the operating model
 - State backend bootstrap resources should remain outside the stack they protect
 
 ## Production Entry Criteria
 
 - Production entrypoint work should not begin only because staging infrastructure exists
-- Before adding production OpenTofu resources, the team should record decisions for domain ownership, certificate sourcing, rollback target, and state locking
+- Before adding production OpenTofu resources, the team should record decisions for domain ownership, certificate sourcing, rollback target, monthly cost ceiling, and how the selected state locking strategy will be wired into production
 - If any of those items remain undecided, production should stay as a documented placeholder rather than a partial implementation
 
 ## Current Decision Status
 
 - The production domain is expected to use an external DNS operating model rather than Route 53 as the primary source of truth
 - Certificate sourcing therefore has to be designed together with the external DNS validation flow
-- State locking is still undecided, so production IaC should stay blocked even if the directory structure is ready
+- State locking baseline is native S3 locking via `use_lockfile = true`, already enabled in staging and intended for production backend wiring once the remaining production gate is closed
+- Monthly cost ceiling for the first public release is fixed at USD 15/month before tax for the current small static-site footprint
+- Production IaC should still stay blocked until the remaining production entry conditions are recorded and the selected backend strategy is wired into production
 
 ## Operational Rules
 

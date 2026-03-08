@@ -67,7 +67,7 @@ Define the minimum CI/CD policy that supports reliable staging delivery first, w
 - Production automation should not be added before the approver role is explicitly assigned
 - Production promotion should require a defined rollback target, artifact retention expectation, and post-deploy verification owner
 - If the domain and certificate operating model are still undecided, the pipeline should stop at staging rather than introducing a speculative production workflow
-- If the state locking mechanism is still undecided, the workflow should fail closed before any production apply path
+- If the selected state locking strategy is not wired into the target backend, the workflow should fail closed before any production apply path
 - External DNS and certificate cutover should remain explicit operator-managed steps rather than assumed workflow-complete automation
 
 ## Current Decision Status
@@ -76,7 +76,9 @@ Define the minimum CI/CD policy that supports reliable staging delivery first, w
 - The production domain will not assume Route 53 ownership, so certificate validation and cutover steps must allow for external DNS coordination
 - The first production promotion candidate should be a staging-validated `main` commit selected explicitly for promotion
 - Staging should use a controlled manual dispatch path before deeper trigger automation is enabled
-- Because state locking and monthly cost guardrails are still unresolved, the pipeline policy should continue to stop at staging
+- Native S3 state locking via `use_lockfile = true` is now the selected backend locking strategy
+- Monthly cost ceiling is fixed at USD 15/month before tax for the initial production footprint
+- The pipeline policy should continue to stop at staging until the selected backend strategy is wired into production and the remaining production entry conditions are completed
 
 ## First-Release Practical Flow
 

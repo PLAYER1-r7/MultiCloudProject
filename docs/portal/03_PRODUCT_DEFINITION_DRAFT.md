@@ -670,21 +670,21 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
   - ACM certificate ownership and renewal responsibility
   - production deploy approver and emergency override owner
   - acceptable monthly cost ceiling for the first public release
-  - OpenTofu state locking strategy for collaborative changes
+  - how the selected OpenTofu state locking strategy will be wired into the production backend
   - which parts of the current solution are intentionally AWS-specific versus required to stay cloud-portable
 
 ## Current Decision Snapshot
 
 - Production domain and DNS operating model: use a custom domain with DNS managed outside AWS
 - Production deploy approver: the repository owner can approve alone in the current phase
-- Monthly cost ceiling: not fixed yet and must be written down before production rollout
-- OpenTofu state locking: still undecided, so production infrastructure work should remain blocked
+- Monthly cost ceiling: USD 15/month before tax for the first public release, based on a small static site footprint centered on S3 + CloudFront
+- OpenTofu state locking: native S3 locking via `use_lockfile = true` is the selected baseline, but production backend wiring for that strategy is still deferred
 - Multi-cloud portability boundary: still needs an explicit statement separating AWS-specific delivery choices from cloud-neutral product constraints
 
 ## Current Working Constraint
 
 - The repository may continue refining the staging path and planning documents
-- New production implementation work should stay blocked until the design gate items above are recorded as explicit decisions
+- New production implementation work should stay blocked until the remaining production entry conditions are recorded explicitly and production backend wiring is prepared
 
 ## One-Page Summary
 
