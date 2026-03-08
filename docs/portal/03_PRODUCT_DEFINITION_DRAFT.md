@@ -87,7 +87,7 @@ Note: in the current solo-development phase, one individual may hold all three r
 
 - Audience model: primary users are external visitors, with the current product owner acting as content owner for repository-driven updates and future expansion teams remaining a separate stakeholder category
 - Delivery model: the first release should use managed static content and avoid dynamic data unless a later issue proves it necessary
-- Content ownership: post-release content updates and approval are owned by the internal operator or product owner through repository-driven workflows
+- Content ownership: post-release content updates and approval are owned by the content owner through repository-driven workflows
 
 ## Current Coverage Notes For Issue 1
 
@@ -95,17 +95,17 @@ Note: in the current solo-development phase, one individual may hold all three r
 - Core usage scenarios are structured as three release-critical major scenarios plus supporting scenarios for technical review and decision-maker validation
 - Expected value is structured in two layers, with user-facing value as the primary product promise and internal value kept as supporting rationale
 - Ownership is defined through product owner, technical owner, and content owner responsibilities
-- This document now provides the working evidence baseline for the next Issue 1 final review and downstream Issue 2 to Issue 4 planning
+- This document now provides the accepted evidence baseline for closed Issue 1 and downstream Issue 2 to Issue 4 planning
 
 ## Issue 1 Discussion Draft
 
-This section began as a discussion scaffold for Issue 1 and now records the latest agreed wording to be used in the next final checkbox review.
+This section began as a discussion scaffold for Issue 1 and now records the latest agreed wording used in the completed final checkbox review.
 
 ### 1. Target User Framing
 
 Proposed position:
 
-- Primary user: an external visitor or pilot user who lands on the portal and needs to understand what it is and what action to take next
+- Primary user: an external visitor who lands on the portal and needs to understand what it is and what action to take next
 - Secondary user: an internal operator who updates content and validates that the portal remains accurate and publishable
 - Tertiary stakeholder: a future platform or application team that treats the portal as the starting pattern for later Azure and GCP expansion
 

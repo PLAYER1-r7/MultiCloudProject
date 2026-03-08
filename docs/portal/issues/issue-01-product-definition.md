@@ -131,7 +131,7 @@ Final checkbox review completed against the latest wording in [docs/portal/03_PR
 - [docs/portal/03_PRODUCT_DEFINITION_DRAFT.md](docs/portal/03_PRODUCT_DEFINITION_DRAFT.md) を Issue 1 の根拠文書として採用することは合意済み
 - 上部セクション（Target Users / Core Usage Scenarios / Expected Value / Operating Model）を Discussion Draft の合意内容に揃えた
 - final checkbox review は完了し、Tasks と Definition of Done は満了と判断した
-- GitHub Issue は open のまま再確認できる状態にしているため、close は明示的な最終判断で実施する
+- GitHub Issue 1 は最終判断に基づいて close し、Issue 1 は完了と判断する
 
 ## Dependencies
 
