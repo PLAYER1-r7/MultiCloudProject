@@ -29,6 +29,8 @@ jobs:
       AWS_REGION: ${{ vars.STAGING_AWS_REGION != '' && vars.STAGING_AWS_REGION || 'ap-northeast-1' }}
       STAGING_SITE_BUCKET_NAME: ${{ vars.STAGING_SITE_BUCKET_NAME }}
       STAGING_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.STAGING_CLOUDFRONT_DISTRIBUTION_ID }}
+      STAGING_BASE_URL: ${{ vars.STAGING_BASE_URL }}
+      STAGING_SMOKE_PATHS: ${{ vars.STAGING_SMOKE_PATHS != '' && vars.STAGING_SMOKE_PATHS || '/,/overview,/guidance' }}
     steps:
       - name: Checkout
         if: github.event_name == 'workflow_dispatch'
@@ -74,6 +76,14 @@ jobs:
           test -n "$STAGING_SITE_BUCKET_NAME"
           test -n "$AWS_ROLE_TO_ASSUME_STAGING"
 
+      - name: Show deploy inputs
+        run: |
+          echo "aws_region=$AWS_REGION"
+          echo "bucket=$STAGING_SITE_BUCKET_NAME"
+          echo "distribution_id=${STAGING_CLOUDFRONT_DISTRIBUTION_ID:-<none>}"
+          echo "base_url=${STAGING_BASE_URL:-<none>}"
+          echo "smoke_paths=$STAGING_SMOKE_PATHS"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -90,3 +100,33 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id "$STAGING_CLOUDFRONT_DISTRIBUTION_ID" \
             --paths '/*'
+
+      - name: Wait for edge propagation window
+        if: env.STAGING_BASE_URL != ''
+        run: sleep 15
+
+      - name: Run post-deploy smoke checks
+        if: env.STAGING_BASE_URL != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          IFS=',' read -r -a paths <<< "$STAGING_SMOKE_PATHS"
+          for raw_path in "${paths[@]}"; do
+            path="${raw_path//[[:space:]]/}"
+            [[ -z "$path" ]] && continue
+            url="${STAGING_BASE_URL%/}${path}"
+            echo "Checking $url"
+            curl --fail --show-error --silent --location "$url" > /tmp/portal-smoke-response.html
+            grep -q "MultiCloudProject Portal\|Overview\|Guidance\|Platform Outline\|Release Path\|Operations View" /tmp/portal-smoke-response.html
+          done
+
+      - name: Record deployment summary
+        if: always()
+        run: |
+          {
+            echo "## Staging deploy summary"
+            echo "- Bucket: $STAGING_SITE_BUCKET_NAME"
+            echo "- CloudFront distribution: ${STAGING_CLOUDFRONT_DISTRIBUTION_ID:-not configured}"
+            echo "- Base URL: ${STAGING_BASE_URL:-not configured}"
+            echo "- Smoke paths: $STAGING_SMOKE_PATHS"
+          } >> "$GITHUB_STEP_SUMMARY"
