@@ -14,11 +14,12 @@ GitHub Actions を前提にした最小の CI/CD フローを定義する。
 - [ ] workflow 設計メモを作成する
 
 ## Definition of Done
-- [ ] build フローが定義されている
-- [ ] test フローが定義されている
-- [ ] staging deploy フローが定義されている
-- [ ] production approval の位置が定義されている
-- [ ] GitHub Actions 実装の前提がそろっている
+- [ ] build と test の最小実行フローが分離して説明されている
+- [ ] staging deploy の起動条件と対象ブランチ方針が整理されている
+- [ ] production deploy に承認ゲートがあることが明示されている
+- [ ] validation と deploy の workflow 役割分担が説明されている
+- [ ] GitHub Actions を前提にした運用フローが 1 本の流れとして説明できる
+- [ ] Issue 11 と Issue 12 の前提条件として参照できる
 
 ## Dependencies
 - Issue 6
