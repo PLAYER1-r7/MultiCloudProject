@@ -1,11 +1,24 @@
-# portal-static-site module seed
+# portal-static-site module
 
-This module directory is the placeholder for the reusable AWS static delivery building block.
+Reusable OpenTofu module for the portal static delivery baseline.
 
-## Expected Responsibilities Later
+## Current Responsibilities
 
-- S3 static asset hosting resources
-- CloudFront distribution resources
-- ACM certificate integration points
-- security header and delivery behavior hooks
-- outputs needed by staging and production entrypoints
+- create the private S3 bucket used for portal static assets
+- create the CloudFront distribution that fronts the S3 origin through Origin Access Control
+- support either the default CloudFront certificate or a supplied ACM certificate ARN
+- attach a baseline CloudFront response headers policy for security-sensitive headers
+- expose outputs needed by environment entrypoints and later deploy workflows
+
+## Current Outputs
+
+- site bucket name
+- CloudFront distribution id
+- CloudFront distribution domain name
+- response headers policy id
+
+## Notes
+
+- this module is intentionally static-site only and does not create backend runtime resources
+- custom aliases remain optional so staging can start with the default CloudFront domain
+- more advanced delivery behavior should be added only when a later issue needs it

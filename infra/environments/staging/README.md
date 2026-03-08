@@ -27,6 +27,18 @@ This directory is reserved for the staging entrypoint of the portal delivery inf
   - `STAGING_BASE_URL`
   - `STAGING_SMOKE_PATHS`
 
+## Build Artifact Handoff Expectation
+
+- Issue 18 should upload the portal frontend build artifact from `apps/portal-web/dist`
+- staging deploy is expected to sync that artifact into the bucket exposed by `site_bucket_name`
+- optional CloudFront invalidation should target the `distribution_id` output when a deploy updates already-cached assets
+
+## Current Delivery Controls
+
+- S3 public access is blocked and CloudFront reads through Origin Access Control
+- CloudFront redirects viewers to HTTPS
+- the shared module attaches a baseline response headers policy for content type, frame, referrer, and HSTS controls
+
 ## Example Computed Bucket Pattern
 
 - `multicloudproject-portal-staging-web`
