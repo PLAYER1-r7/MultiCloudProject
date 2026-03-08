@@ -30,3 +30,4 @@ Initial static-first frontend scaffold for the MultiCloudProject portal.
 - `VITE_BASE_PATH` can be set at build time if the app is hosted below `/`
 - Secrets must not be embedded into the frontend
 - This directory is the implementation target introduced by Issue 16
+- Current route cards include direct links to the active GitHub project, issues, docs, and workflow definitions
