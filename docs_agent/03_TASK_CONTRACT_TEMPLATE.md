@@ -8,6 +8,7 @@ Use this template before implementation starts.
 - Replace every placeholder on the same line; delete lines that are truly not needed.
 - Keep acceptance criteria and validation commands concrete enough that another agent can continue without re-interpreting intent.
 - If reviewer and approval owner boundaries matter for the task, follow `ROLE_HANDOFF_OWNERSHIP.md` while filling `Requester`, `Expected value`, and handoff-related scope notes.
+- Use this template for review-remediation, document-only correction, and final-review packaging passes as well as normal implementation work.
 
 ## Copy-Ready Template
 

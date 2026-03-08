@@ -43,6 +43,7 @@ flowchart TD
 
 - Write the task contract before implementation.
 - Lock scope, acceptance criteria, tests, and rollback.
+- Review-remediation, document-only correction, and final-review packaging passes still require their own task contract before edits start.
 
 ### 3. Implement
 
@@ -64,7 +65,9 @@ flowchart TD
 - Align checklist state, status sections, and remote issue state before declaring review completion.
 - Do not mix unrelated uncommitted changes into an issue close or equivalent final-state transition. Separate, stash, or defer them so the close flow stays scoped to the reviewed issue.
 - Commit and push evidence documents before writing a Final Review Result. The review record must reflect the published state, not a local draft.
+- Do not sync a remote issue or PR body with a new Final Review Result, completion wording, or equivalent final-state language until the commit and push that introduced that wording are already published.
 - Write Final Review Result only after all review comments (including low-severity items) are resolved. Do not mark Satisfied against a document that still contains open review items.
+- Record human re-agreement separately from agent validation. Re-agreement can confirm that the decision basis remains accepted, but it does not imply issue close approval.
 - Keep review-state sections inside the source document aligned. Sections such as Current Draft Focus, Final Review Result, and Current Status must not point to different stages.
 - If the local issue definition changes after the last remote sync, sync the remote issue or PR body again before close or any equivalent final-state transition.
 

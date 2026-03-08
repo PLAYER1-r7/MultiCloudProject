@@ -153,7 +153,7 @@ Risk and Rollback
 
 ## Evidence Mapping Table
 
-The tables below do not mark the checklist as complete yet. They only show where the evidence is expected to come from when the team performs final checkbox review.
+The tables below identify the evidence used for final checkbox review and should remain aligned with the checked state above.
 
 ### Task Mapping
 
@@ -187,7 +187,7 @@ The tables below do not mark the checklist as complete yet. They only show where
 
 ## Final Review Result
 
-Final checkbox review completed against the latest wording in [docs/portal/08_FRONTEND_TECHNICAL_CHOICE_DRAFT.md](docs/portal/08_FRONTEND_TECHNICAL_CHOICE_DRAFT.md).
+Final checkbox review completed against the latest wording in [docs/portal/08_FRONTEND_TECHNICAL_CHOICE_DRAFT.md](docs/portal/08_FRONTEND_TECHNICAL_CHOICE_DRAFT.md). The table below records the document-level validation judgment. Human re-agreement is recorded separately and does not by itself approve issue close.
 
 | Checklist area                  | Final judgment | Evidence basis                                                                                                                                                              |
 | ------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -203,6 +203,12 @@ Final checkbox review completed against the latest wording in [docs/portal/08_FR
 - A pre-implementation task contract was required by the protocol but was not written before the main Issue 6 decision work started.
 - The Task Contract Record above was added afterward to restore auditability for scope, validation, and rollback, but it should be treated as a retrospective record rather than proof of full step-order compliance.
 - Final review output is now separated from evidence mapping so future reviewers can distinguish evidence locations from completion judgment.
+
+## Re-Agreement Record
+
+- After the major process findings were remediated, the requester confirmed that Issue 6 should remain agreed with a static-first TypeScript frontend with Vite as the first-release decision.
+- This re-agreement applies to the decision basis, evidence mapping, and review structure recorded in this document.
+- The re-agreement does not imply issue close approval. Close remains a separate explicit action.
 
 ## Discussion Starter
 
@@ -226,6 +232,7 @@ Final checkbox review completed against the latest wording in [docs/portal/08_FR
 - [docs/portal/08_FRONTEND_TECHNICAL_CHOICE_DRAFT.md](docs/portal/08_FRONTEND_TECHNICAL_CHOICE_DRAFT.md) を判断材料の中心文書として使う
 - local issue file には discussion starter、比較結果、adoption decision、checkbox 根拠の対応付けを追加済み
 - retrospective Task Contract Record、Final Review Rule、Final Review Result を追加し、Issue 6 の監査可能性を補強した
+- Re-Agreement Record を追加し、agent validation と人間の再合意を分けて記録した
 - 採用案は static-first TypeScript frontend with Vite として確定した
 - routing、build 方式、environment variable policy は first-release decision として文書上で整列済みである
 - final checkbox review は完了し、Tasks と Definition of Done は満了と判断した

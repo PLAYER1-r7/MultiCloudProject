@@ -7,6 +7,7 @@ If blocked: auth -> `17_AUTH_REQUEST_PLAYBOOK.md`; contract or scope -> `03_TASK
 - [ ] Target app declared.
 - [ ] Target environment declared.
 - [ ] Task contract completed.
+- [ ] If this is a review-remediation or document-only correction pass, a dedicated task contract exists for that remediation scope.
 - [ ] Scope and acceptance criteria fixed.
 - [ ] Required authentication confirmed.
 
@@ -29,7 +30,9 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] Local source document, remote issue or PR body, and status wording are aligned.
 - [ ] Review-state sections inside the source document are aligned and do not point to different stages.
 - [ ] External review targets the latest published state, or local-only drift is explicitly disclosed.
+- [ ] Remote issue or PR body was not updated with new Final Review Result or equivalent completion wording before the matching commit was published.
 - [ ] If the source document changed after the last remote sync, the remote issue or PR body was synced again before close or handoff.
+- [ ] Human re-agreement, if obtained, is recorded separately from agent validation and does not imply close approval.
 - [ ] Explicit human approval recorded before issue close or equivalent final-state transition.
 - [ ] PR template completed.
 - [ ] Remaining risks and follow-up work logged.
