@@ -63,6 +63,8 @@ flowchart TD
 - レビュー完了を宣言する前に、checkbox 状態、status セクション、リモート Issue 状態を揃える。
 - Final Review Result を書く前に、evidence 文書をコミット・push する。レビュー記録はローカル Draft ではなく、公開状態の文書を根拠にしなければならない。
 - Final Review Result は、すべてのレビュー指摘（低優先度を含む）が解消された後に書く。未解決の指摘が残っている文書に対して Satisfied を付けてはならない。
+- 根拠文書内のレビュー状態セクションも揃える。Current Draft Focus、Final Review Result、Current Status のような節が異なる段階を指してはならない。
+- ローカルの Issue 定義文書が最後のリモート同期後に変わった場合は、close や同等の最終状態変更の前に、Issue または PR 本文を再同期する。
 
 ### 6. 引き継ぎ
 
