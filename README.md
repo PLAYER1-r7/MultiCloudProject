@@ -14,6 +14,15 @@ Planning repository for a new portal project that starts on AWS and is designed 
 ```text
 docs/
   portal/
+apps/
+  portal-web/
+infra/
+  environments/
+    staging/
+    production/
+  modules/
+.github/
+  workflows/
 docs_agent/
 docs_agent_ja/
 ```
@@ -52,3 +61,11 @@ docs_agent_ja/
 - Initial cloud target: AWS
 - Planned expansion target: Azure and GCP
 - GitHub operations are expected to run from the devcontainer using GitHub CLI
+- Implementation now starts under `apps/portal-web`, `infra/`, and `.github/workflows`
+
+## Implementation Seeds
+
+- Frontend scaffold: `apps/portal-web`
+- AWS delivery foundation placeholder: `infra/`
+- CI and staging workflow placeholder: `.github/workflows`
+
