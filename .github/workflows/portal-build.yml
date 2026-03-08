@@ -15,6 +15,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BUILD_ARTIFACT_NAME: portal-web-dist
+      BUILD_EVIDENCE_ARTIFACT_NAME: portal-build-evidence
+      BUILD_ARTIFACT_RETENTION_DAYS: 14
     defaults:
       run:
         working-directory: apps/portal-web
@@ -38,9 +42,48 @@ jobs:
       - name: Build portal
         run: npm run build
 
+      - name: Generate build evidence record
+        run: |
+          cat > "$GITHUB_WORKSPACE/portal-build-evidence.md" <<EOF
+          ## Portal build evidence
+
+          - Workflow: portal-build
+          - Run ID: ${{ github.run_id }}
+          - Run attempt: ${{ github.run_attempt }}
+          - Event: ${{ github.event_name }}
+          - Ref: ${{ github.ref_name }}
+          - Commit SHA: ${{ github.sha }}
+          - Dist artifact: ${BUILD_ARTIFACT_NAME}
+          - Evidence artifact: ${BUILD_EVIDENCE_ARTIFACT_NAME}
+          - Artifact retention days: ${BUILD_ARTIFACT_RETENTION_DAYS}
+          - Validation commands: npm run typecheck, npm run build
+          - Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EOF
+
       - name: Upload static artifact
         uses: actions/upload-artifact@v4
         with:
-          name: portal-web-dist
+          name: ${{ env.BUILD_ARTIFACT_NAME }}
           path: apps/portal-web/dist
           if-no-files-found: error
+          retention-days: ${{ env.BUILD_ARTIFACT_RETENTION_DAYS }}
+
+      - name: Upload build evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BUILD_EVIDENCE_ARTIFACT_NAME }}
+          path: portal-build-evidence.md
+          if-no-files-found: error
+          retention-days: ${{ env.BUILD_ARTIFACT_RETENTION_DAYS }}
+
+      - name: Record build summary
+        run: |
+          {
+            echo "## Portal build summary"
+            echo "- Dist artifact: ${BUILD_ARTIFACT_NAME}"
+            echo "- Evidence artifact: ${BUILD_EVIDENCE_ARTIFACT_NAME}"
+            echo "- Artifact retention days: ${BUILD_ARTIFACT_RETENTION_DAYS}"
+            echo "- Validation commands: npm run typecheck, npm run build"
+            echo ""
+            cat "$GITHUB_WORKSPACE/portal-build-evidence.md"
+          } >> "$GITHUB_STEP_SUMMARY"

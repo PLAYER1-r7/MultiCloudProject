@@ -27,6 +27,8 @@ jobs:
     environment: staging
     env:
       AWS_REGION: ${{ vars.STAGING_AWS_REGION != '' && vars.STAGING_AWS_REGION || 'ap-northeast-1' }}
+      BUILD_ARTIFACT_NAME: portal-web-dist
+      BUILD_EVIDENCE_ARTIFACT_NAME: portal-build-evidence
       STAGING_SITE_BUCKET_NAME: ${{ vars.STAGING_SITE_BUCKET_NAME }}
       STAGING_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.STAGING_CLOUDFRONT_DISTRIBUTION_ID }}
       STAGING_BASE_URL: ${{ vars.STAGING_BASE_URL }}
@@ -60,8 +62,17 @@ jobs:
         with:
           github-token: ${{ github.token }}
           run-id: ${{ github.event.workflow_run.id }}
-          name: portal-web-dist
+          name: ${{ env.BUILD_ARTIFACT_NAME }}
           path: portal-dist
+
+      - name: Download build evidence artifact from portal-build
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: ${{ env.BUILD_EVIDENCE_ARTIFACT_NAME }}
+          path: build-evidence
 
       - name: Prepare dist from manual dispatch
         if: github.event_name == 'workflow_dispatch'
@@ -69,21 +80,51 @@ jobs:
           rm -rf portal-dist
           cp -R apps/portal-web/dist portal-dist
 
+      - name: Prepare source build evidence from portal-build
+        if: github.event_name == 'workflow_run'
+        run: cp build-evidence/portal-build-evidence.md staging-source-build-evidence.md
+
+      - name: Prepare source build evidence from manual dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          cat > staging-source-build-evidence.md <<EOF
+          ## Portal build evidence
+
+          - Workflow: portal-staging-deploy manual dispatch local build
+          - Run ID: ${{ github.run_id }}
+          - Run attempt: ${{ github.run_attempt }}
+          - Event: ${{ github.event_name }}
+          - Ref: ${{ github.ref_name }}
+          - Commit SHA: ${{ github.sha }}
+          - Dist artifact: ${BUILD_ARTIFACT_NAME}
+          - Evidence artifact: in-run local build evidence only
+          - Artifact retention days: n/a
+          - Validation commands: npm run build
+          - Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EOF
+
       - name: Validate staging settings
         env:
           AWS_ROLE_TO_ASSUME_STAGING: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
         run: |
           test -f portal-dist/index.html
+          test -f staging-source-build-evidence.md
           test -n "$STAGING_SITE_BUCKET_NAME"
           test -n "$AWS_ROLE_TO_ASSUME_STAGING"
 
       - name: Show deploy inputs
         run: |
+          release_owner='${{ github.repository_owner }}'
+          deploy_operator='${{ github.triggering_actor != '' && github.triggering_actor || github.actor }}'
+          notification_route='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           echo "aws_region=$AWS_REGION"
           echo "bucket=$STAGING_SITE_BUCKET_NAME"
           echo "distribution_id=${STAGING_CLOUDFRONT_DISTRIBUTION_ID:-<none>}"
           echo "base_url=${STAGING_BASE_URL:-<none>}"
           echo "smoke_paths=$STAGING_SMOKE_PATHS"
+          echo "release_owner=$release_owner"
+          echo "deploy_operator=$deploy_operator"
+          echo "notification_route=$notification_route"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -106,12 +147,65 @@ jobs:
         if: env.STAGING_BASE_URL != ''
         run: sleep 15
 
+      - name: Initialize staging monitoring record
+        if: always()
+        run: |
+          release_owner='${{ github.repository_owner }}'
+          deploy_operator='${{ github.triggering_actor != '' && github.triggering_actor || github.actor }}'
+          notification_route='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          source_build_run_id='manual-dispatch'
+          source_build_sha='${{ github.sha }}'
+          source_build_run_url='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          source_build_workflow='portal-staging-deploy manual dispatch local build'
+          if [[ '${{ github.event_name }}' == 'workflow_run' ]]; then
+            source_build_run_id='${{ github.event.workflow_run.id }}'
+            source_build_sha='${{ github.event.workflow_run.head_sha }}'
+            source_build_run_url='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}'
+            source_build_workflow='portal-build'
+          fi
+          cat > staging-monitoring-record.md <<EOF
+          ## Staging monitoring record
+
+          - Workflow: portal-staging-deploy
+          - Run ID: ${{ github.run_id }}
+          - Run attempt: ${{ github.run_attempt }}
+          - Event: ${{ github.event_name }}
+          - Bucket: ${STAGING_SITE_BUCKET_NAME:-not configured}
+          - CloudFront distribution: ${STAGING_CLOUDFRONT_DISTRIBUTION_ID:-not configured}
+          - Base URL: ${STAGING_BASE_URL:-not configured}
+          - Smoke paths: ${STAGING_SMOKE_PATHS}
+          - Release owner: ${release_owner}
+          - Deploy operator: ${deploy_operator}
+          - Notification route: ${notification_route}
+          - Source build workflow: ${source_build_workflow}
+          - Source build run ID: ${source_build_run_id}
+          - Source build commit SHA: ${source_build_sha}
+          - Source build run URL: ${source_build_run_url}
+          - Source build evidence artifact: ${BUILD_EVIDENCE_ARTIFACT_NAME}
+
+          ### Source build evidence snapshot
+
+          EOF
+          cat staging-source-build-evidence.md >> staging-monitoring-record.md
+          cat <<EOF >> staging-monitoring-record.md
+
+          ### Reachability results
+
+          | Path | HTTP status | Result | Expected marker |
+          | --- | --- | --- | --- |
+          EOF
+
       - name: Run post-deploy smoke checks
-        if: env.STAGING_BASE_URL != ''
         shell: bash
         run: |
           set -euo pipefail
+          if [[ -z "${STAGING_BASE_URL:-}" ]]; then
+            echo "| skipped | n/a | skipped | STAGING_BASE_URL not configured |" >> staging-monitoring-record.md
+            exit 0
+          fi
+
           IFS=',' read -r -a paths <<< "$STAGING_SMOKE_PATHS"
+          failure=0
           for raw_path in "${paths[@]}"; do
             path="${raw_path//[[:space:]]/}"
             [[ -z "$path" ]] && continue
@@ -129,17 +223,50 @@ jobs:
                 ;;
             esac
             echo "Checking $url"
-            curl --fail --show-error --silent --location "$url" > /tmp/portal-smoke-response.html
-            grep -q "$expected" /tmp/portal-smoke-response.html
+            response_file="$(mktemp)"
+            status_code='curl-failed'
+            result='failed'
+            if status_code="$(curl --show-error --silent --location --output "$response_file" --write-out '%{http_code}' "$url")"; then
+              if [[ "$status_code" =~ ^2[0-9][0-9]$ ]] && grep -q "$expected" "$response_file"; then
+                result='passed'
+              else
+                failure=1
+              fi
+            else
+              failure=1
+            fi
+            echo "| $path | $status_code | $result | $expected |" >> staging-monitoring-record.md
+            rm -f "$response_file"
           done
+
+          echo "" >> staging-monitoring-record.md
+          echo "Owner note: release owner defaults to repository owner and deploy operator defaults to the triggering actor for this run." >> staging-monitoring-record.md
+
+          exit "$failure"
+
+      - name: Upload staging monitoring record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-staging-monitoring-record
+          path: staging-monitoring-record.md
 
       - name: Record deployment summary
         if: always()
         run: |
+          release_owner='${{ github.repository_owner }}'
+          deploy_operator='${{ github.triggering_actor != '' && github.triggering_actor || github.actor }}'
+          notification_route='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           {
             echo "## Staging deploy summary"
             echo "- Bucket: $STAGING_SITE_BUCKET_NAME"
             echo "- CloudFront distribution: ${STAGING_CLOUDFRONT_DISTRIBUTION_ID:-not configured}"
             echo "- Base URL: ${STAGING_BASE_URL:-not configured}"
             echo "- Smoke paths: $STAGING_SMOKE_PATHS"
+            echo "- Release owner: $release_owner"
+            echo "- Deploy operator: $deploy_operator"
+            echo "- Notification route: $notification_route"
+            echo "- Monitoring record artifact: portal-staging-monitoring-record"
+            echo ""
+            cat staging-monitoring-record.md
           } >> "$GITHUB_STEP_SUMMARY"
