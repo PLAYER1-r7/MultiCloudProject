@@ -42,6 +42,7 @@ flowchart TD
 ### 2. Contract
 
 - Write the task contract before implementation.
+- If all details are not known yet, write a minimum starter contract first and mark unknown fields as `TBD` rather than starting without a contract.
 - Lock scope, acceptance criteria, tests, and rollback.
 - Review-remediation, document-only correction, and final-review packaging passes still require their own task contract before edits start.
 

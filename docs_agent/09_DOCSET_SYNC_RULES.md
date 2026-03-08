@@ -21,6 +21,7 @@ Keep `docs_agent/` and `docs_agent_ja/` structurally aligned so agents can switc
 - If a local issue definition is used as the source for a GitHub issue or PR body, sync the remote body in the same task whenever possible.
 - Before requesting external review based on GitHub content, commit and push the review target or explicitly state that the review is against a local-only draft.
 - If a review-remediation pass changes a local source document, create a dedicated task contract or execution record for that remediation scope.
+- If work starts before every contract detail is known, use the minimum starter contract format and mark unknown fields as `TBD` in both languages instead of omitting the contract.
 - Keep completion wording aligned across checklist sections, status sections, and remote issue state.
 - Keep review-state sections inside the local source document aligned. Do not leave Current Draft Focus, Final Review Result, and Current Status pointing to different stages.
 - Do not sync a remote issue or PR body with new Final Review Result, completion wording, or equivalent final-state language until the commit and push containing that wording are already published.
