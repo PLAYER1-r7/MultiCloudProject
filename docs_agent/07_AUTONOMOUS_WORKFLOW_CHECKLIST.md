@@ -44,6 +44,7 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] Unrelated uncommitted changes are not being mixed into the issue close or handoff flow.
 - [ ] Local source document, remote issue or PR body, and status wording are aligned.
 - [ ] Review-state sections inside the source document are aligned and do not point to different stages.
+- [ ] If the source document may have changed since the last review pass, approval exchange, or tool warning, the current file was reread before adding Process Review Notes, close approval records, or other final-state edits.
 - [ ] External review targets the latest published state, or local-only drift is explicitly disclosed.
 - [ ] Remote issue or PR body was not updated with new Final Review Result or equivalent completion wording before the matching commit was published.
 - [ ] If the source document changed after the last remote sync, the remote issue or PR body was synced again before close or handoff.

@@ -72,6 +72,7 @@ flowchart TD
 - 人間の再合意は agent validation と分けて記録する。再合意は判断根拠の受け入れを示せるが、Issue close 承認を意味してはならない。
 - 人間の再合意を Issue または PR コメントに記録する場合は、そのコメントが簡潔な記録であること、正式文言の正本は本文の Resolution または同等の最終判断セクションにあること、そして close 承認ではないことを明記する。
 - 根拠文書内のレビュー状態セクションも揃える。Current Draft Focus、Final Review Result、Current Status のような節が異なる段階を指してはならない。
+- 最後の review pass、承認やり取り、またはツール通知の後に根拠文書が変わっている可能性がある場合は、Process Review Notes、close 承認記録、その他の最終状態向け編集を加える前に現行ファイルを読み直し、formatter や人手の編集を壊さないようにする。
 - ローカルの Issue 定義文書が最後のリモート同期後に変わった場合は、close や同等の最終状態変更の前に、Issue または PR 本文を再同期する。
 - リモートの Issue または PR 本文がリポジトリ内ファイルを正本としている場合、別経路で本文を再構成して同期するのではなく、`gh issue edit --body-file <path>` または PR の同等コマンドのような file-based sync を優先する。
 - 最終同期後は、GitHub 上の公開本文に `<env>` のような Markdown-sensitive な記法、表、コードフェンスの崩れがないか確認する。公開本文がローカル正本から drift していた場合は、close 前にそのファイルから再同期する。

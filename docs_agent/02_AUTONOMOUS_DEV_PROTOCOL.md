@@ -73,6 +73,7 @@ flowchart TD
 - Record human re-agreement separately from agent validation. Re-agreement can confirm that the decision basis remains accepted, but it does not imply issue close approval.
 - If a human re-agreement is recorded in an issue or PR comment, state that the comment is a concise record, point the canonical wording to the source body's Resolution or equivalent final decision section, and say explicitly that the comment is not close approval.
 - Keep review-state sections inside the source document aligned. Sections such as Current Draft Focus, Final Review Result, and Current Status must not point to different stages.
+- If the source document may have changed since the last review pass, approval request, or tool notice, reread the current file before adding Process Review Notes, close approval records, or any other final-state edits so formatter or human edits are preserved.
 - If the local issue definition changes after the last remote sync, sync the remote issue or PR body again before close or any equivalent final-state transition.
 - When the remote issue or PR body is sourced from a repository file, prefer a file-based sync path such as `gh issue edit --body-file <path>` or the PR equivalent instead of manually re-serializing the body through another API path.
 - After the final sync, verify the published remote body for Markdown-sensitive literals such as `<env>`, inline tables, or fenced blocks. If the published body drifted from the local source of truth, resync from the file before close.

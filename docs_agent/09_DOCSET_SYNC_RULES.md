@@ -24,6 +24,7 @@ Keep `docs_agent/` and `docs_agent_ja/` structurally aligned so agents can switc
 - If work starts before every contract detail is known, use the minimum starter contract format and mark unknown fields as `TBD` in both languages instead of omitting the contract.
 - Keep completion wording aligned across checklist sections, status sections, and remote issue state.
 - Keep review-state sections inside the local source document aligned. Do not leave Current Draft Focus, Final Review Result, and Current Status pointing to different stages.
+- If the local source document may have been changed by a formatter, another editor, or a resumed session after the latest review pass, reread the current file before adding approval records or other final-state edits.
 - Do not sync a remote issue or PR body with new Final Review Result, completion wording, or equivalent final-state language until the commit and push containing that wording are already published.
 - If human re-agreement is obtained after review remediation, record it separately from agent validation and do not treat it as issue close approval.
 - When recording human re-agreement in a comment, mark it as a concise record, point canonical wording to the issue or PR body's Resolution or equivalent section, and state explicitly that the comment is not close approval.
