@@ -49,6 +49,25 @@ infra/
 - Do not fork module logic unnecessarily between staging and production
 - Keep provider, region, domain, and environment naming configurable
 
+## State Backend And Locking Direction
+
+- Each environment should keep its own remote state key and should not share mutable state with other environments
+- S3 remote state is acceptable for the current staging phase, but serialized operation is only a temporary control
+- A formal locking mechanism such as a dedicated lock table should be decided before production infrastructure changes are made by more than one operator or workflow
+- State backend bootstrap resources should remain outside the stack they protect
+
+## Production Entry Criteria
+
+- Production entrypoint work should not begin only because staging infrastructure exists
+- Before adding production OpenTofu resources, the team should record decisions for domain ownership, certificate sourcing, rollback target, and state locking
+- If any of those items remain undecided, production should stay as a documented placeholder rather than a partial implementation
+
+## Current Decision Status
+
+- The production domain is expected to use an external DNS operating model rather than Route 53 as the primary source of truth
+- Certificate sourcing therefore has to be designed together with the external DNS validation flow
+- State locking is still undecided, so production IaC should stay blocked even if the directory structure is ready
+
 ## Operational Rules
 
 - Avoid manual drift by treating console changes as exceptional and back-porting them into code if they occur
