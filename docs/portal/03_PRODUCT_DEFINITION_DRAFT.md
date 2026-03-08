@@ -63,11 +63,11 @@ Launch a small portal on AWS first as the entry point for a broader multi-cloud 
 - Finalizing AWS service selection
 - Defining implementation tasks
 
-## Open Questions
+## Confirmed Working Answers
 
-- Should the primary audience be treated as external visitors only, or mixed with internal pilot users?
-- Does the first release need dynamic data or only managed static content?
-- Who owns post-release content updates and approval?
+- Audience model: primary users are external or pilot visitors, with internal operators acting as supporting maintainers rather than the main audience
+- Delivery model: the first release should use managed static content and avoid dynamic data unless a later issue proves it necessary
+- Update ownership: post-release content updates and approval are owned by the internal operator or product owner through repository-driven workflows
 
 ## One-Page Summary
 
