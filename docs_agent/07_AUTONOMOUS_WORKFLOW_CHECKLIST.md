@@ -40,6 +40,8 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] External review targets the latest published state, or local-only drift is explicitly disclosed.
 - [ ] Remote issue or PR body was not updated with new Final Review Result or equivalent completion wording before the matching commit was published.
 - [ ] If the source document changed after the last remote sync, the remote issue or PR body was synced again before close or handoff.
+- [ ] If the remote body is derived from a repository file, the final sync used a body-file path from that file instead of a manually reconstructed body payload.
+- [ ] After the final sync, the published GitHub body was spot-checked for Markdown-sensitive drift such as broken `<...>` literals, malformed tables, or damaged code fences.
 - [ ] Human re-agreement, if obtained, is recorded separately from agent validation and does not imply close approval.
 - [ ] Explicit human approval recorded before issue close or equivalent final-state transition.
 - [ ] PR template completed.
