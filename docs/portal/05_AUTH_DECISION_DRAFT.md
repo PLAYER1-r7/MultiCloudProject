@@ -53,9 +53,15 @@ Define whether the first portal release needs user authentication, what should b
 
 Unless a blocking requirement is identified during MVP scoping, the first release should launch as a public portal without end-user authentication.
 
-## Open Questions
+## Confirmed Working Answers
 
-- Is any page required to be accessible only to internal users from day one?
-- Is any user-specific data expected in the first release?
-- Is inquiry submission sufficient without authenticated identity?
-- Does any compliance requirement force authentication earlier than planned?
+- No first-release page is currently planned as internal-only within the portal itself
+- No user-specific data is assumed in the first release
+- Inquiry or contact handling, if needed, should avoid authenticated identity in the first release
+- No current compliance requirement has been identified that forces authentication into the first release
+
+## Downstream Implication
+
+- Issue 4 should assume no Cognito dependency in the baseline AWS architecture
+- Issue 6 should prefer frontend choices that work cleanly with public-first routing
+- Issue 7 should only introduce backend identity coupling if a later requirement invalidates this decision
