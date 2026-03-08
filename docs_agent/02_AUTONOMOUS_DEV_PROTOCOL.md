@@ -62,6 +62,8 @@ flowchart TD
 
 - Summarize what changed, what was validated, and what remains risky.
 - Align checklist state, status sections, and remote issue state before declaring review completion.
+- Commit and push evidence documents before writing a Final Review Result. The review record must reflect the published state, not a local draft.
+- Write Final Review Result only after all review comments (including low-severity items) are resolved. Do not mark Satisfied against a document that still contains open review items.
 
 ### 6. Handoff
 
