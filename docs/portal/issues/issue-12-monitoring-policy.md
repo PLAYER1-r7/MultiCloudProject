@@ -187,13 +187,15 @@
 
 ### 10. この場で確認したい論点
 
-| Question | Provisional direction (at draft time) | Candidate wording for confirmation |
-| --- | --- | --- |
-| first-release で常時監視の中心に置く signal は何か | reachability、deploy success/failure、major route health を優先する | `first-release monitoring の中心 signal は public reachability、deploy success/failure、major route health とし、deep application telemetry は後段で再評価する` |
-| static-first portal で最低限 reviewable にすべき log は何か | workflow history、delivery log、audit log を優先する | `first-release で最低限 reviewable にすべき log は GitHub workflow history、cloud-native delivery visibility、audit log とし、存在しない application log を前提にしない` |
-| staging と production で alert 条件をどこまで揃えるか | baseline は揃えつつ、production では operator-managed cutover 異常を追加で扱う | `staging と production は同じ health baseline を目標とするが、production では operator-managed cutover 後の異常も alert 対象に含める` |
-| notification path は製品選定より先に何を決めるべきか | owner と一次対応経路を先に決める | `notification path はツール選定より先に owner と一次対応経路を固定し、無人の通知先は enable しない` |
-| performance degradation を初回から paging 対象に含めるか | 初回は記録対象に留め、即応が必要な failure を優先する | `first-release では site unreachable、failed deploy、major route failure を alert の中心とし、performance degradation は paging 条件として先行確定しない` |
+`Resolution 確定文言` 列が埋まっていない行がある場合は Resolution セクションを書いてはならない。
+
+| 論点                                                        | 判断方向（Discussion 時点の仮）                                                | Resolution 確定文言                                                                                                                                                 |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| first-release で常時監視の中心に置く signal は何か          | reachability、deploy success/failure、major route health を優先する            | `first-release monitoring の中心 signal は public reachability、deploy success/failure、major route health とし、deep application telemetry は後段で再評価する` |
+| static-first portal で最低限 reviewable にすべき log は何か | workflow history、delivery log、audit log を優先する                           | `first-release で最低限 reviewable にすべき log は GitHub workflow history、cloud-native delivery visibility、audit log とし、存在しない application log を前提にしない` |
+| staging と production で alert 条件をどこまで揃えるか       | baseline は揃えつつ、production では operator-managed cutover 異常を追加で扱う | `staging と production は同じ health baseline を目標とするが、production では operator-managed cutover 後の異常も alert 対象に含める`                              |
+| notification path は製品選定より先に何を決めるべきか        | owner と一次対応経路を先に決める                                               | `notification path はツール選定より先に owner と一次対応経路を固定し、無人の通知先は enable しない`                                                            |
+| performance degradation を初回から paging 対象に含めるか    | 初回は記録対象に留め、即応が必要な failure を優先する                          | `first-release では site unreachable、failed deploy、major route failure を alert の中心とし、performance degradation は paging 条件として先行確定しない`          |
 
 ## Working Direction
 
@@ -213,6 +215,38 @@
 - Issue 11 の auditability と security-relevant failure を observability の必須範囲へ落とし込める
 - Issue 13 は test と post-deploy verification の境界を整理しやすくなる
 - Issue 14 は rollback を開始すべき signal と証跡を明示しやすくなる
+
+## Resolution
+
+Issue 12 の判断結果は次の通りとする。
+
+- first-release monitoring baseline は public-first static portal に対して、public reachability、deploy verification、auditability、actionable alerting を必須 signal とする
+- health check baseline は top page、主要 route、主要 static asset を含む user-facing reachability を正規経路とする
+- deploy 成否の正規証跡は GitHub Actions workflow history とし、staging deploy 後の smoke check failure は delivery path 異常の primary alert signal として扱う
+- first-release で reviewable にすべき log は GitHub workflow history、cloud-native delivery visibility、audit log を中心とし、存在しない application log を前提にしない
+- first-release の metrics は availability と delivery health を中心とし、deep application telemetry や高粒度 tracing は後段の enhancement として扱う
+- alert は site unreachable、failed deploy、major route failure、production cutover 後の operator action 必要イベントを優先し、staging smoke check failure の release blocker 判定そのものは Issue 13 の staging acceptance rule に委ねる
+- notification path はツール選定より先に role-based owner と一次対応経路を固定し、current small-team phase では repository owner が release owner を兼ねる前提で、deploy operator と production operator を必要に応じて同報対象にする
+- performance degradation は first-release では paging 条件として先行確定せず、記録対象または later-phase enhancement として扱う
+
+この合意で明確になること:
+
+- Issue 10 の workflow boundary に沿って、monitoring evidence と notification path を固定できる
+- Issue 13 は smoke test、post-deploy verification、staging acceptance の pass/fail rule を、Issue 12 から切り分けて具体化できる
+- Issue 14 は rollback を開始すべき signal、証跡、通知経路をこの Resolution を前提に整理できる
+
+## Process Review Notes
+
+- direct-decision: Section 10 の論点は個別の逐次回答ログを積み上げる形ではなく、requester が monitoring baseline の方向性に合意した後に Resolution へ統合する形で確定した。
+- Section 10 の論点テーブルは open question と final wording の対応を後から追跡できるように維持し、3 列目は candidate wording ではなく Resolution に反映された確定文言として扱う。
+- この Issue は現時点では planning / draft 段階のままであり、Resolution の追加は方針合意を記録するものであって、Tasks や Definition of Done の完了、Issue close 承認、Final Review Result を意味しない。
+
+## Current Status
+
+- local issue file には monitoring baseline の discussion draft と Resolution を記録済み
+- Section 10 の open questions は Resolution 確定文言列で final wording と対応付けた
+- first-release monitoring baseline の合意内容は reachability、deploy verification、auditability、actionable alerting を中心に固定した
+- Tasks と Definition of Done は final checkbox review 未実施のため未完了のまま維持する
 
 ## Dependencies
 

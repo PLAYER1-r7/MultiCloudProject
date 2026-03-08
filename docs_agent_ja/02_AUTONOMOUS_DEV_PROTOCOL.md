@@ -44,7 +44,7 @@ flowchart TD
 - すべての詳細がまだ固まっていない場合でも、契約なしで始めず、未確定項目を `TBD` とした最小着手版の契約を先に書く。
 - スコープ、受け入れ条件、テスト、ロールバックを固定する。
 - レビュー指摘への是正、文書だけの修正、Final Review の取りまとめ作業であっても、編集開始前にその作業専用のタスク契約を作成する。
-- Discussion Draft に論点節を置く場合は、`論点`・`判断方向（Discussion 時点の仮）`・`Resolution 確定文言` の 3 列テーブル形式で記述する。`Resolution 確定文言` 列は Resolution セクションを書く前に必ず埋める。 3 列目が空のままの行がある場合は Resolution を書いてはならない。
+- Discussion Draft に論点節を置く場合は、`論点`・`判断方向（Discussion 時点の仮）`・`Resolution 確定文言` の 3 列テーブル形式で記述する。既存の英語表記を使う場合は `Question`・`Provisional direction (at draft time)`・`Resolution confirmed wording` を同義の正準名として扱う。人間合意後は 3 列目を候補文言のまま残さず、Resolution 本文と整合する確定文言へ更新する。`Resolution 確定文言` 列は Resolution セクションを書く前に必ず埋める。3 列目が空のままの行、または candidate wording のまま凍結されている行がある場合は Resolution を書いてはならない。
 
 ### 3. 実装
 
@@ -69,6 +69,7 @@ flowchart TD
 - 新しい Final Review Result、完了表現、または同等の最終状態文言を含む Issue または PR 本文は、その文言を含む commit と push が公開済みになるまで同期してはならない。
 - Final Review Result は、すべてのレビュー指摘（低優先度を含む）が解消された後に書く。未解決の指摘が残っている文書に対して Satisfied を付けてはならない。
 - 人間の再合意は agent validation と分けて記録する。再合意は判断根拠の受け入れを示せるが、Issue close 承認を意味してはならない。
+- 人間の再合意を Issue または PR コメントに記録する場合は、そのコメントが簡潔な記録であること、正式文言の正本は本文の Resolution または同等の最終判断セクションにあること、そして close 承認ではないことを明記する。
 - 根拠文書内のレビュー状態セクションも揃える。Current Draft Focus、Final Review Result、Current Status のような節が異なる段階を指してはならない。
 - ローカルの Issue 定義文書が最後のリモート同期後に変わった場合は、close や同等の最終状態変更の前に、Issue または PR 本文を再同期する。
 - リモートの Issue または PR 本文がリポジトリ内ファイルを正本としている場合、別経路で本文を再構成して同期するのではなく、`gh issue edit --body-file <path>` または PR の同等コマンドのような file-based sync を優先する。

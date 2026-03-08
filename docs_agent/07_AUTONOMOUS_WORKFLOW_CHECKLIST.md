@@ -25,7 +25,7 @@ If blocked: boundary violation -> `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`; har
 
 If blocked: question disposition -> `02_AUTONOMOUS_DEV_PROTOCOL.md` Step 2 (Contract).
 
-- [ ] If the discussion draft has an open-questions table, every row has the `Resolution confirmed wording` column filled.
+- [ ] If the discussion draft has an open-questions table, every row has the `Resolution confirmed wording` column filled, and the third column is no longer left as draft-only candidate wording such as `Candidate wording for confirmation`.
 - [ ] If questions were resolved by direct decision without individual written answers, that fact is recorded in Process Review Notes with the label `direct-decision`.
 
 ## Before Handoff

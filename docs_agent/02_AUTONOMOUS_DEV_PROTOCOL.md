@@ -45,7 +45,7 @@ flowchart TD
 - If all details are not known yet, write a minimum starter contract first and mark unknown fields as `TBD` rather than starting without a contract.
 - Lock scope, acceptance criteria, tests, and rollback.
 - Review-remediation, document-only correction, and final-review packaging passes still require their own task contract before edits start.
-- If the discussion draft includes an open-questions section, format it as a three-column table with columns `Question`, `Provisional direction (at draft time)`, and `Resolution confirmed wording`. The `Resolution confirmed wording` column must be filled in before writing the Resolution section. A table with any empty cell in the third column is a hard stop for Resolution creation.
+- If the discussion draft includes an open-questions section, format it as a three-column table with columns `Question`, `Provisional direction (at draft time)`, and `Resolution confirmed wording`. The existing Japanese labels `論点`, `判断方向（Discussion 時点の仮）`, and `Resolution 確定文言` are canonical equivalents. After human agreement, do not leave the third column as draft-only candidate wording; promote it to final wording that matches the Resolution section. The `Resolution confirmed wording` column must be filled in before writing the Resolution section. A table with any empty cell in the third column, or any row still frozen as candidate wording, is a hard stop for Resolution creation.
 
 ### 3. Implement
 
@@ -70,6 +70,7 @@ flowchart TD
 - Do not sync a remote issue or PR body with a new Final Review Result, completion wording, or equivalent final-state language until the commit and push that introduced that wording are already published.
 - Write Final Review Result only after all review comments (including low-severity items) are resolved. Do not mark Satisfied against a document that still contains open review items.
 - Record human re-agreement separately from agent validation. Re-agreement can confirm that the decision basis remains accepted, but it does not imply issue close approval.
+- If a human re-agreement is recorded in an issue or PR comment, state that the comment is a concise record, point the canonical wording to the source body's Resolution or equivalent final decision section, and say explicitly that the comment is not close approval.
 - Keep review-state sections inside the source document aligned. Sections such as Current Draft Focus, Final Review Result, and Current Status must not point to different stages.
 - If the local issue definition changes after the last remote sync, sync the remote issue or PR body again before close or any equivalent final-state transition.
 - When the remote issue or PR body is sourced from a repository file, prefer a file-based sync path such as `gh issue edit --body-file <path>` or the PR equivalent instead of manually re-serializing the body through another API path.

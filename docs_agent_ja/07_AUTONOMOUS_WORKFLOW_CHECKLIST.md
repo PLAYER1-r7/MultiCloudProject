@@ -25,7 +25,7 @@
 
 詰まった場合: 論点処理 -> `02_AUTONOMOUS_DEV_PROTOCOL.md` Step 2（契約）。
 
-- [ ] Discussion Draft に論点テーブルがある場合、全行の `Resolution 確定文言` 列が埋まっている
+- [ ] Discussion Draft に論点テーブルがある場合、全行の `Resolution 確定文言` 列（英語表記なら `Resolution confirmed wording` 列）が埋まっており、3 列目が `Candidate wording for confirmation` のような draft-only 表現のまま残っていない
 - [ ] 論点を逐次回答せずに直接決定した場合は、その事実を `direct-decision` と明記して Process Review Notes に記録した
 
 ## 引き継ぎ前
