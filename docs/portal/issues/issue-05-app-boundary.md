@@ -8,20 +8,20 @@
 
 ## Tasks
 
-- [ ] 新規ポータルの配置先候補を整理する
-- [ ] 編集可能範囲を定義する
-- [ ] 既存アプリで触らない範囲を定義する
-- [ ] 共有基盤扱いとなる領域を整理する
-- [ ] boundary メモを作成する
+- [x] 新規ポータルの配置先候補を整理する
+- [x] 編集可能範囲を定義する
+- [x] 既存アプリで触らない範囲を定義する
+- [x] 共有基盤扱いとなる領域を整理する
+- [x] boundary メモを作成する
 
 ## Definition of Done
 
-- [ ] planning ドキュメントの主作業領域が明示されている
-- [ ] 将来のフロントエンド実装配置先が定義されている
-- [ ] 将来のインフラ実装配置先が定義されている
-- [ ] 触ってはいけない領域または今は触らない領域が明文化されている
-- [ ] 共有基盤と portal 固有領域の切り分けが説明されている
-- [ ] 境界違反を避けるための編集ルールが存在する
+- [x] planning ドキュメントの主作業領域が明示されている
+- [x] 将来のフロントエンド実装配置先が定義されている
+- [x] 将来のインフラ実装配置先が定義されている
+- [x] 触ってはいけない領域または今は触らない領域が明文化されている
+- [x] 共有基盤と portal 固有領域の切り分けが説明されている
+- [x] 境界違反を避けるための編集ルールが存在する
 
 ## Evidence To Fill Before Checking
 
@@ -33,11 +33,11 @@
 
 ## Current Draft Focus
 
-- current repository reality に合わせて、既に存在する `apps/portal-web` と `infra/` を boundary decision に含める
-- `docs/portal` と `docs/portal/issues` を planning source of truth として維持する
-- `docs_agent`、`docs_agent_ja`、`.tmp-home` を通常の portal product edits から外す
-- repository-level shared material と portal-specific work の分け方を先に固める
-- 上記論点に合意できた後で、Tasks と Definition of Done の checkbox 根拠を対応付ける
+- current repository reality に合わせた boundary decision の整理は完了した
+- `docs/portal` と `docs/portal/issues` を planning source of truth とする方針は合意済み
+- `apps/portal-web`、`infra/`、`docs_agent`、`docs_agent_ja`、`.tmp-home` の扱いは文書上で整理済み
+- shared foundation と portal-specific work の切り分けは文書上で整理済み
+- evidence mapping と final checkbox review の反映まで完了した
 
 ## Provisional Agreement
 
@@ -139,9 +139,10 @@ The tables below do not mark the checklist as complete yet. They only show where
 
 ## Current Status
 
-- [docs/portal/07_APP_BOUNDARY_DRAFT.md](docs/portal/07_APP_BOUNDARY_DRAFT.md) に候補材料はある
-- Issue 5 を始めるための議論たたき台をこの local issue file に追加した
-- ただし Tasks と Definition of Done を満たしたと判断する根拠の対応付けはまだ議論中とみなす
+- [docs/portal/07_APP_BOUNDARY_DRAFT.md](docs/portal/07_APP_BOUNDARY_DRAFT.md) を決定文書として更新済み
+- 議論結果と checkbox 根拠の対応付けをこの local issue file に追加済み
+- final checkbox review は完了し、Tasks と Definition of Done は満了と判断した
+- GitHub Issue は open のまま再確認できる状態にしているため、close は明示的な最終判断で実施する
 
 ## Dependencies
 
