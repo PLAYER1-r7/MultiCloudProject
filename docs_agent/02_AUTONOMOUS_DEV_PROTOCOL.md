@@ -56,15 +56,18 @@ flowchart TD
 
 - Run the smallest test set that proves correctness.
 - Add deeper checks when the blast radius is larger.
+- If a document or issue will be reviewed from GitHub, make sure the review target is the current published state before asking for external review.
 
 ### 5. Package
 
 - Summarize what changed, what was validated, and what remains risky.
+- Align checklist state, status sections, and remote issue state before declaring review completion.
 
 ### 6. Handoff
 
 - Use the PR task contract template.
 - State open questions and reviewer focus areas.
+- Do not close an issue or declare final completion without explicit user approval.
 
 ## Hard Stop Conditions
 

@@ -25,5 +25,8 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 
 - [ ] Tests recorded.
 - [ ] DoD mandatory gates passed.
+- [ ] Local source document, remote issue or PR body, and status wording are aligned.
+- [ ] External review targets the latest published state, or local-only drift is explicitly disclosed.
+- [ ] Explicit human approval recorded before issue close or equivalent final-state transition.
 - [ ] PR template completed.
 - [ ] Remaining risks and follow-up work logged.
