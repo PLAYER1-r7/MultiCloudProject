@@ -62,6 +62,7 @@ flowchart TD
 
 - Summarize what changed, what was validated, and what remains risky.
 - Align checklist state, status sections, and remote issue state before declaring review completion.
+- Do not mix unrelated uncommitted changes into an issue close or equivalent final-state transition. Separate, stash, or defer them so the close flow stays scoped to the reviewed issue.
 - Commit and push evidence documents before writing a Final Review Result. The review record must reflect the published state, not a local draft.
 - Write Final Review Result only after all review comments (including low-severity items) are resolved. Do not mark Satisfied against a document that still contains open review items.
 - Keep review-state sections inside the source document aligned. Sections such as Current Draft Focus, Final Review Result, and Current Status must not point to different stages.
