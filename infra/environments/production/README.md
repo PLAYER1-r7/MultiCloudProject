@@ -11,8 +11,16 @@ This directory is reserved for the production entrypoint of the portal delivery 
 
 ## Current Guardrail
 
-- Keep this directory as a placeholder until the production design gate is closed
-- Do not add partial production wiring before domain ownership, certificate sourcing, approval ownership, rollback target, and state locking are decided
+- Production backend configuration can exist before full production rollout, but production delivery resources and deploy automation must stay blocked until the remaining production gate is closed
+- Do not add production module wiring, deploy workflow definitions, or cutover scripts before the remaining production entry conditions are recorded explicitly
+
+## Current Backend Baseline
+
+- backend bucket: multicloudproject-tfstate-apne1
+- backend key: portal/production/terraform.tfstate
+- backend region: ap-northeast-1
+- native S3 state locking is enabled with use_lockfile = true
+- production backend configuration is present, but production delivery resources are still intentionally absent
 
 ## Production Readiness Gate Snapshot
 
@@ -22,12 +30,12 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Rollback target baseline: use the last known-good artifact previously validated through the staging delivery path
 - Artifact evidence baseline: rely on `portal-build-evidence` and `portal-staging-monitoring-record` as the minimum promotion traceability set
 - Monthly cost ceiling: USD 15/month before tax for the first public release while the footprint remains a small static site centered on S3 + CloudFront
-- State locking strategy: use native S3 locking via `use_lockfile = true`; production backend wiring for that strategy is still deferred until the remaining gate is closed
+- State locking strategy: use native S3 locking via `use_lockfile = true`; production backend configuration now preserves that strategy through the dedicated production state key
 
 ## Fail-Closed Rules
 
-- Do not add production OpenTofu wiring, backend settings, deploy workflow definitions, or cutover scripts unless the production footprint still fits the USD 15/month ceiling or the ceiling is explicitly revised
-- Do not allow any production apply path until the selected native S3 locking strategy is wired into the production backend configuration
+- Do not add production module wiring, deploy workflow definitions, or cutover scripts unless the production footprint still fits the USD 15/month ceiling or the ceiling is explicitly revised
+- Do not allow any production apply path until the remaining production entry conditions are recorded and approved, even though the backend configuration now exists
 - Do not treat staging success as implicit approval to create production resources or a production GitHub Actions environment
 - Do not assume external DNS validation, certificate issuance, or emergency override handling are workflow-complete until operator steps are written down and approved
 

@@ -34,4 +34,5 @@ infra/
 
 - staging OpenTofu state is stored in the S3 backend bucket `multicloudproject-tfstate-apne1`
 - staging state key is `portal/staging/terraform.tfstate`
+- production OpenTofu backend configuration uses the same backend bucket with the dedicated key `portal/production/terraform.tfstate`
 - backend bootstrap is intentionally kept outside the staging module itself to avoid self-managing the state bucket

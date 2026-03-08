@@ -678,13 +678,13 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
 - Production domain and DNS operating model: use a custom domain with DNS managed outside AWS
 - Production deploy approver: the repository owner can approve alone in the current phase
 - Monthly cost ceiling: USD 15/month before tax for the first public release, based on a small static site footprint centered on S3 + CloudFront
-- OpenTofu state locking: native S3 locking via `use_lockfile = true` is the selected baseline, but production backend wiring for that strategy is still deferred
+- OpenTofu state locking: native S3 locking via `use_lockfile = true` is the selected baseline, and the production backend is now wired to a dedicated production state key
 - Multi-cloud portability boundary: still needs an explicit statement separating AWS-specific delivery choices from cloud-neutral product constraints
 
 ## Current Working Constraint
 
 - The repository may continue refining the staging path and planning documents
-- New production implementation work should stay blocked until the remaining production entry conditions are recorded explicitly and production backend wiring is prepared
+- New production implementation work should stay blocked until the remaining production entry conditions are recorded explicitly
 
 ## One-Page Summary
 

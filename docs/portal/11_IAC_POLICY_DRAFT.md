@@ -66,9 +66,9 @@ infra/
 
 - The production domain is expected to use an external DNS operating model rather than Route 53 as the primary source of truth
 - Certificate sourcing therefore has to be designed together with the external DNS validation flow
-- State locking baseline is native S3 locking via `use_lockfile = true`, already enabled in staging and intended for production backend wiring once the remaining production gate is closed
+- State locking baseline is native S3 locking via `use_lockfile = true`, enabled in staging and now wired into the production backend configuration through a dedicated production state key
 - Monthly cost ceiling for the first public release is fixed at USD 15/month before tax for the current small static-site footprint
-- Production IaC should still stay blocked until the remaining production entry conditions are recorded and the selected backend strategy is wired into production
+- Production IaC should still stay blocked until the remaining production entry conditions are recorded, even though the selected backend strategy is now wired into production
 
 ## Operational Rules
 
