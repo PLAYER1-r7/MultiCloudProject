@@ -46,7 +46,7 @@
 - Guidance page を MVP 必須ページとして扱う方針は合意済み
 - 初回対象機能は利用者機能と運用能力を分けて記述する方針は合意済み
 - login と backend workflow を明示的に後続送りとする方針は合意済み
-- 次は evidence mapping と checkbox 判定根拠の整理に進む
+- evidence mapping と checkbox 判定根拠の整理は完了し、final checkbox review まで反映済み
 
 ## Provisional Agreement
 
