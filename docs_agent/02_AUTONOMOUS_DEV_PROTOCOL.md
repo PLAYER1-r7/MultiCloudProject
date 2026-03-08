@@ -54,6 +54,7 @@ flowchart TD
 - Keep a single change within 5 files unless the task contract explicitly scopes a larger surface.
 - Keep net line delta within 200 lines unless the task contract explicitly scopes a larger surface.
 - Multiple files are acceptable only when they form one logically cohesive unit.
+- If remaining diffs split into semantic work and formatting-only cleanup, separate them into different task contracts or issues so review evidence and close approval stay scope-accurate.
 - Avoid unrelated edits.
 
 ### 4. Validate

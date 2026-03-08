@@ -25,6 +25,7 @@ If blocked: boundary violation -> `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`; har
 
 - [ ] Changes are small and reversible.
 - [ ] No unrelated paths are touched.
+- [ ] If leftover diffs separate into semantic work and formatting-only cleanup, they were split into distinct task scopes before review or close.
 - [ ] Boundary check remains clean.
 - [ ] Rollback path remains available.
 

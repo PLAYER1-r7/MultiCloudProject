@@ -18,6 +18,7 @@ Keep `docs_agent/` and `docs_agent_ja/` structurally aligned so agents can switc
 - Keep template fields aligned one-to-one across both languages.
 - Update both `01_START_HERE.md` files whenever reading order changes.
 - If only one language is updated, record the mismatch and fix it in the same task when possible.
+- If a leftover diff set mixes semantic changes with formatting-only cleanup, record and track them as separate scopes so final review evidence stays unambiguous.
 - If a local issue definition is used as the source for a GitHub issue or PR body, sync the remote body in the same task whenever possible.
 - Before requesting external review based on GitHub content, commit and push the review target or explicitly state that the review is against a local-only draft.
 - If a review-remediation pass changes a local source document, create a dedicated task contract or execution record for that remediation scope.
