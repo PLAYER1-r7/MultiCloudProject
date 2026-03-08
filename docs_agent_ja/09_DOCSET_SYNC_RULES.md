@@ -26,6 +26,7 @@
 - ローカル根拠文書内のレビュー状態セクションも揃える。Current Draft Focus、Final Review Result、Current Status のような節が異なる段階を指してはならない
 - 新しい Final Review Result、完了表現、または同等の最終状態文言を含むリモート Issue または PR 本文は、その文言を含む commit と push が公開済みになるまで同期してはならない
 - レビュー是正後に人間の再合意を得た場合は、agent validation と分けて記録し、Issue close 承認として扱ってはならない
+- 人間の再合意をコメントで記録する場合は、そのコメントが簡潔な記録であること、正式文言の正本は Issue または PR 本文の Resolution または同等セクションにあること、そして close 承認ではないことを明記する
 - ローカル根拠文書が最後のリモート同期後に変わった場合は、close や同等の最終状態変更の前に、リモートの Issue または PR 本文を再同期する
 
 ## 推奨する構造化形式

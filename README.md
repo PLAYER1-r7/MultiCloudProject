@@ -32,6 +32,7 @@ docs_agent_ja/
 - Read `docs/portal/01_AWS_PORTAL_START_GUIDE.md`
 - Follow `docs/portal/02_GITHUB_ISSUE_WORKFLOW.md`
 - Use the issue bodies under `docs/portal/issues/`
+- Before closing any checklist issue, sync the GitHub Issue body from the matching local file and verify the checklist state on GitHub
 
 ## GitHub Resources
 
@@ -68,4 +69,3 @@ docs_agent_ja/
 - Frontend scaffold: `apps/portal-web`
 - AWS delivery foundation placeholder: `infra/`
 - CI and staging workflow placeholder: `.github/workflows`
-

@@ -145,15 +145,46 @@ gh issue list --state open --limit 30
 
 ## 9. Update issue body after creation
 
-If the issue body needs revision, edit through the web UI or use comments for follow-up notes.
+If the issue body needs revision, the repository copy under `docs/portal/issues/` remains the source of truth and GitHub should be synchronized from that file.
 
 Example:
 
 ```bash
-gh issue comment <issue-number> --body "Updated scope note: staging is the first deployment target."
+gh issue edit <issue-number> --body-file docs/portal/issues/issue-XX-example.md
 ```
 
-## 10. Minimum workflow for this repository
+Use comments only for progress notes or supplemental discussion that should not replace the canonical checklist body.
+
+## 10. Close issue only after checklist sync
+
+Use this closure sequence whenever an issue uses Tasks or Definition of Done checklists.
+
+1. update the decision draft or implementation artifact that proves completion
+2. update the matching file under `docs/portal/issues/`
+3. verify every required checkbox in that local issue file is checked
+4. sync the GitHub Issue body from the local file with `gh issue edit --body-file ...`
+5. verify the GitHub Issue body now shows the checked boxes
+6. close the GitHub Issue
+
+Required rule:
+
+- do not close a GitHub Issue while its GitHub checklist body still shows unchecked items that are meant to be complete
+- comments are not a substitute for synchronized checklist state
+- if closure depends on a separate draft document, add a short `Resolution` section in the issue body that points to the deciding file
+
+Example:
+
+```bash
+gh issue edit 1 \
+  --repo <owner>/<repo> \
+  --body-file docs/portal/issues/issue-01-product-definition.md
+
+gh issue view 1 --repo <owner>/<repo>
+
+gh issue close 1 --repo <owner>/<repo>
+```
+
+## 11. Minimum workflow for this repository
 
 Use this sequence as the default path.
 
@@ -162,7 +193,9 @@ Use this sequence as the default path.
 3. prepare issue body files under docs/portal/issues
 4. create issues in the agreed order
 5. list created issues and record their numbers
-6. add dependency comments where helpful
+6. keep the local issue file updated as the canonical checklist copy
+7. sync the GitHub Issue body before closing any checklist-driven issue
+8. add dependency comments where helpful
 
 ## Example Session
 

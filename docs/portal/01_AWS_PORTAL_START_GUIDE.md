@@ -29,6 +29,7 @@ Use it as the default execution order when resuming work inside the container.
 - Avoid mixing the new portal with existing app boundaries unless explicitly planned
 - Do not place secrets in the repository
 - Use staging as the first deployment target
+- Do not close checklist-driven GitHub Issues until the GitHub body is synchronized from the local issue file and the checklist state is verified on GitHub
 
 ## Recommended Execution Order
 
@@ -77,8 +78,8 @@ Default recommendation:
 
 - S3
 - CloudFront
-- Route 53
 - ACM
+- External DNS or CloudFront domain during the current planning phase
 
 Add only if required:
 
@@ -150,7 +151,7 @@ If no additional requirements exist, start with this shape.
 
 - frontend: TypeScript web app
 - hosting: S3 + CloudFront
-- domain: Route 53 + ACM
+- domain: external DNS or CloudFront domain + ACM when a custom domain is connected
 - auth: add Cognito only if required
 - backend: defer until a real MVP use case needs it
 - infra: OpenTofu for staging first
