@@ -7,6 +7,7 @@ If blocked: auth -> `17_AUTH_REQUEST_PLAYBOOK.md`; contract or scope -> `03_TASK
 - [ ] Target app declared.
 - [ ] Target environment declared.
 - [ ] Task contract completed.
+- [ ] If some task details are still unknown, a minimum starter contract was still written before the first edit and unknown fields are marked as `TBD`.
 - [ ] If this is a review-remediation or document-only correction pass, a dedicated task contract exists for that remediation scope.
 - [ ] Scope and acceptance criteria fixed.
 - [ ] Required authentication confirmed.

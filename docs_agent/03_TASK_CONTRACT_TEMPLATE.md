@@ -10,6 +10,58 @@ Use this template before implementation starts.
 - If reviewer and approval owner boundaries matter for the task, follow `ROLE_HANDOFF_OWNERSHIP.md` while filling `Requester`, `Expected value`, and handoff-related scope notes.
 - Use this template for review-remediation, document-only correction, and final-review packaging passes as well as normal implementation work.
 
+## Minimum Start Rule
+
+- If work must start before every detail is known, still create a task contract before the first edit.
+- At minimum, fill `Title`, `Requester`, `Target App`, `Environment`, `Problem to solve`, `In scope`, `Out of scope`, one acceptance criterion, and one validation command.
+- Leave unknown values as explicit `TBD` markers rather than skipping the contract.
+- Expand the contract before handoff if the work grows beyond the initial narrow scope.
+
+## Minimum Starter Block
+
+Use this only when speed matters and the full template would delay safe task startup.
+
+```text
+Task Contract
+
+Metadata
+- Task ID: TBD
+- Title:
+- Requester:
+- Target App:
+- Environment:
+- Priority: TBD
+
+Objective
+- Problem to solve:
+- Expected value: TBD
+
+Scope
+- In scope:
+- Out of scope:
+- Editable paths: TBD
+- Restricted paths: TBD
+
+Acceptance Criteria
+- [ ] AC-1:
+
+Implementation Plan
+- Files likely to change: TBD
+- Approach: TBD
+- Alternative rejected and why: TBD
+
+Validation Plan
+- Commands to run:
+- Expected results: TBD
+- Failure triage path: TBD
+
+Risk and Rollback
+- Risks: TBD
+- Impact area: TBD
+- Mitigation: TBD
+- Rollback: TBD
+```
+
 ## Copy-Ready Template
 
 ```text
