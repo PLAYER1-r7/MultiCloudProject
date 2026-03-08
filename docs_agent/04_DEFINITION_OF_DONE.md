@@ -14,6 +14,7 @@
 - [ ] Risks and trade-offs are explicit. Record them in the Risk and Rollback section of `03_TASK_CONTRACT_TEMPLATE.md`.
 - [ ] Reviewer instructions are included. Follow the Reviewer Notes format in `05_PR_TASK_CONTRACT_TEMPLATE.md`.
 - [ ] Follow-up work is logged if needed. Record it in `Next action` of the canonical execution record in `08_ESCALATION_AND_HANDOFF.md`.
+- [ ] Issue close confirmed: ran `gh issue close <N>` with prior human approval, then verified closed state with `gh issue view <N> --json state`. Do not begin the next Intake until this step is complete.
 
 ## Minimum Rollback Content
 

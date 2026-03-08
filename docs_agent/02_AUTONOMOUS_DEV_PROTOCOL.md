@@ -19,6 +19,7 @@ flowchart TD
 	C -. hard stop .-> X
 	D -. hard stop .-> X
 	E -. hard stop .-> X
+	F -. hard stop .-> X
 ```
 
 ## Step Map
@@ -81,6 +82,8 @@ flowchart TD
 - Use the PR task contract template.
 - State open questions and reviewer focus areas.
 - Do not close an issue or declare final completion without explicit user approval.
+- **Hard stop before next Intake**: Run `gh issue view <N> --json state` and confirm the state is `CLOSED` before accepting any new Intake. If human close approval has not been received, stop here and request review. Proceeding to a new Intake without a confirmed close is a protocol violation.
+- After close is confirmed, record the closed issue number and confirmation timestamp in the execution record before starting the next Intake.
 
 ## Hard Stop Conditions
 

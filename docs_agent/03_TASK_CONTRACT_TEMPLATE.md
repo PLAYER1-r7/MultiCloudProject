@@ -31,6 +31,7 @@ Metadata
 - Target App:
 - Environment:
 - Priority: TBD
+- Predecessor: (Issue # that must be CLOSED before this contract is activated, or "none")
 
 Objective
 - Problem to solve:
@@ -74,6 +75,7 @@ Metadata
 - Target App:
 - Environment:
 - Priority:
+- Predecessor:
 
 Objective
 - Problem to solve:

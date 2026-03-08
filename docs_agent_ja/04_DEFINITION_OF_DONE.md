@@ -14,6 +14,7 @@
 - [ ] リスクとトレードオフが明示されている。`03_TASK_CONTRACT_TEMPLATE.md` の Risk and Rollback セクションに記録する
 - [ ] レビュアー向けの確認ポイントがある。`05_PR_TASK_CONTRACT_TEMPLATE.md` の Reviewer Notes 形式に従う
 - [ ] 必要な後続作業が記録されている。`08_ESCALATION_AND_HANDOFF.md` の正規 Execution Record にある `Next action` に記録する
+- [ ] Issue close を確認した。人間の close 承認を取得した上で `gh issue close <N>` を実行し、`gh issue view <N> --json state` で closed 状態を確認した。このステップが完了するまで次の受領（Intake）を開始しない
 
 ## ロールバック記載の最低要件
 

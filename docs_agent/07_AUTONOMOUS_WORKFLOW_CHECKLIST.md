@@ -1,5 +1,12 @@
 # Autonomous Workflow Checklist
 
+## Before Intake (Pre-Task Gate)
+
+If a preceding issue exists, `gh issue view <N> --json state` must return `"state": "CLOSED"` before this Intake is accepted.
+
+- [ ] No preceding issue exists for this task, OR the preceding issue is confirmed closed via `gh issue view <N> --json state`.
+- [ ] If close approval for the preceding issue has not been received, stopped here and requested human review before proceeding.
+
 ## Before Coding
 
 If blocked: auth -> `17_AUTH_REQUEST_PLAYBOOK.md`; contract or scope -> `03_TASK_CONTRACT_TEMPLATE.md`; boundary -> `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`.

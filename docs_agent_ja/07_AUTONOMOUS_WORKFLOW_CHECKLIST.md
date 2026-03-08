@@ -1,5 +1,12 @@
 # 自律ワークフローチェックリスト
 
+## 受領前ゲート（Pre-Task Gate）
+
+前提 Issue がある場合、`gh issue view <N> --json state` が `"state": "CLOSED"` を返すことを確認してから、この受領を受け付ける。
+
+- [ ] この作業に前提 Issue は存在しない、または `gh issue view <N> --json state` で前提 Issue の closed を確認した
+- [ ] 前提 Issue の close 承認がまだ得られていない場合は、ここで停止して人間のレビューを要求した
+
 ## 開始前
 
 詰まった場合: 認証 -> `17_AUTH_REQUEST_PLAYBOOK.md`、コントラクトまたはスコープ -> `03_TASK_CONTRACT_TEMPLATE.md`、境界確認 -> `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`。
