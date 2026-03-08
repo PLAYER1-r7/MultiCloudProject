@@ -19,6 +19,8 @@ Initial static-first frontend scaffold for the MultiCloudProject portal.
 ## Route Seed
 
 - `/`
+- `/overview`
+- `/guidance`
 - `/platform`
 - `/delivery`
 - `/operations`

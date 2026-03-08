@@ -1,0 +1,92 @@
+name: portal-staging-deploy
+
+on:
+  workflow_run:
+    workflows:
+      - portal-build
+    types:
+      - completed
+  workflow_dispatch:
+
+concurrency:
+  group: portal-staging-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    environment: staging
+    env:
+      AWS_REGION: ${{ vars.STAGING_AWS_REGION != '' && vars.STAGING_AWS_REGION || 'ap-northeast-1' }}
+      STAGING_SITE_BUCKET_NAME: ${{ vars.STAGING_SITE_BUCKET_NAME }}
+      STAGING_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.STAGING_CLOUDFRONT_DISTRIBUTION_ID }}
+    steps:
+      - name: Checkout
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/portal-web/package-lock.json
+
+      - name: Install dependencies
+        if: github.event_name == 'workflow_dispatch'
+        working-directory: apps/portal-web
+        run: npm ci
+
+      - name: Build portal
+        if: github.event_name == 'workflow_dispatch'
+        working-directory: apps/portal-web
+        run: npm run build
+
+      - name: Download build artifact from portal-build
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: portal-web-dist
+          path: portal-dist
+
+      - name: Prepare dist from manual dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          rm -rf portal-dist
+          cp -R apps/portal-web/dist portal-dist
+
+      - name: Validate staging settings
+        env:
+          AWS_ROLE_TO_ASSUME_STAGING: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
+        run: |
+          test -n "$STAGING_SITE_BUCKET_NAME"
+          test -n "$AWS_ROLE_TO_ASSUME_STAGING"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync portal artifact to staging bucket
+        run: |
+          aws s3 sync portal-dist/ "s3://${STAGING_SITE_BUCKET_NAME}" --delete
+
+      - name: Invalidate CloudFront cache
+        if: env.STAGING_CLOUDFRONT_DISTRIBUTION_ID != ''
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$STAGING_CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths '/*'
