@@ -1,0 +1,46 @@
+name: portal-build
+
+on:
+  pull_request:
+    paths:
+      - apps/portal-web/**
+      - .github/workflows/portal-build.yml
+  push:
+    branches:
+      - main
+    paths:
+      - apps/portal-web/**
+      - .github/workflows/portal-build.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/portal-web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/portal-web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build portal
+        run: npm run build
+
+      - name: Upload static artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-web-dist
+          path: apps/portal-web/dist
+          if-no-files-found: error
