@@ -33,6 +33,22 @@ This directory is reserved for the staging entrypoint of the portal delivery inf
 - staging deploy is expected to sync that artifact into the bucket exposed by `site_bucket_name`
 - optional CloudFront invalidation should target the `distribution_id` output when a deploy updates already-cached assets
 
+## Staging Rollback Readiness
+
+- Last known-good rollback target: the most recent validated `portal-build` artifact that was successfully delivered to staging before the failing change
+- Preferred restore path: re-run `portal-staging-deploy` against that known-good artifact context instead of rebuilding an unverified replacement under incident pressure
+- Primary rollback evidence path: the GitHub Actions run URL, the step summary for the rollback run, and the `portal-staging-monitoring-record` artifact retained from deploy verification
+- Operator action boundary: staging rollback is an operator-driven restore and verification flow; it is not automatic rollback and it does not authorize production-specific DNS or state interventions
+
+### Verification Checklist
+
+- Confirm which artifact is the last known-good target before starting the restore action
+- Confirm the staging bucket sync points to the expected artifact contents for that target
+- If CloudFront invalidation is used, record whether it was triggered for the rollback run
+- Verify `/`, `/overview`, and `/guidance` return expected content markers after rollback completion
+- Review the rollback run step summary and `portal-staging-monitoring-record` artifact as the minimum recovery evidence set
+- Escalate separately if the incident requires production DNS rollback, production state correction, or credential rotation beyond staging restore scope
+
 ## Current Delivery Controls
 
 - S3 public access is blocked and CloudFront reads through Origin Access Control
@@ -50,4 +66,6 @@ This directory is reserved for the staging entrypoint of the portal delivery inf
 - backend bucket: `multicloudproject-tfstate-apne1`
 - backend key: `portal/staging/terraform.tfstate`
 - backend region: `ap-northeast-1`
-- current backend design does not add a separate lock table; state operations should stay serialized until a stronger locking design is introduced
+- native S3 state locking is enabled with `use_lockfile = true`
+- current backend design does not add a separate DynamoDB lock table; the selected locking baseline is S3-native locking in the same backend bucket
+- bucket versioning should remain enabled on the backend bucket so state recovery and lockfile churn stay reviewable
