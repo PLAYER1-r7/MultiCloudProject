@@ -81,7 +81,10 @@ flowchart TD
 
 - Use the PR task contract template.
 - State open questions and reviewer focus areas.
-- Do not close an issue or declare final completion without explicit user approval.
+- Do not close an issue or declare final completion without explicit user approval. Approval takes one of two forms:
+  - (a) Single-issue approval: the user names or clearly designates the specific issue for close.
+  - (b) Sequential-batch authorization: the user explicitly requests that a numbered series of issues be processed in order. In this case, before closing each issue, state "I will now close Issue N (<title>)" and pause one turn to allow the user to intervene. Proceeding without that pause is a protocol violation equivalent to missing approval.
+- In both approval forms, the approval basis must be quoted or referenced verbatim in Process Review Notes.
 - **Hard stop before next Intake**: Run `gh issue view <N> --json state` and confirm the state is `CLOSED` before accepting any new Intake. If human close approval has not been received, stop here and request review. Proceeding to a new Intake without a confirmed close is a protocol violation.
 - After close is confirmed, record the closed issue number and confirmation timestamp in the execution record before starting the next Intake.
 

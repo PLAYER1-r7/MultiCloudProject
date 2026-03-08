@@ -80,7 +80,10 @@ flowchart TD
 
 - PR タスク契約テンプレートを使う。
 - 未解決点とレビュー重点を明示する。
-- 明示的なユーザー承認なしに Issue を close したり、最終完了を宣言したりしない。
+- 明示的なユーザー承認なしに Issue を close したり、最終完了を宣言したりしない。承認は次のいずれかの形式をとる:
+  - (a) 個別 Issue 承認（single-issue approval）: ユーザーが close 対象 Issue を名指し、または明確に指定する。
+  - (b) 連続処理一括承認（sequential-batch authorization）: ユーザーが一連の Issue を順番に処理するよう明示的に依頼した場合。この場合、各 Issue の close 前に「次に Issue N（<タイトル>）を close します」と宣言し、1 ターン待機してユーザーの介入を許可する。この待機なしに進めることは、承認欠如と同等のプロトコル違反である。
+- どちらの承認形式でも、承認根拠（発言の引用または参照）を Process Review Notes に記録しなければならない。
 - **次の受領へ進む前のハードストップ**: `gh issue view <N> --json state` を実行して state が `CLOSED` であることを確認してから、次の受領（Intake）を受け付ける。人間による close 承認が得られていない場合は、ここで停止してレビューを要求する。close 確認なしに次の受領へ移行することはプロトコル違反である。
 - close が確認できたら、close した Issue 番号と確認日時を Execution Record に記録してから、次の受領を開始する。
 

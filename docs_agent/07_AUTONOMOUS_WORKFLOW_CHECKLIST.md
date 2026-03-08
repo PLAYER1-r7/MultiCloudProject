@@ -50,6 +50,6 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] If the remote body is derived from a repository file, the final sync used a body-file path from that file instead of a manually reconstructed body payload.
 - [ ] After the final sync, the published GitHub body was spot-checked for Markdown-sensitive drift such as broken `<...>` literals, malformed tables, or damaged code fences.
 - [ ] Human re-agreement, if obtained, is recorded separately from agent validation and does not imply close approval.
-- [ ] Explicit human approval recorded before issue close or equivalent final-state transition.
+- [ ] Explicit human approval recorded before issue close or equivalent final-state transition: the approval form (single-issue or sequential-batch), and the verbatim quote or conversation reference that constitutes the approval, are written in Process Review Notes.
 - [ ] PR template completed.
 - [ ] Remaining risks and follow-up work logged.
