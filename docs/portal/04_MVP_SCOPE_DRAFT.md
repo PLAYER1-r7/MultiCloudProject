@@ -15,18 +15,23 @@ Define a first release scope that is small enough to ship quickly on AWS staging
 
 - Home page
   - explains what the portal is
-  - presents the primary call to action
+  - presents the single primary call to action for the first release
   - links to the most important destination pages
 - Overview page
   - explains intended users and use cases
   - states what this first release covers
-- Contact or guidance page
-  - provides next-step guidance, support contact, or operational notice if needed
+- Guidance page
+  - provides next-step guidance, support contact, and operational notice for the first release
 
-## Proposed In-Scope Functions
+## Proposed In-Scope User-Facing Functions
 
-- Static content delivery over a stable public URL
-- Basic navigation across the initial page set
+- Reach the public portal from a stable URL
+- Move across the initial page set without confusion
+- Understand what this first release covers and what it does not cover
+- Identify the intended next action, support contact, and operational notice from public guidance
+
+## Operational Capabilities Required For MVP
+
 - Simple content update flow through repository change and deployment process
 - Minimal observability and release validation needed for staging
 
@@ -39,16 +44,25 @@ Define a first release scope that is small enough to ship quickly on AWS staging
 - Admin console beyond repository-driven content updates
 - Cross-cloud runtime deployment in the first release
 
-## Deferred To Later Phases
+## Explicitly Deferred To Later Phases
 
-- Login-protected user area if Issue 3 concludes it is necessary
-- API-driven content or backend workflows if Issue 7 concludes they are necessary
-- Cloud-portable operational abstraction beyond the minimum needed for AWS-first delivery
-- Production hardening beyond the initial staging path
+- Login-protected user area is deferred unless Issue 3 concludes it is necessary
+- API-driven content or backend workflows are deferred unless Issue 7 concludes they are necessary; this is a later-phase dependency and not a completion condition for Issue 2
+- Cloud-portable operational abstraction beyond the minimum needed for AWS-first delivery is deferred because Issue 2 defines an AWS-first MVP boundary rather than a multi-cloud runtime target
+- Production hardening beyond the initial staging path is deferred because the first release should validate scope and visitor journey before expanding operational investment
+
+## Confirmed Scope Decisions
+
+- Public access is sufficient for the first release
+- Guidance page is a required MVP page because the initial portal must tell visitors what to do next without requiring a backend workflow
+- Inquiry submission is out of scope for the first release and should not introduce a custom form backend yet
+- The first release should emphasize one primary call to action, with supporting navigation available as secondary paths
+- User-facing functions and operational capabilities should be described separately when judging MVP scope
+- Login and backend workflow are explicitly deferred and should not be treated as hidden MVP requirements
 
 ## MVP Boundary
 
-The MVP succeeds if a user can reach the portal, understand its purpose, navigate the initial information architecture, and reach the intended next action without requiring a custom backend or complex operations.
+The MVP succeeds if a user can reach the public portal URL, understand its purpose, navigate the initial information architecture, and reach the intended next action without requiring login, a custom backend, or complex operations.
 
 ## Decision Inputs Required
 
@@ -58,10 +72,16 @@ The MVP succeeds if a user can reach the portal, understand its purpose, navigat
 
 ## Open Questions
 
-- Is public access sufficient for the first release?
-- Is the contact or guidance page necessary on day one?
-- Does the first release need any form of inquiry submission?
-- Should the MVP include a single primary call to action or multiple entry paths?
+- No unresolved scope blockers remain for Issue 2 final checkbox review; any later changes should be treated as downstream refinement rather than MVP boundary definition.
+
+## Current Coverage Notes For Issue 2
+
+- Initial MVP pages are Home, Overview, and Guidance
+- Initial MVP user-facing functions are reaching the portal, navigating the initial page set, understanding first-release scope, and identifying the next action from public guidance
+- MVP operational capabilities are repository-driven updates and minimal release verification
+- Out-of-scope items are personalized dashboards, user-generated content, member management, real-time notifications, admin console features, and cross-cloud runtime deployment
+- Later-phase items are explicitly deferred protected areas, API-backed workflows, deeper cloud-portable abstractions, and production hardening, each with a stated reason for deferral
+- This document now provides the accepted evidence baseline for Issue 2 final review and downstream Issue 3 to Issue 4 planning
 
 ## One-Page Summary
 
