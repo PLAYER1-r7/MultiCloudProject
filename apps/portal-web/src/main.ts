@@ -188,7 +188,7 @@ const routeDefinitions: Record<string, RouteDefinition> = {
     title: "Platform Outline",
     eyebrow: "AWS static delivery baseline",
     summary:
-      "Route 53、CloudFront、S3 を軸にした AWS 静的配信の前提を説明し、Issue 17 の IaC 実装へ自然につなぐ。",
+      "external DNS または CloudFront domain、CloudFront、S3 を軸にした AWS 静的配信の前提を説明し、Issue 17 の IaC 実装へ自然につなぐ。",
     audience:
       "このページは、構成判断を確認したい開発者と運用担当に向けた delivery baseline の要約面として使う。",
     outcome:
@@ -209,7 +209,7 @@ const routeDefinitions: Record<string, RouteDefinition> = {
         body:
           "first release では User から CloudFront を経由し、S3 の静的 asset を配信する流れを基本とする。",
         points: [
-          "Route 53 は custom domain 利用時に追加",
+          "custom domain を使う場合は external DNS または CloudFront domain の運用前提を先に確認する",
           "ACM は HTTPS の証明書管理に使用",
           "backend runtime は baseline に含めない"
         ]
@@ -357,17 +357,56 @@ const navGroups: NavGroup[] = [
 ];
 
 const applicationRoot = document.querySelector<HTMLDivElement>("#app");
+const applicationBasePath = normalizeBasePath(import.meta.env.BASE_URL || "/");
 
 if (!applicationRoot) {
   throw new Error("Application root was not found.");
 }
 
-function normalizePath(pathname: string): string {
-  if (pathname.length > 1 && pathname.endsWith("/")) {
-    return pathname.slice(0, -1);
+function normalizeBasePath(basePath: string): string {
+  if (!basePath || basePath === "/") {
+    return "";
   }
 
-  return pathname || "/";
+  const normalizedLeadingSlash = basePath.startsWith("/") ? basePath : `/${basePath}`;
+
+  return normalizedLeadingSlash.endsWith("/")
+    ? normalizedLeadingSlash.slice(0, -1)
+    : normalizedLeadingSlash;
+}
+
+function toApplicationPath(routePath: string): string {
+  if (routePath === "/") {
+    return applicationBasePath ? `${applicationBasePath}/` : "/";
+  }
+
+  return `${applicationBasePath}${routePath}`;
+}
+
+function toRoutePath(pathname: string): string {
+  if (!applicationBasePath) {
+    return pathname;
+  }
+
+  if (pathname === applicationBasePath || pathname === `${applicationBasePath}/`) {
+    return "/";
+  }
+
+  if (pathname.startsWith(`${applicationBasePath}/`)) {
+    return pathname.slice(applicationBasePath.length) || "/";
+  }
+
+  return pathname;
+}
+
+function normalizePath(pathname: string): string {
+  const routePath = toRoutePath(pathname);
+
+  if (routePath.length > 1 && routePath.endsWith("/")) {
+    return routePath.slice(0, -1);
+  }
+
+  return routePath || "/";
 }
 
 function escapeHtml(value: string): string {
@@ -389,9 +428,10 @@ function renderActionLinks(actions: ActionLink[], className: string): string {
   return actions
     .map((action) => {
       const emphasis = action.emphasis === "primary" ? `${className} primary` : `${className} secondary`;
+      const destination = toApplicationPath(action.href);
 
       return `
-        <a class="${emphasis}" href="${action.href}" data-link="internal">
+        <a class="${emphasis}" href="${destination}" data-link="internal">
           <span>${escapeHtml(action.label)}</span>
           <small>${escapeHtml(action.hint)}</small>
         </a>
@@ -407,8 +447,9 @@ function renderNavigation(currentPath: string): string {
         .map((path) => {
           const route = routeDefinitions[path];
           const currentClass = currentPath === path ? "nav-link current" : "nav-link";
+          const destination = toApplicationPath(path);
 
-          return `<a class="${currentClass}" href="${path}" data-link="internal">${escapeHtml(route.title)}</a>`;
+          return `<a class="${currentClass}" href="${destination}" data-link="internal">${escapeHtml(route.title)}</a>`;
         })
         .join("");
 
