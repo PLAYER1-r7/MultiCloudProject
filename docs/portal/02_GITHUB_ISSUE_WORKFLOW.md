@@ -1,0 +1,184 @@
+# GitHub Issue Workflow In Devcontainer
+
+## Purpose
+
+This document defines the standard GitHub CLI workflow for creating and managing portal planning issues from inside the devcontainer.
+
+## Prerequisites
+
+- The workspace is opened in the devcontainer
+- GitHub CLI is installed in the container
+- The repository is available locally
+- The user has permission to create issues in the target repository
+
+## 1. Verify GitHub authentication
+
+Run the following first.
+
+```bash
+gh auth status
+```
+
+If not authenticated, log in.
+
+```bash
+gh auth login
+```
+
+Recommended choices:
+
+- GitHub.com
+- HTTPS
+- Login with a browser
+
+## 2. Confirm the repository target
+
+Check which repository gh will use.
+
+```bash
+gh repo view
+```
+
+If needed, explicitly set the target repository for later commands.
+
+```bash
+gh repo set-default <owner>/<repo>
+```
+
+Expected result:
+
+- issue creation commands run against the intended repository
+
+## 3. Create issues from prepared text
+
+The safest pattern is to prepare the issue body in a markdown file and pass it to gh.
+
+Example:
+
+```bash
+gh issue create \
+  --title "新規ポータルのプロダクト定義を確定する" \
+  --body-file docs/portal/issues/issue-01-product-definition.md
+```
+
+Advantages:
+
+- the issue text is reviewable before submission
+- the same content can be reused later
+- large issue bodies are easier to edit in files than on the command line
+
+## 4. Recommended local issue file layout
+
+Use this directory structure when you begin creating issue body files.
+
+```text
+docs/
+  portal/
+    issues/
+      issue-01-product-definition.md
+      issue-02-mvp-scope.md
+      issue-03-auth-decision.md
+```
+
+## 5. Create all planning issues in order
+
+Recommended order:
+
+1. product definition
+2. MVP scope
+3. auth decision
+4. AWS architecture
+5. app boundary
+6. frontend technical choice
+7. backend and persistence decision
+8. multi-cloud design constraints
+9. IaC policy
+10. CI/CD policy
+11. security baseline
+12. monitoring policy
+13. test strategy
+14. rollback policy
+15. implementation backlog
+
+## 6. Add labels during creation if the repository uses them
+
+Example:
+
+```bash
+gh issue create \
+  --title "MVP スコープを確定する" \
+  --body-file docs/portal/issues/issue-02-mvp-scope.md \
+  --label planning \
+  --label portal
+```
+
+Only use labels that actually exist in the repository.
+
+Check available labels if needed.
+
+```bash
+gh label list
+```
+
+## 7. Link issues after creation
+
+After creating issues, inspect the list and capture issue numbers.
+
+```bash
+gh issue list --limit 30
+```
+
+Then update dependent issues with references in the body or comments.
+
+```bash
+gh issue comment <issue-number> --body "Depends on #<other-issue-number>."
+```
+
+## 8. View issue details
+
+Use these commands during planning work.
+
+```bash
+gh issue view <issue-number>
+gh issue list --state open --limit 30
+```
+
+## 9. Update issue body after creation
+
+If the issue body needs revision, edit through the web UI or use comments for follow-up notes.
+
+Example:
+
+```bash
+gh issue comment <issue-number> --body "Updated scope note: staging is the first deployment target."
+```
+
+## 10. Minimum workflow for this repository
+
+Use this sequence as the default path.
+
+1. run GitHub authentication check
+2. confirm the target repository
+3. prepare issue body files under docs/portal/issues
+4. create issues in the agreed order
+5. list created issues and record their numbers
+6. add dependency comments where helpful
+
+## Example Session
+
+```bash
+gh auth status
+gh repo view
+mkdir -p docs/portal/issues
+gh issue create \
+  --title "新規ポータルのプロダクト定義を確定する" \
+  --body-file docs/portal/issues/issue-01-product-definition.md
+gh issue list --limit 30
+```
+
+## Notes
+
+- Keep issue text in files when possible
+- Create planning issues before implementation issues
+- Prefer explicit titles over short ambiguous names
+- Do not assume labels, projects, or milestones already exist
