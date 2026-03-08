@@ -73,6 +73,7 @@ jobs:
         env:
           AWS_ROLE_TO_ASSUME_STAGING: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
         run: |
+          test -f portal-dist/index.html
           test -n "$STAGING_SITE_BUCKET_NAME"
           test -n "$AWS_ROLE_TO_ASSUME_STAGING"
 
@@ -115,9 +116,21 @@ jobs:
             path="${raw_path//[[:space:]]/}"
             [[ -z "$path" ]] && continue
             url="${STAGING_BASE_URL%/}${path}"
+            expected='MultiCloudProject Portal'
+            case "$path" in
+              "/")
+                expected='MultiCloudProject Portal'
+                ;;
+              "/overview")
+                expected='Overview'
+                ;;
+              "/guidance")
+                expected='Guidance'
+                ;;
+            esac
             echo "Checking $url"
             curl --fail --show-error --silent --location "$url" > /tmp/portal-smoke-response.html
-            grep -q "MultiCloudProject Portal\|Overview\|Guidance\|Platform Outline\|Release Path\|Operations View" /tmp/portal-smoke-response.html
+            grep -q "$expected" /tmp/portal-smoke-response.html
           done
 
       - name: Record deployment summary
