@@ -59,7 +59,7 @@ infra/
 ## Production Entry Criteria
 
 - Production entrypoint work should not begin only because staging infrastructure exists
-- Before adding production OpenTofu resources, the team should record decisions for domain ownership, certificate sourcing, rollback target, monthly cost ceiling, and how the selected state locking strategy will be wired into production
+- Before adding production OpenTofu resources, the team should record decisions for domain ownership, certificate sourcing, rollback target, and monthly cost ceiling
 - If any of those items remain undecided, production should stay as a documented placeholder rather than a partial implementation
 
 ## Current Decision Status

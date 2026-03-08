@@ -670,7 +670,6 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
   - ACM certificate ownership and renewal responsibility
   - production deploy approver and emergency override owner
   - acceptable monthly cost ceiling for the first public release
-  - how the selected OpenTofu state locking strategy will be wired into the production backend
   - which parts of the current solution are intentionally AWS-specific versus required to stay cloud-portable
 
 ## Current Decision Snapshot
