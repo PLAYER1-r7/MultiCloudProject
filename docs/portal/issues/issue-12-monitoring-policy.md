@@ -52,22 +52,22 @@
 
 ## Tasks
 
-- [ ] ヘルスチェック方法を定義する
-- [ ] 収集すべきログを定義する
-- [ ] 必要なメトリクスを定義する
-- [ ] アラート条件を定義する
-- [ ] 通知先を整理する
-- [ ] 監視対象一覧を作成する
+- [x] ヘルスチェック方法を定義する
+- [x] 収集すべきログを定義する
+- [x] 必要なメトリクスを定義する
+- [x] アラート条件を定義する
+- [x] 通知先を整理する
+- [x] 監視対象一覧を作成する
 
 ## Definition of Done
 
-- [ ] 公開ポータルの到達性を確認するヘルスチェック方法が明示されている
-- [ ] デプロイ後確認でトップページと主要静的アセットを検証する方針が整理されている
-- [ ] 初回リリースで確認すべきログの参照元と見方が説明されている
-- [ ] 可用性と配信正常性を中心にした最小メトリクス方針が整理されている
-- [ ] サイト到達不可、デプロイ失敗、主要導線障害に対するアラート条件が明示されている
-- [ ] 通知先と一次対応者の経路が整理されている
-- [ ] MVP の監視対象一覧として参照できる状態になっている
+- [x] 公開ポータルの到達性を確認するヘルスチェック方法が明示されている
+- [x] デプロイ後確認でトップページと主要静的アセットを検証する方針が整理されている
+- [x] 初回リリースで確認すべきログの参照元と見方が説明されている
+- [x] 可用性と配信正常性を中心にした最小メトリクス方針が整理されている
+- [x] サイト到達不可、デプロイ失敗、主要導線障害に対するアラート条件が明示されている
+- [x] 通知先と一次対応者の経路が整理されている
+- [x] MVP の監視対象一覧として参照できる状態になっている
 
 ## Issue 12 Discussion Draft
 
@@ -189,13 +189,13 @@
 
 `Resolution 確定文言` 列が埋まっていない行がある場合は Resolution セクションを書いてはならない。
 
-| 論点                                                        | 判断方向（Discussion 時点の仮）                                                | Resolution 確定文言                                                                                                                                                 |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| first-release で常時監視の中心に置く signal は何か          | reachability、deploy success/failure、major route health を優先する            | `first-release monitoring の中心 signal は public reachability、deploy success/failure、major route health とし、deep application telemetry は後段で再評価する` |
+| 論点                                                        | 判断方向（Discussion 時点の仮）                                                | Resolution 確定文言                                                                                                                                                      |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| first-release で常時監視の中心に置く signal は何か          | reachability、deploy success/failure、major route health を優先する            | `first-release monitoring の中心 signal は public reachability、deploy success/failure、major route health とし、deep application telemetry は後段で再評価する`          |
 | static-first portal で最低限 reviewable にすべき log は何か | workflow history、delivery log、audit log を優先する                           | `first-release で最低限 reviewable にすべき log は GitHub workflow history、cloud-native delivery visibility、audit log とし、存在しない application log を前提にしない` |
-| staging と production で alert 条件をどこまで揃えるか       | baseline は揃えつつ、production では operator-managed cutover 異常を追加で扱う | `staging と production は同じ health baseline を目標とするが、production では operator-managed cutover 後の異常も alert 対象に含める`                              |
-| notification path は製品選定より先に何を決めるべきか        | owner と一次対応経路を先に決める                                               | `notification path はツール選定より先に owner と一次対応経路を固定し、無人の通知先は enable しない`                                                            |
-| performance degradation を初回から paging 対象に含めるか    | 初回は記録対象に留め、即応が必要な failure を優先する                          | `first-release では site unreachable、failed deploy、major route failure を alert の中心とし、performance degradation は paging 条件として先行確定しない`          |
+| staging と production で alert 条件をどこまで揃えるか       | baseline は揃えつつ、production では operator-managed cutover 異常を追加で扱う | `staging と production は同じ health baseline を目標とするが、production では operator-managed cutover 後の異常も alert 対象に含める`                                    |
+| notification path は製品選定より先に何を決めるべきか        | owner と一次対応経路を先に決める                                               | `notification path はツール選定より先に owner と一次対応経路を固定し、無人の通知先は enable しない`                                                                      |
+| performance degradation を初回から paging 対象に含めるか    | 初回は記録対象に留め、即応が必要な failure を優先する                          | `first-release では site unreachable、failed deploy、major route failure を alert の中心とし、performance degradation は paging 条件として先行確定しない`                |
 
 ## Working Direction
 
@@ -239,14 +239,61 @@ Issue 12 の判断結果は次の通りとする。
 
 - direct-decision: Section 10 の論点は個別の逐次回答ログを積み上げる形ではなく、requester が monitoring baseline の方向性に合意した後に Resolution へ統合する形で確定した。
 - Section 10 の論点テーブルは open question と final wording の対応を後から追跡できるように維持し、3 列目は candidate wording ではなく Resolution に反映された確定文言として扱う。
-- この Issue は現時点では planning / draft 段階のままであり、Resolution の追加は方針合意を記録するものであって、Tasks や Definition of Done の完了、Issue close 承認、Final Review Result を意味しない。
+- Resolution 追加時点では planning / draft 段階として扱い、方針合意の記録と final checkbox review を分離して管理した。その後、再レビュー収束と明示的な close 承認を受けて final review を完了した。
+
+## Evidence Mapping Table
+
+The tables below identify the evidence used for final checkbox review and should remain aligned with the checked state above.
+
+For Issue 12 final review, the local issue record is the primary evidence source. [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) is supporting background and synchronized policy text, not the sole proof of checklist completion.
+
+### Task Mapping
+
+| Checklist item | Primary evidence section | Why this is the evidence | Review state |
+| -------------- | ------------------------ | ------------------------ | ------------ |
+| `ヘルスチェック方法を定義する` | `3. ヘルスチェック方針のたたき台`, `8. first-release monitoring checklist のたたき台`, and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections define the minimum health path, post-deploy checks, and the required user-facing reachability baseline. | Accepted for final review |
+| `収集すべきログを定義する` | `4. ログ方針のたたき台`, `Resolution`, and [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) | These sections define the reviewable evidence sources and keep logging scoped to actual first-release triage needs. | Accepted for final review |
+| `必要なメトリクスを定義する` | `5. メトリクス方針のたたき台` and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections define the minimum metrics focus on availability and delivery health while deferring deep telemetry. | Accepted for final review |
+| `アラート条件を定義する` | `6. アラート条件のたたき台`, `10. この場で確認したい論点`, and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections define actionable alert conditions, including unreachable site, failed deploy, major route failure, and operator-managed cutover anomalies. | Accepted for final review |
+| `通知先を整理する` | `7. 通知先と一次対応経路のたたき台`, `Resolution`, and [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) | These sections define owner-first routing and prohibit enabling unowned notification paths. | Accepted for final review |
+| `監視対象一覧を作成する` | `8. first-release monitoring checklist のたたき台`, `9. Issue 10 / 11 / 13 / 14 への接続観点`, and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections collect the baseline monitoring targets into a reusable first-release list and connect them to downstream issues. | Accepted for final review |
+
+### Definition Of Done Mapping
+
+| Checklist item | Primary evidence section | Why this is the evidence | Review state |
+| -------------- | ------------------------ | ------------------------ | ------------ |
+| `公開ポータルの到達性を確認するヘルスチェック方法が明示されている` | `3. ヘルスチェック方針のたたき台`, `8. first-release monitoring checklist のたたき台`, and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections define public reachability as a mandatory signal and describe the minimum health-check targets. | Accepted for final review |
+| `デプロイ後確認でトップページと主要静的アセットを検証する方針が整理されている` | `3. ヘルスチェック方針のたたき台`, `6. アラート条件のたたき台`, and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections define staging smoke checks and connect post-deploy verification to monitoring and alerting. | Accepted for final review |
+| `初回リリースで確認すべきログの参照元と見方が説明されている` | `4. ログ方針のたたき台`, `Resolution`, and [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) | These sections define GitHub workflow history, cloud-native delivery visibility, and audit log as the reviewable evidence sources. | Accepted for final review |
+| `可用性と配信正常性を中心にした最小メトリクス方針が整理されている` | `5. メトリクス方針のたたき台` and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections focus metrics on availability and delivery health while deferring nonessential telemetry. | Accepted for final review |
+| `サイト到達不可、デプロイ失敗、主要導線障害に対するアラート条件が明示されている` | `6. アラート条件のたたき台`, `10. この場で確認したい論点`, and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections define the actionable first-release alert set and keep low-signal noise out of paging. | Accepted for final review |
+| `通知先と一次対応者の経路が整理されている` | `7. 通知先と一次対応経路のたたき台` and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections define role-based ownership and the minimum notification routing for staging and production signals. | Accepted for final review |
+| `MVP の監視対象一覧として参照できる状態になっている` | `8. first-release monitoring checklist のたたき台`, `9. Issue 10 / 11 / 13 / 14 への接続観点`, and `Resolution` in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md) | These sections organize the baseline into a reusable monitoring checklist that downstream issues can reference. | Accepted for final review |
+
+## Final Review Result
+
+Final checkbox review completed against the latest wording in [docs/portal/issues/issue-12-monitoring-policy.md](docs/portal/issues/issue-12-monitoring-policy.md), with [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) used as synchronized supporting policy text. The table below records the document-level validation judgment. Explicit human close approval is recorded separately.
+
+| Checklist area | Final judgment | Evidence basis |
+| -------------- | -------------- | -------------- |
+| Health-check baseline | Satisfied | `3. ヘルスチェック方針のたたき台`, `8. first-release monitoring checklist のたたき台`, and `Resolution` confirm the public reachability path and required targets. |
+| Reviewable log sources | Satisfied | `4. ログ方針のたたき台`, `Resolution`, and [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) confirm the minimum evidence sources for deploy, delivery, and audit review. |
+| Minimal metrics posture | Satisfied | `5. メトリクス方針のたたき台` and `Resolution` confirm that availability and delivery health are the first-release metric priorities. |
+| Actionable alert policy | Satisfied | `6. アラート条件のたたき台`, `10. この場で確認したい論点`, and `Resolution` confirm the required alert signals and preserve operator actionability. |
+| Notification ownership | Satisfied | `7. 通知先と一次対応経路のたたき台` and `Resolution` confirm owner-first routing and the no-unowned-notification rule. |
+| First-release monitoring checklist | Satisfied | `8. first-release monitoring checklist のたたき台`, `Resolution`, and [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) confirm that the baseline is reusable as a concrete first-release checklist. |
+| Downstream planning readiness | Satisfied | `9. Issue 10 / 11 / 13 / 14 への接続観点` and `Resolution` confirm that CI/CD, security, test, and rollback planning can build on this monitoring baseline. |
 
 ## Current Status
 
-- local issue file には monitoring baseline の discussion draft と Resolution を記録済み
-- Section 10 の open questions は Resolution 確定文言列で final wording と対応付けた
-- first-release monitoring baseline の合意内容は reachability、deploy verification、auditability、actionable alerting を中心に固定した
-- Tasks と Definition of Done は final checkbox review 未実施のため未完了のまま維持する
+- [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) を monitoring judgment の同期先として扱う
+- local issue file には task contract、discussion draft、resolution、evidence mapping、final review result を追加済み
+- first-release monitoring baseline は public reachability、deploy verification、auditability、actionable alerting を必須 signal として確定した
+- reviewable log source は GitHub workflow history、cloud-native delivery visibility、audit log を中心とする方針で確定した
+- alert は site unreachable、failed deploy、major route failure、production cutover 後の operator action 必要イベントを優先し、performance degradation は first-release paging 条件に含めない方針で確定した
+- notification path は role-based owner と一次対応経路を先に固定し、無人の通知先は enable しない方針で確定した
+- final checkbox review は完了し、Tasks と Definition of Done は満了と判断した
+- GitHub Issue 12 は明示的な close 承認に基づいて close し、Issue 12 は完了と判断する
 
 ## Dependencies
 
