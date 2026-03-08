@@ -6,16 +6,16 @@ Select a smallest viable AWS architecture for the first release that matches the
 
 ## Working Recommendation
 
-- S3 for static asset hosting
-- CloudFront for CDN delivery and TLS termination path
-- ACM for certificate management
-- Route 53 for DNS if the project uses a custom domain
+- S3 for static asset hosting behind CloudFront
+- CloudFront for CDN delivery, HTTPS entry, and the default staging access path
+- ACM for certificate management when a custom domain is connected through CloudFront
+- External DNS remains the current operating model for the production custom domain
 
 ## Recommended Baseline Architecture
 
 ```text
 User
-  -> Route 53
+  -> External DNS or CloudFront domain
   -> CloudFront
   -> S3
 ```
@@ -28,8 +28,8 @@ User
   - reason: provides caching, HTTPS integration, and stable public delivery
 - ACM: adopt
   - reason: required for certificate management with CloudFront and custom domain usage
-- Route 53: adopt when custom domain is used
-  - reason: simplest AWS-native DNS option for the first release
+- Route 53: do not adopt in the current baseline
+  - reason: the current production operating model assumes external DNS rather than AWS-managed authoritative DNS
 - Cognito: do not adopt in the baseline
   - reason: current auth decision is public-first with no end-user login
 - API Gateway: do not adopt in the baseline
@@ -39,19 +39,34 @@ User
 - DynamoDB: do not adopt in the baseline
   - reason: no confirmed first-release persistent user or app data exists
 
+## Working Answers To The Current Architecture Questions
+
+- Staging entrypoint: use the CloudFront default domain first
+  - reason: the first release is staging-first, and a custom domain should not be treated as a prerequisite for validating the MVP architecture
+- Production custom domain model: keep external DNS and connect the domain to CloudFront when production entry criteria are satisfied
+  - reason: the current product definition already assumes DNS is managed outside AWS, so Route 53 is not required to validate the baseline architecture
+- ACM responsibility boundary in this issue: confirm that ACM is required for the CloudFront custom-domain path, but do not treat certificate ownership, renewal ownership, or cutover approval as resolved here
+  - reason: those operational ownership decisions belong to the production design gate rather than the minimum architecture selection itself
+- Origin model: keep CloudFront in front of S3 and do not use S3 website hosting as the primary public entry model
+  - reason: this keeps HTTPS delivery, caching behavior, and request routing consistent between staging and production-oriented operation
+- Backend assumption: treat guidance, contact direction, and operational notice as static-first content for the first release
+  - reason: the current MVP scope does not validate a need for API-backed inquiry handling or server-side business processing
+
 ## Why This Fits The Current Plan
 
 - Aligns with the product definition baseline of a public entry portal
 - Aligns with the MVP scope direction of a small, low-complexity release
 - Keeps deployment, rollback, and monitoring scope narrow
 - Preserves room to add authenticated or API-backed features later without forcing them now
+- Lets staging validate the user journey before production domain coordination and approval-specific work is introduced
 
 ## What This Architecture Supports
 
 - Public landing and overview pages
 - Static guidance or contact information pages
 - Repository-driven content updates followed by deployment
-- Basic staging validation before production hardening
+- Basic staging validation through the CloudFront default domain before production hardening
+- A future custom domain connection coordinated through external DNS without changing the application model
 
 ## What This Architecture Does Not Yet Support
 
@@ -59,6 +74,7 @@ User
 - Personalized dashboards
 - API-backed business workflows
 - Persistent application state tied to individual users
+- Production ownership decisions for certificate renewal, DNS cutover approval, or emergency override
 
 ## Change Triggers
 
@@ -66,7 +82,23 @@ User
 - Requirement for dynamic inquiry processing inside the portal
 - Requirement for user-specific data persistence
 - Requirement for server-side business logic that cannot be handled externally
+- Requirement to move authoritative DNS management into AWS
 
 ## Decision Statement
 
-Unless a later issue introduces a validated need for authentication or backend logic, the first release should use an S3 plus CloudFront based public architecture with ACM and optional Route 53.
+Unless a later issue introduces a validated need for authentication or backend logic, the first release should use an S3 plus CloudFront based public architecture with ACM, while keeping external DNS as the current custom-domain operating model.
+
+## Downstream Implication
+
+- Issue 7 should remain the decision point for any later backend or persistence introduction
+- Production domain ownership, ACM ownership, and cutover approval stay governed by the product-definition design gate rather than being forced into the first-release baseline
+- Infrastructure and delivery work can optimize for staging-first validation without adding speculative Route 53, API Gateway, Lambda, or DynamoDB resources
+
+## Current Coverage Notes For Issue 4
+
+- The baseline request path is External DNS or CloudFront domain to CloudFront to S3
+- S3, CloudFront, and ACM are adopted in the first-release baseline
+- Route 53, Cognito, API Gateway, Lambda, and DynamoDB are not part of the current baseline
+- Staging starts from the CloudFront default domain, while production custom-domain coordination remains compatible with external DNS
+- This architecture aligns with the current public-first auth decision and static-first MVP scope
+- This document now provides the accepted evidence baseline for Issue 4 final review and downstream AWS delivery planning
