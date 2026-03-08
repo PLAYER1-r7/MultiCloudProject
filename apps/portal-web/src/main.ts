@@ -1,5 +1,3 @@
-import "./styles.css";
-
 type ActionLink = {
   label: string;
   href: string;
@@ -31,7 +29,16 @@ type NavGroup = {
   paths: string[];
 };
 
-const routeDefinitions: Record<string, RouteDefinition> = {
+type RouteValidationIssue = {
+  scope: string;
+  message: string;
+};
+
+const requiredMajorFlowRoutes = ["/", "/overview", "/guidance"] as const;
+const importMetaEnv = (import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env;
+const browserRuntimeAvailable = typeof window !== "undefined" && typeof document !== "undefined";
+
+export const routeDefinitions: Record<string, RouteDefinition> = {
   "/": {
     title: "MultiCloudProject Portal",
     eyebrow: "Public entry experience",
@@ -345,7 +352,7 @@ const routeDefinitions: Record<string, RouteDefinition> = {
   }
 };
 
-const navGroups: NavGroup[] = [
+export const navGroups: NavGroup[] = [
   {
     title: "Public Pages",
     paths: ["/", "/overview", "/guidance"]
@@ -356,12 +363,7 @@ const navGroups: NavGroup[] = [
   }
 ];
 
-const applicationRoot = document.querySelector<HTMLDivElement>("#app");
-const applicationBasePath = normalizeBasePath(import.meta.env.BASE_URL || "/");
-
-if (!applicationRoot) {
-  throw new Error("Application root was not found.");
-}
+const applicationBasePath = normalizeBasePath(importMetaEnv?.BASE_URL || "/");
 
 function normalizeBasePath(basePath: string): string {
   if (!basePath || basePath === "/") {
@@ -409,13 +411,115 @@ function normalizePath(pathname: string): string {
   return routePath || "/";
 }
 
+function getReferencedRoutePaths(): string[] {
+  return Object.values(routeDefinitions).flatMap((route) => route.actions.map((action) => action.href));
+}
+
+export function validateRouteMetadata(): RouteValidationIssue[] {
+  const issues: RouteValidationIssue[] = [];
+
+  for (const path of requiredMajorFlowRoutes) {
+    const route = routeDefinitions[path];
+
+    if (!route) {
+      issues.push({
+        scope: path,
+        message: "required major-flow route definition is missing"
+      });
+      continue;
+    }
+
+    if (!route.title.trim()) {
+      issues.push({ scope: path, message: "title must not be empty" });
+    }
+
+    if (!route.summary.trim()) {
+      issues.push({ scope: path, message: "summary must not be empty" });
+    }
+
+    if (route.checklist.length === 0) {
+      issues.push({ scope: path, message: "checklist must include at least one baseline item" });
+    }
+
+    if (route.sections.length === 0) {
+      issues.push({ scope: path, message: "sections must include at least one major-flow explanation" });
+    }
+
+    if (route.actions.length === 0) {
+      issues.push({ scope: path, message: "actions must include at least one next-route link" });
+    }
+  }
+
+  for (const group of navGroups) {
+    if (group.paths.length === 0) {
+      issues.push({ scope: group.title, message: "navigation group must not be empty" });
+    }
+
+    for (const path of group.paths) {
+      if (!routeDefinitions[path]) {
+        issues.push({
+          scope: group.title,
+          message: `navigation path ${path} does not have a route definition`
+        });
+      }
+    }
+  }
+
+  for (const referencedPath of getReferencedRoutePaths()) {
+    if (!routeDefinitions[referencedPath]) {
+      issues.push({
+        scope: referencedPath,
+        message: "action link points to a route that is not defined"
+      });
+    }
+  }
+
+  for (const path of requiredMajorFlowRoutes) {
+    const roundTripPath = normalizePath(toApplicationPath(path));
+
+    if (roundTripPath !== path) {
+      issues.push({
+        scope: path,
+        message: `base-path round trip failed: received ${roundTripPath}`
+      });
+    }
+  }
+
+  return issues;
+}
+
+export function buildRouteValidationReport(): string {
+  const issues = validateRouteMetadata();
+  const evidenceLines = [
+    "Route validation baseline",
+    `- Base path: ${applicationBasePath || "/"}`,
+    `- Route definitions: ${Object.keys(routeDefinitions).length}`,
+    `- Required major-flow routes: ${requiredMajorFlowRoutes.join(", ")}`,
+    `- Navigation groups: ${navGroups.map((group) => group.title).join(", ")}`,
+    `- Result: ${issues.length === 0 ? "passed" : "failed"}`
+  ];
+
+  if (issues.length === 0) {
+    evidenceLines.push("- Issues: none");
+    return evidenceLines.join("\n");
+  }
+
+  evidenceLines.push("- Issues:");
+
+  for (const issue of issues) {
+    evidenceLines.push(`  - [${issue.scope}] ${issue.message}`);
+  }
+
+  return evidenceLines.join("\n");
+}
+
 function escapeHtml(value: string): string {
   return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function renderList(items: string[], className: string): string {
@@ -479,7 +583,7 @@ function renderSections(sections: RouteSection[]): string {
     .join("");
 }
 
-function renderRoute(): void {
+function renderRoute(applicationRoot: HTMLDivElement): void {
   const currentPath = normalizePath(window.location.pathname);
   const route = routeDefinitions[currentPath] ?? routeDefinitions["/"];
 
@@ -556,32 +660,60 @@ function renderRoute(): void {
   `;
 }
 
-document.addEventListener("click", (event) => {
-  const target = event.target;
+async function bootstrapBrowserApplication(): Promise<void> {
+  await import("./styles.css");
 
-  if (!(target instanceof HTMLElement)) {
+  const applicationRoot = document.querySelector<HTMLDivElement>("#app");
+
+  if (!applicationRoot) {
+    throw new Error("Application root was not found.");
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const link = target.closest<HTMLAnchorElement>('a[data-link="internal"]');
+
+    if (!link) {
+      return;
+    }
+
+    const href = link.getAttribute("href");
+
+    if (!href) {
+      return;
+    }
+
+    event.preventDefault();
+    window.history.pushState({}, "", href);
+    renderRoute(applicationRoot);
+  });
+
+  window.addEventListener("popstate", () => {
+    renderRoute(applicationRoot);
+  });
+
+  renderRoute(applicationRoot);
+}
+
+function runRouteValidationCli(): void {
+  const report = buildRouteValidationReport();
+
+  if (validateRouteMetadata().length > 0) {
+    console.error(report);
+    process.exitCode = 1;
     return;
   }
 
-  const link = target.closest<HTMLAnchorElement>('a[data-link="internal"]');
+  console.log(report);
+}
 
-  if (!link) {
-    return;
-  }
-
-  const href = link.getAttribute("href");
-
-  if (!href) {
-    return;
-  }
-
-  event.preventDefault();
-  window.history.pushState({}, "", href);
-  renderRoute();
-});
-
-window.addEventListener("popstate", () => {
-  renderRoute();
-});
-
-renderRoute();
+if (browserRuntimeAvailable) {
+  void bootstrapBrowserApplication();
+} else if (process.argv.includes("--validate-routes")) {
+  runRouteValidationCli();
+}
