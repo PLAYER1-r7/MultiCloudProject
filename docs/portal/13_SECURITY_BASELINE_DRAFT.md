@@ -34,18 +34,23 @@ Define the minimum security baseline that must be present in the first portal im
 - WAF is not automatically required for the first static informational release
 - Reevaluate WAF if traffic profile, compliance needs, or protected interactions change
 - Keep the decision documented rather than leaving it implicit
+- Record the first AWS-side candidate as CloudFront WebACL if later reevaluation changes the requirement
 
 ## Secret Management Policy
 
 - Secrets must not be committed into the repository
 - Frontend builds must not depend on embedding sensitive secrets
-- Operational credentials and sensitive values should be stored in appropriate secret stores and CI/CD controls
+- CI/CD secrets should use approved GitHub Environments as the first control path
+- Staging and production CI/CD secrets should use separate approved GitHub Environments
+- Add managed secret stores when runtime secrets become necessary instead of embedding them into app code or bundles
+- Secret sources should retain a rotation path from the start
 
 ## Audit And Logging Policy
 
 - Infrastructure and deployment actions should be traceable through platform-native logs and CI/CD history
 - Security-relevant changes should be reviewable through repository history and workflow execution logs
 - Logging expectations should stay proportional to the first-release scope but must not be absent
+- Approval steps and operator-managed actions such as DNS or certificate cutover should also be captured as reviewable evidence
 
 ## First-Release Checklist Direction
 
@@ -55,7 +60,14 @@ Define the minimum security baseline that must be present in the first portal im
 - CORS minimized to actual need
 - WAF decision explicitly recorded
 - Deployment and infra changes auditable
+- Staging and production secret boundaries separated
+
+## Header Parity Direction
+
+- Aim for the same baseline security header set in staging and production
+- If a platform support gap prevents parity, record it explicitly as a tracked gap
+- Do not weaken production headers just to match a weaker staging path
 
 ## Decision Statement
 
-The first portal release should launch with HTTPS, explicit baseline headers, minimal CORS exposure, no repository-stored secrets, and documented security decisions that can scale with later requirements.
+The first portal release should launch with HTTPS, explicit baseline headers, minimal CORS exposure, no repository-stored secrets, approved CI/CD secret controls, and documented security decisions that can scale with later requirements.
