@@ -21,6 +21,13 @@ If blocked: boundary violation -> `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`; har
 - [ ] Boundary check remains clean.
 - [ ] Rollback path remains available.
 
+## Before Writing Resolution
+
+If blocked: question disposition -> `02_AUTONOMOUS_DEV_PROTOCOL.md` Step 2 (Contract).
+
+- [ ] If the discussion draft has an open-questions table, every row has the `Resolution confirmed wording` column filled.
+- [ ] If questions were resolved by direct decision without individual written answers, that fact is recorded in Process Review Notes with the label `direct-decision`.
+
 ## Before Handoff
 
 If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION_OF_DONE.md`; PR packaging -> `05_PR_TASK_CONTRACT_TEMPLATE.md`.

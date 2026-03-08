@@ -21,6 +21,13 @@
 - [ ] 境界チェックがクリーンである
 - [ ] ロールバック経路が維持されている
 
+## Resolution 作成前
+
+詰まった場合: 論点処理 -> `02_AUTONOMOUS_DEV_PROTOCOL.md` Step 2（契約）。
+
+- [ ] Discussion Draft に論点テーブルがある場合、全行の `Resolution 確定文言` 列が埋まっている
+- [ ] 論点を逐次回答せずに直接決定した場合は、その事実を `direct-decision` と明記して Process Review Notes に記録した
+
 ## 引き継ぎ前
 
 詰まった場合: テストゲート -> `32_TEST_EXECUTION_GATE.md`、DoD ゲート -> `04_DEFINITION_OF_DONE.md`、PR パッケージング -> `05_PR_TASK_CONTRACT_TEMPLATE.md`。

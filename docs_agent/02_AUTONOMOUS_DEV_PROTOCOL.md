@@ -45,6 +45,7 @@ flowchart TD
 - If all details are not known yet, write a minimum starter contract first and mark unknown fields as `TBD` rather than starting without a contract.
 - Lock scope, acceptance criteria, tests, and rollback.
 - Review-remediation, document-only correction, and final-review packaging passes still require their own task contract before edits start.
+- If the discussion draft includes an open-questions section, format it as a three-column table with columns `Question`, `Provisional direction (at draft time)`, and `Resolution confirmed wording`. The `Resolution confirmed wording` column must be filled in before writing the Resolution section. A table with any empty cell in the third column is a hard stop for Resolution creation.
 
 ### 3. Implement
 
