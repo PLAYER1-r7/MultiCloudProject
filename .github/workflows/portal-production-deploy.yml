@@ -234,24 +234,13 @@ jobs:
             path="${raw_path//[[:space:]]/}"
             [[ -z "$path" ]] && continue
             url="${PRODUCTION_BASE_URL%/}${path}"
-            expected='MultiCloudProject Portal'
-            case "$path" in
-              "/")
-                expected='MultiCloudProject Portal'
-                ;;
-              "/overview")
-                expected='Overview'
-                ;;
-              "/guidance")
-                expected='Guidance'
-                ;;
-            esac
+            expected='SPA shell markers: MultiCloudProject Portal + <div id="app"></div>'
             echo "Checking $url"
             response_file="$(mktemp)"
             status_code='curl-failed'
             result='failed'
             if status_code="$(curl --show-error --silent --location --output "$response_file" --write-out '%{http_code}' "$url")"; then
-              if [[ "$status_code" =~ ^2[0-9][0-9]$ ]] && grep -q "$expected" "$response_file"; then
+              if [[ "$status_code" =~ ^2[0-9][0-9]$ ]] && grep -q 'MultiCloudProject Portal' "$response_file" && grep -q '<div id="app"></div>' "$response_file"; then
                 result='passed'
               else
                 failure=1
