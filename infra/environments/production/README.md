@@ -161,6 +161,20 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Confirm the verification owner and notification route on the production deploy record are still the intended first-response path
 - Confirm any use of CloudFront state or external DNS diagnostics is recorded as supporting evidence rather than the sole declaration of service health
 
+## Production Alert Routing Snapshot
+
+- Current alert trigger set: failed `portal-production-deploy`, custom-domain reachability failure on `https://www.aws.ashnova.jp`, smoke-path failure on `/`, `/overview`, or `/guidance`, and certificate continuity faults where ACM state or validation retention no longer matches the reviewed baseline
+- Current notification owner baseline: release owner is the repository owner, deploy operator is the triggering actor on the latest reviewed production deploy run, and verification owner is the recorded dispatch input or repository owner default on that run
+- Current first-response notification path: the latest reviewed `portal-production-deploy` run URL, its step summary, and the `portal-production-deployment-record` artifact
+- Current supporting diagnostics path: CloudFront distribution state, Google Public DNS resolution, and ACM describe-certificate output recorded in the same operator review path after the primary deploy evidence is checked
+
+## Production Alert Routing Operator Direction
+
+- Open the latest reviewed production deploy run first when an alert trigger fires; do not begin from provider dashboards or raw DNS tools unless the reviewed deploy evidence path is unavailable
+- Keep first response inside the recorded owner path: deploy operator starts the check, release owner is the default escalation target, and verification owner confirms restoration when the incident is closing
+- If the trigger is certificate continuity related, keep the same owner and notification path while switching the diagnostic sequence to ACM certificate state and validation CNAME retention before artifact rollback or DNS reversal is considered
+- Do not treat external chat integrations, paging products, or 24x7 staffing as implicitly available; if they are not explicitly recorded for the current incident path, the run URL and deployment record remain the only approved first-response notification route
+
 ## Monitoring Scope Boundary
 
 - This repository does not yet treat external alert products, 24x7 on-call staffing, dashboard depth, or numeric SLO/SLI thresholds as part of the first production monitoring baseline

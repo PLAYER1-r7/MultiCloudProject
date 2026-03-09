@@ -63,6 +63,20 @@ Define the minimum monitoring and alerting policy needed so the first release ca
 - Keep alert routing tied to the operator path that can actually respond; do not enable broader alert tooling until the response owner and channel are recorded tightly enough
 - Keep 24x7 on-call design, dashboard depth, SLO/SLI thresholds, and provider-specific alert products outside the current first-release monitoring baseline
 
+## Current Production Alert Routing Baseline
+
+- The current production alert trigger set is limited to failed `portal-production-deploy`, custom-domain reachability failure on `https://www.aws.ashnova.jp`, route-level smoke failure on `/`, `/overview`, or `/guidance`, and certificate continuity faults where ACM no longer reports the reviewed healthy state
+- The notification owner baseline stays role-based: release owner remains the repository owner, deploy operator remains the triggering actor on the production deploy run, and verification owner remains the dispatch input or repository owner default recorded on the same evidence path
+- The first-response notification path is the reviewed `portal-production-deploy` run URL together with the step summary and `portal-production-deployment-record` artifact; this route is the operator-managed notification destination until a tighter external channel is explicitly recorded
+- Supporting diagnostics such as CloudFront distribution state, Google Public DNS, and ACM describe-certificate output are part of the same operator review path, but they do not replace the deploy run URL and deployment record as the first notification route
+- If the recorded notification owner is unavailable, escalation stays inside the same small-team path by moving from deploy operator to release owner before any broader notification assumption is made
+
+## Alert Routing Scope Boundary
+
+- This baseline records who is expected to notice and respond first; it does not claim that provider-native alert delivery, chat integrations, or paging products are already enabled
+- Automatic escalation, 24x7 staffing, dashboard depth, and numeric SLO/SLI thresholds remain outside the current alert routing baseline until the response owner and operating channel are recorded more tightly
+- Certificate renewal watchpoint failures should follow the same notification owner and first-response route as deploy and reachability failures; do not invent a separate certificate-only paging path in the current phase
+
 ## Current Production Certificate Renewal Watchpoint
 
 - The current production certificate watchpoint is ACM certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` for `www.aws.ashnova.jp`, attached to CloudFront distribution `E34CI3F0M5904O`

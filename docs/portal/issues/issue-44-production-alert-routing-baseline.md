@@ -55,17 +55,17 @@ production alert routing baseline を実運用レベルで固め、alert trigger
 
 ## Tasks
 
-- [ ] production alert trigger set を固定する
-- [ ] notification owner と first-response notification path を整理する
-- [ ] escalation 境界と非対象を current production operations 文脈で明文化する
-- [ ] alert routing baseline の根拠と検証方針を issue 記録へ残す
+- [x] production alert trigger set を固定する
+- [x] notification owner と first-response notification path を整理する
+- [x] escalation 境界と非対象を current production operations 文脈で明文化する
+- [x] alert routing baseline の根拠と検証方針を issue 記録へ残す
 
 ## Definition of Done
 
-- [ ] production alert trigger set、notification owner、notification path が同じ文脈で読める
-- [ ] failed deploy、custom-domain reachability failure、certificate continuity fault の一次対応経路が読める
-- [ ] provider-specific tooling と 24x7 on-call depth がスコープ外として維持されている
-- [ ] 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている
+- [x] production alert trigger set、notification owner、notification path が同じ文脈で読める
+- [x] failed deploy、custom-domain reachability failure、certificate continuity fault の一次対応経路が読める
+- [x] provider-specific tooling と 24x7 on-call depth がスコープ外として維持されている
+- [x] 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている
 
 ## Initial Notes
 
@@ -73,12 +73,41 @@ production alert routing baseline を実運用レベルで固め、alert trigger
 - Issue 25 は staging 側で notification owner と一次対応経路の最小構成を固定しており、production alert routing は別 issue へ分離されていた
 - current production failure signals の土台は `portal-production-deploy` の deploy evidence、`https://www.aws.ashnova.jp` と smoke paths の reachability、external DNS continuity、ACM certificate renewal watchpoint である
 
+## Implementation Notes
+
+- [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) に Current Production Alert Routing Baseline と Alert Routing Scope Boundary を追加し、minimum trigger set、notification owner baseline、first-response notification path、非対象を current monitoring policy に接続した
+- [.github/workflows/README.md](.github/workflows/README.md) に Production Alert Routing Baseline を追加し、`portal-production-deploy` run URL、step summary、`portal-production-deployment-record` artifact を workflow-facing な first-response notification path として固定した
+- [infra/environments/production/README.md](infra/environments/production/README.md) に Production Alert Routing Snapshot と Production Alert Routing Operator Direction を追加し、production operator が alert trigger 発火時に誰を owner とし、どの evidence path から開くかを current operations wording として固定した
+
+## Current Review Notes
+
+- alert routing baseline は notification product の導入ではなく、既存の production deploy evidence path を operator-managed notification route として固定することに限定している
+- trigger set は failed deploy、custom-domain reachability failure、smoke-path failure、certificate continuity fault の最小集合に絞り、noise になりやすい performance degradation や broader telemetry は持ち込んでいない
+- escalation は recorded owner path の中で fail-closed に扱い、deploy operator から release owner、incident close 時の verification owner という current small-team phase の責務境界を維持している
+
+## Spot Check Evidence
+
+- monitoring policy wording: [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) は alert trigger set、notification owner baseline、first-response notification path、scope boundary を current production monitoring baseline と同じ文脈で保持している
+- workflow guidance wording: [.github/workflows/README.md](.github/workflows/README.md) は `portal-production-deploy` run URL、step summary、`portal-production-deployment-record` artifact を default notification route として保持し、provider-specific alert delivery を scope 外に置いている
+- production operator wording: [infra/environments/production/README.md](infra/environments/production/README.md) は alert trigger 発火時の owner path、supporting diagnostics の順序、certificate continuity fault を含む operator direction を production review path として保持している
+
+## Final Review Result
+
+- PASS: alert trigger set、notification owner、first-response notification path、scope boundary が monitoring draft、workflow README、production README、issue record で整合しており、Issue 44 の scope では blocking finding はない
+- NOTE: CloudWatch/SNS などの provider-specific alert delivery、24x7 on-call、automatic escalation、numeric SLO/SLI threshold は本 issue では扱わず、operator-managed follow-up として残している
+
+## Process Review Notes
+
+- 2026-03-09 に Issue 44 を follow-up として起票し、initial task contract を GitHub Issue #44 へ同期した
+- 同日、monitoring draft、workflow README、production README を同期し、current production alert trigger set、notification owner baseline、first-response notification path、scope boundary を current operations baseline として整理した
+- formal review では existing production evidence path を起点に wording drift がないことを確認し、`portal-production-deploy` run URL、step summary、`portal-production-deployment-record` artifact が default notification route として一貫して参照されること、failed deploy、custom-domain reachability failure、smoke-path failure、certificate continuity fault が同じ owner path で扱われることを再確認した
+
 ## Current Status
 
 - OPEN
 
-- initial task contract を起票し、production alert routing baseline の scope と dependency を固定した段階である
-- implementation、formal review、close approval は未実施である
+- implementation sync と formal review は完了しており、close approval は未実施である
+- current production alert routing baseline は monitoring policy、workflow guidance、production operator memo に反映済みである
 
 ## Dependencies
 

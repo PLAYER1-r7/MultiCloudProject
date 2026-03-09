@@ -86,6 +86,14 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - CloudFront distribution status and external DNS resolution are supporting diagnostics used to split propagation delay from artifact-path failure; they are not a substitute for the reviewed custom-domain check
 - External alert tooling, broader notification integrations, and 24x7 on-call process remain outside the current workflow contract until response ownership is recorded more tightly
 
+## Production Alert Routing Baseline
+
+- Treat failed `portal-production-deploy`, custom-domain reachability failure, route-level smoke failure on `/`, `/overview`, or `/guidance`, and certificate continuity faults as the minimum production alert trigger set for the current phase
+- The notification owner baseline remains the same reviewed operator path already emitted by `portal-production-deploy`: release owner is the repository owner, deploy operator is the triggering actor, and verification owner is the dispatch input or repository owner default recorded on the run
+- The first-response notification path is the reviewed production deploy run URL plus the step summary and `portal-production-deployment-record` artifact; this is the operator-managed route to open first before any external notification product is assumed
+- CloudFront state, external DNS resolution, and ACM certificate state are supporting diagnostics that belong in the same review path, but they do not replace the recorded deploy evidence as the default notification route
+- Provider-specific alert delivery, automatic escalation, and 24x7 paging remain outside the current workflow contract until the small-team response owner and channel are tightened further
+
 ## External DNS Operations Memo
 
 - External DNS cutover remains operator-managed and must stay outside workflow-complete automation even after `portal-production-deploy` succeeds
