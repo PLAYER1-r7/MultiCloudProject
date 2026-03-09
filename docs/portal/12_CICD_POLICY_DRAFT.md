@@ -73,7 +73,7 @@ Define the minimum CI/CD policy that supports reliable staging delivery first, w
 ## Current Decision Status
 
 - The current production approval model can assume a single named approver rather than a committee
-- The production domain will not assume Route 53 ownership, so certificate validation and cutover steps must allow for external DNS coordination
+- The production domain baseline uses an approved custom-domain path owned outside AWS, so DNS record changes and cutover steps must allow for explicit external DNS coordination
 - Certificate sourcing baseline uses an AWS-managed ACM public certificate in us-east-1, while DNS validation records and cutover timing remain explicit operator-managed steps outside workflow automation
 - The first production promotion candidate should be a staging-validated `main` commit selected explicitly for promotion
 - Staging should use a controlled manual dispatch path before deeper trigger automation is enabled

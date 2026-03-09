@@ -43,8 +43,8 @@ User
 
 - Staging entrypoint: use the CloudFront default domain first
   - reason: the first release is staging-first, and a custom domain should not be treated as a prerequisite for validating the MVP architecture
-- Production custom domain model: keep external DNS and connect the domain to CloudFront when production entry criteria are satisfied
-  - reason: the current product definition already assumes DNS is managed outside AWS, so Route 53 is not required to validate the baseline architecture
+- Production custom domain model: connect the approved production custom-domain path that remains owned outside AWS through the external DNS operating model when production entry criteria are satisfied
+  - reason: authoritative DNS already lives outside AWS, so Route 53 is not required, and the repository only needs an approved custom-domain path rather than in-AWS domain control
 - ACM responsibility boundary: use an AWS-managed ACM public certificate in us-east-1 for the CloudFront custom-domain path, keep certificate request and renewal in AWS, and treat external DNS validation plus cutover approval as explicit operator-managed production steps
   - reason: CloudFront requires ACM integration for the custom-domain path, while external DNS remains the source of truth for validation records and cutover timing
 - Origin model: keep CloudFront in front of S3 and do not use S3 website hosting as the primary public entry model
@@ -91,7 +91,7 @@ Unless a later issue introduces a validated need for authentication or backend l
 ## Downstream Implication
 
 - Issue 7 should remain the decision point for any later backend or persistence introduction
-- Production domain ownership, rollback target, and cutover approval stay governed by the product-definition design gate rather than being forced into the first-release baseline
+- Production rollback target and cutover approval stay governed by the product-definition design gate rather than being forced into the first-release baseline
 - Infrastructure and delivery work can optimize for staging-first validation without adding speculative Route 53, API Gateway, Lambda, or DynamoDB resources
 
 ## Current Coverage Notes For Issue 4

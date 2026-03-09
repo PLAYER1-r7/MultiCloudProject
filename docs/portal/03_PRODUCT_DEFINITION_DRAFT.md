@@ -673,7 +673,7 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
 
 ## Current Decision Snapshot
 
-- Production domain and DNS operating model: use a custom domain with DNS managed outside AWS
+- Production domain ownership and DNS operating model: use an approved production custom-domain path owned outside AWS, keep DNS managed outside AWS, and treat DNS record changes as operator-managed work after repository-owner approval
 - Certificate sourcing baseline: use an AWS-managed ACM public certificate in us-east-1 for the CloudFront custom-domain path, with external DNS validation records applied by the operator and the reviewed certificate ARN passed into production configuration explicitly
 - Production deploy approver: the repository owner can approve alone in the current phase
 - Monthly cost ceiling: USD 15/month before tax for the first public release, based on a small static site footprint centered on S3 + CloudFront

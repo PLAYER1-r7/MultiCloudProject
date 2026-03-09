@@ -64,7 +64,7 @@ infra/
 
 ## Current Decision Status
 
-- The production domain is expected to use an external DNS operating model rather than Route 53 as the primary source of truth
+- The production domain baseline is an approved custom-domain path owned outside AWS, with external DNS remaining the primary source of truth and DNS record changes handled as operator-managed steps
 - Certificate sourcing baseline is an AWS-managed ACM public certificate in us-east-1 for the approved CloudFront custom-domain path, with external DNS validation CNAMEs applied outside AWS and the reviewed certificate ARN passed into production configuration explicitly
 - State locking baseline is native S3 locking via `use_lockfile = true`, enabled in staging and now wired into the production backend configuration through a dedicated production state key
 - Monthly cost ceiling for the first public release is fixed at USD 15/month before tax for the current small static-site footprint
