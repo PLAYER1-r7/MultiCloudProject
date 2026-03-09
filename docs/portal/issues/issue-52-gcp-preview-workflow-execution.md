@@ -218,6 +218,8 @@ Issue 52 の判断結果は次の通りとする。
 - `.github/workflows/portal-gcp-preview-deploy.yml` を追加し、manual dispatch input、build provenance check、resource execution reference check、GCS sync、optional CDN invalidation、deployment record artifact、step summary を実装した
 - `.github/workflows/portal-build.yml` には GCP preview workflow 変更時も build artifact を再生成できる path filter を追加し、`.github/workflows/README.md` には required input、required labels、fail-closed 条件を追記した
 - 新規 workflow と関連 README / build workflow には editor diagnostics 上のエラーはなく、実装は static validation 済みである
+- live negative-path validation として `portal-gcp-preview-deploy` run `22849331033` は `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md` の `blocked pending state` を正しく解釈し、deploy を開始せず deployment record artifact と summary を残して fail-closed に停止することを確認した
+- Issue 53 側の live infra apply は完了し、reviewed target reference は `A 34.128.181.172` まで確定したが、`preview.gcp.ashnova.jp` はまだ DNS 解決できず、managed certificate も `PROVISIONING` のため、positive-path deploy validation は external DNS operator による A record 反映と certificate `ACTIVE` 化が完了するまで未実施のまま保留する
 - GitHub repository へ `gcp-preview` environment を作成し、repo から確定できる `GCP_PREVIEW_SITE_BUCKET_NAME`、`GCP_PREVIEW_BASE_URL`、`GCP_PREVIEW_SMOKE_PATHS` を先行登録した
 - 再検証により、`GCP_PREVIEW_PROJECT_ID=ashnova` と `GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL=github-actions-deploy@ashnova.iam.gserviceaccount.com` は `gcp-preview` environment variable として登録済みであることを確認した
 - 再検証により、`GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER=projects/899621454670/locations/global/workloadIdentityPools/github-actions/providers/github-actions` を登録し、`github-actions` pool/provider と `github-actions-deploy@ashnova.iam.gserviceaccount.com` への `roles/iam.workloadIdentityUser` binding も作成した

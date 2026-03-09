@@ -207,13 +207,14 @@ Issue 53 の判断結果は次の通りとする。
 - 新規 OpenTofu module / environment ファイルには editor diagnostics 上のエラーはなく、対象ディレクトリに対して `tofu fmt` を実行済みである
 - preinstalled `tofu v1.8.8` では fresh backend init が `use_lockfile = true` を解釈できず停止したため、production execution precedent と同様に local execution binary として `OpenTofu v1.11.0` を配置し、[infra/environments/gcp-preview/versions.tf](infra/environments/gcp-preview/versions.tf) の S3 backend で `init -reconfigure` と `validate` が成功することを確認した
 - 再検証により、current devcontainer では Google Application Default Credentials が存在するため、`OpenTofu v1.11.0` による `plan` は dummy `project_id` 指定で 12 resource の create plan まで到達することを確認した
+- `infra/modules/portal-gcp-static-delivery/main.tf` の Cloud Armor policy を `type = "CLOUD_ARMOR_EDGE"` に修正し、`OpenTofu v1.11.0 apply` で backend bucket、HTTPS URL map、target HTTPS proxy、HTTPS forwarding rule を含む GCP preview delivery resource 一式が live project `ashnova` に収束した
 - Resource execution status: blocked pending state
 - Preview public URL: https://preview.gcp.ashnova.jp
-- Reviewed target reference: pending live apply for `global_ip_address` output from `infra/environments/gcp-preview`
-- Certificate-related reference: pending live apply for managed certificate output from `infra/environments/gcp-preview`
+- Reviewed target reference: A 34.128.181.172
+- Certificate-related reference: multicloudproject-portal-preview-certificate domains=preview.gcp.ashnova.jp managed_status=PROVISIONING
 - Selected environment entrypoint reference: infra/environments/gcp-preview
 - `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md` は run `22849331033` の `resource_execution_reference` として live dispatch に使用し、`blocked pending state` により deploy を開始せず fail-closed に停止することを確認した
-- `tofu apply`、external DNS change、certificate validation 実作業は未実施であり、残存 blocker は operator-side execution と live GCP project / DNS 側の実施判断である
+- preview hostname `preview.gcp.ashnova.jp` はまだ DNS 解決できず、managed certificate も `PROVISIONING` のため、positive-path deploy validation は external DNS operator による A record 反映と certificate `ACTIVE` 化が完了するまで fail-closed に保留する
 
 ## Dependencies
 

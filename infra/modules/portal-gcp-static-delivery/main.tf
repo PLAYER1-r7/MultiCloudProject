@@ -38,6 +38,7 @@ resource "google_storage_bucket_iam_member" "site_public_read" {
 resource "google_compute_security_policy" "preview" {
   name        = "${var.resource_name_prefix}-edge-policy"
   description = "Baseline Cloud Armor policy for the portal GCP preview path"
+  type        = "CLOUD_ARMOR_EDGE"
 
   rule {
     action   = "allow"
