@@ -25,6 +25,7 @@ This directory is reserved for the production entrypoint of the portal delivery 
 ## Production Readiness Gate Snapshot
 
 - Custom domain and DNS operating model: use a production custom domain with DNS managed outside AWS
+- Certificate sourcing baseline: use an AWS-managed ACM public certificate in us-east-1 for the approved custom-domain path, keep DNS validation records in the external DNS operating model, and pass only the reviewed certificate ARN into production configuration
 - Production approver model: the repository owner can approve production promotion alone in the current phase
 - Promotion candidate rule: promote only a staging-validated `main` commit with reviewable build and deploy evidence
 - Rollback target baseline: use the last known-good artifact previously validated through the staging delivery path
@@ -38,6 +39,7 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Do not add production module wiring, deploy workflow definitions, or cutover scripts unless the production footprint still fits the USD 15/month ceiling or the ceiling is explicitly revised
 - Do not allow any production apply path until the remaining production entry conditions are recorded and approved, even though the backend configuration now exists
 - Do not treat staging success as implicit approval to create production resources or a production GitHub Actions environment
+- Do not set production aliases or a production `acm_certificate_arn` until the reviewed us-east-1 ACM certificate ARN and the external DNS validation record plan are both recorded
 - Do not assume external DNS validation, certificate issuance, or emergency override handling are workflow-complete until operator steps are written down and approved
 
 ## Expected Operator Steps After Gate Closure

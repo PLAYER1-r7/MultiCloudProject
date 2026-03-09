@@ -667,7 +667,6 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
 - The team should not treat staging success as implicit approval to implement production delivery details
 - The following items must be decided explicitly before production infrastructure or production deploy automation is added:
   - production domain ownership and DNS operating model
-  - ACM certificate ownership and renewal responsibility
   - production deploy approver and emergency override owner
   - acceptable monthly cost ceiling for the first public release
 - The portability boundary is already fixed: AWS-specific delivery choices may remain inside infrastructure and workflow internals, while product structure, user-facing routes, frontend configuration contracts, frontend architecture, and monitoring wording stay cloud-neutral
@@ -675,6 +674,7 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
 ## Current Decision Snapshot
 
 - Production domain and DNS operating model: use a custom domain with DNS managed outside AWS
+- Certificate sourcing baseline: use an AWS-managed ACM public certificate in us-east-1 for the CloudFront custom-domain path, with external DNS validation records applied by the operator and the reviewed certificate ARN passed into production configuration explicitly
 - Production deploy approver: the repository owner can approve alone in the current phase
 - Monthly cost ceiling: USD 15/month before tax for the first public release, based on a small static site footprint centered on S3 + CloudFront
 - OpenTofu state locking: native S3 locking via `use_lockfile = true` is the selected baseline, and the production backend is now wired to a dedicated production state key

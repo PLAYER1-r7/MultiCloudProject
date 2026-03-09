@@ -41,7 +41,7 @@ variable "aliases" {
 }
 
 variable "acm_certificate_arn" {
-  description = "Optional ACM certificate ARN for staging custom domains."
+  description = "Optional us-east-1 ACM certificate ARN for staging CloudFront custom domains."
   type        = string
   default     = ""
 }

@@ -15,7 +15,7 @@ variable "aliases" {
 }
 
 variable "acm_certificate_arn" {
-  description = "ACM certificate ARN for custom domains. Leave empty when using the default CloudFront certificate."
+  description = "ACM certificate ARN for CloudFront custom domains. Use a reviewed us-east-1 ACM certificate ARN and leave empty when using the default CloudFront certificate."
   type        = string
   default     = ""
 }

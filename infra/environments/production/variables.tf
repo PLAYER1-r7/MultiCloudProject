@@ -41,7 +41,7 @@ variable "aliases" {
 }
 
 variable "acm_certificate_arn" {
-  description = "Optional ACM certificate ARN reserved for the approved production domain path."
+  description = "Optional us-east-1 ACM certificate ARN reserved for the approved production CloudFront custom-domain path."
   type        = string
   default     = ""
 }

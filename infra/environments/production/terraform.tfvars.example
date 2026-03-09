@@ -5,4 +5,5 @@ environment_name    = "production"
 bucket_name_suffix  = "web"
 site_bucket_name    = ""
 aliases             = []
+# Use a reviewed us-east-1 ACM certificate ARN only after external DNS validation records are approved.
 acm_certificate_arn = ""

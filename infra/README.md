@@ -27,7 +27,7 @@ infra/
 - `bucket_name_suffix`: defaults to `web`
 - `site_bucket_name`: optional explicit override for bucket naming
 - `aliases`: optional CloudFront aliases
-- `acm_certificate_arn`: optional ACM certificate ARN when not using the default certificate
+- `acm_certificate_arn`: optional ACM certificate ARN when not using the default certificate; for a CloudFront custom domain this should be a reviewed us-east-1 ACM certificate ARN
 - `common_tags`: optional extra tags
 
 ## State Management
