@@ -175,6 +175,20 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - If the trigger is certificate continuity related, keep the same owner and notification path while switching the diagnostic sequence to ACM certificate state and validation CNAME retention before artifact rollback or DNS reversal is considered
 - Do not treat external chat integrations, paging products, or 24x7 staffing as implicitly available; if they are not explicitly recorded for the current incident path, the run URL and deployment record remain the only approved first-response notification route
 
+## Production Alert Delivery Snapshot
+
+- Current approved delivery baseline: the reviewed `portal-production-deploy` run URL, its step summary, and the `portal-production-deployment-record` artifact remain the canonical delivery path for every production alert trigger
+- Current optional external delivery allowance: at most one explicitly recorded owner-bound pointer destination may be used, but only if it directs responders back to the same reviewed production deploy evidence path
+- Current delivery owner baseline: repository owner approves any external delivery destination, deploy operator owns the initial send or incident-start path, and verification owner closes the same incident path after restoration evidence is reviewed
+- Current delivery failure fallback: if the optional external destination does not deliver, is stale, or cannot be verified as owned, responders fall back immediately to the deploy run URL and deployment record without assuming any broader paging layer exists
+
+## Production Alert Delivery Operator Direction
+
+- Treat any external delivery destination as advisory only; open the latest reviewed `portal-production-deploy` run first even when a chat or provider-native delivery message exists
+- Record the exact external destination, owner, timestamp, and reason in the same operator review path if the team uses one, so delivery drift is visible during follow-up and incident review
+- If delivery through the optional external destination fails, do not wait for retry loops or alternate tools before starting response; continue on the Issue 44 first-response path and keep escalation inside deploy operator to release owner unless a tighter owner path has been explicitly recorded
+- Do not enable mailbox-style destinations, broad chat rooms without named owners, automatic remediation hooks, or 24x7 paging assumptions under this baseline
+
 ## Monitoring Scope Boundary
 
 - This repository does not yet treat external alert products, 24x7 on-call staffing, dashboard depth, or numeric SLO/SLI thresholds as part of the first production monitoring baseline

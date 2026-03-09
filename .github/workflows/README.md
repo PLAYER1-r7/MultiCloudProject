@@ -94,6 +94,14 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - CloudFront state, external DNS resolution, and ACM certificate state are supporting diagnostics that belong in the same review path, but they do not replace the recorded deploy evidence as the default notification route
 - Provider-specific alert delivery, automatic escalation, and 24x7 paging remain outside the current workflow contract until the small-team response owner and channel are tightened further
 
+## Production Alert Delivery Baseline
+
+- If the team enables an external delivery destination for a production alert, it must be an explicitly recorded owner-bound destination that points back to the reviewed `portal-production-deploy` run URL, step summary, and `portal-production-deployment-record` artifact
+- The external destination is optional and secondary: delivery success there does not replace the workflow run as the canonical incident path, and delivery failure there must not block first response on the reviewed deploy evidence route
+- Repository owner remains the approver for any external destination, deploy operator remains the sender or incident-start owner for the active path, and verification owner remains the named closer recorded on the same production deploy evidence
+- If an external channel is stale, unavailable, or no longer clearly owned, operators must treat it as disabled and continue from the workflow evidence path without assuming chat fan-out, paging coverage, or provider-native acknowledgement tracking exists
+- Automatic fan-out, 24x7 paging rotation, and remediation hooks remain outside the current workflow contract even if a pointer-style external delivery destination is later documented
+
 ## External DNS Operations Memo
 
 - External DNS cutover remains operator-managed and must stay outside workflow-complete automation even after `portal-production-deploy` succeeds

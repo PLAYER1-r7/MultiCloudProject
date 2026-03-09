@@ -77,6 +77,20 @@ Define the minimum monitoring and alerting policy needed so the first release ca
 - Automatic escalation, 24x7 staffing, dashboard depth, and numeric SLO/SLI thresholds remain outside the current alert routing baseline until the response owner and operating channel are recorded more tightly
 - Certificate renewal watchpoint failures should follow the same notification owner and first-response route as deploy and reachability failures; do not invent a separate certificate-only paging path in the current phase
 
+## Current Production Alert Delivery Baseline
+
+- The current phase permits at most one explicitly recorded external delivery destination for production alerts, and that destination must be owned by the same small-team response path already recorded on the reviewed `portal-production-deploy` evidence
+- Any approved external delivery destination must carry the production deploy run URL and point operators back to the step summary plus `portal-production-deployment-record`; the external destination is a pointer channel, not a replacement source of truth
+- Delivery ownership remains fail-closed: repository owner approves the destination, deploy operator is the sender or triggering owner for the current incident path, and verification owner remains the recorded closer on the same production review record
+- If the external delivery destination is unavailable, stale, or unowned, first response must fall back immediately to the reviewed `portal-production-deploy` run URL, step summary, and `portal-production-deployment-record` artifact without assuming broader paging or chat coverage exists
+- Supporting diagnostics and any provider-native delivery mechanism may be linked from the same operator path, but they do not replace the recorded deploy evidence as the authoritative incident path
+
+## Alert Delivery Scope Boundary
+
+- This baseline does not approve broad chat fan-out, 24x7 paging rotations, automatic remediation, or unowned mailbox-style destinations for production alerts
+- Provider-specific delivery products may only be treated as optional pointer channels in the current phase; they are not the declaration baseline for delivery success or incident acknowledgement
+- Delivery failure is not itself grounds to invent a wider escalation tree; the fail-closed response is to return to the Issue 44 first-response notification path and continue inside the recorded owner path
+
 ## Current Production Certificate Renewal Watchpoint
 
 - The current production certificate watchpoint is ACM certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` for `www.aws.ashnova.jp`, attached to CloudFront distribution `E34CI3F0M5904O`
