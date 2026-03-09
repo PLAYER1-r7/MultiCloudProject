@@ -93,21 +93,21 @@ For Issue 39 implementation progress, the local issue record is the primary evid
 
 ### Task Mapping
 
-| Checklist item | Primary evidence section | Why this is the evidence | Review state |
-| --- | --- | --- | --- |
-| production reviewed inputs を再確認する | Implementation Notes, Current Review Notes | These sections record the reviewed alias and ACM certificate ARN that were used for the first apply attempt. | Accepted for final review |
-| production OpenTofu apply を実行して resources を作成する | Implementation Notes, Spot Check Evidence, [infra/environments/production/main.tf](infra/environments/production/main.tf), [infra/environments/production/outputs.tf](infra/environments/production/outputs.tf) | These sources show both the failed reviewed-input attempt and the successful fallback apply that created the production delivery resources. | Accepted for final review |
-| production outputs と `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` handoff を記録する | Implementation Notes, Spot Check Evidence, [infra/environments/production/README.md](infra/environments/production/README.md) | These sources show the created distribution id, domain name, bucket name, and GitHub environment variable handoff. | Accepted for final review |
-| issue 記録へ execution evidence と非対象を残す | Task Contract, Implementation Notes, Current Review Notes, Spot Check Evidence | These sections preserve execution evidence, fallback reasoning, and the excluded DNS / deploy scope in one record. | Accepted for final review |
+| Checklist item                                                                   | Primary evidence section                                                                                                                                                                                        | Why this is the evidence                                                                                                                    | Review state              |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| production reviewed inputs を再確認する                                          | Implementation Notes, Current Review Notes                                                                                                                                                                      | These sections record the reviewed alias and ACM certificate ARN that were used for the first apply attempt.                                | Accepted for final review |
+| production OpenTofu apply を実行して resources を作成する                        | Implementation Notes, Spot Check Evidence, [infra/environments/production/main.tf](infra/environments/production/main.tf), [infra/environments/production/outputs.tf](infra/environments/production/outputs.tf) | These sources show both the failed reviewed-input attempt and the successful fallback apply that created the production delivery resources. | Accepted for final review |
+| production outputs と `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` handoff を記録する | Implementation Notes, Spot Check Evidence, [infra/environments/production/README.md](infra/environments/production/README.md)                                                                                   | These sources show the created distribution id, domain name, bucket name, and GitHub environment variable handoff.                          | Accepted for final review |
+| issue 記録へ execution evidence と非対象を残す                                   | Task Contract, Implementation Notes, Current Review Notes, Spot Check Evidence                                                                                                                                  | These sections preserve execution evidence, fallback reasoning, and the excluded DNS / deploy scope in one record.                          | Accepted for final review |
 
 ### Definition Of Done Mapping
 
-| Checklist item | Primary evidence section | Why this is the evidence | Review state |
-| --- | --- | --- | --- |
-| production site bucket と CloudFront distribution が AWS 上で確認できる | Implementation Notes, Spot Check Evidence, [infra/environments/production/outputs.tf](infra/environments/production/outputs.tf) | These sources show the created bucket and deployed CloudFront distribution with concrete output values. | Accepted for final review |
-| `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` が GitHub environment に投入され、workflow handoff と整合している | Implementation Notes, Spot Check Evidence, [infra/environments/production/README.md](infra/environments/production/README.md), [.github/workflows/README.md](.github/workflows/README.md) | These sources show the workflow contract expects the variable and the execution record confirms it is now set. | Accepted for final review |
-| reviewed certificate ARN と approved aliases の適用試行結果を含む production delivery surface が記録されている | Implementation Notes, Current Review Notes, Spot Check Evidence | These sections show the reviewed-input apply failed closed on alias ownership conflict and the fallback delivery surface that was actually created. | Accepted for final review |
-| 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている | Task Contract, Implementation Notes, Spot Check Evidence, Evidence Mapping Table | These sections preserve the file scope, validation path, and execution evidence basis for this work. | Accepted for final review |
+| Checklist item                                                                                                 | Primary evidence section                                                                                                                                                                  | Why this is the evidence                                                                                                                            | Review state              |
+| -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| production site bucket と CloudFront distribution が AWS 上で確認できる                                        | Implementation Notes, Spot Check Evidence, [infra/environments/production/outputs.tf](infra/environments/production/outputs.tf)                                                           | These sources show the created bucket and deployed CloudFront distribution with concrete output values.                                             | Accepted for final review |
+| `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` が GitHub environment に投入され、workflow handoff と整合している      | Implementation Notes, Spot Check Evidence, [infra/environments/production/README.md](infra/environments/production/README.md), [.github/workflows/README.md](.github/workflows/README.md) | These sources show the workflow contract expects the variable and the execution record confirms it is now set.                                      | Accepted for final review |
+| reviewed certificate ARN と approved aliases の適用試行結果を含む production delivery surface が記録されている | Implementation Notes, Current Review Notes, Spot Check Evidence                                                                                                                           | These sections show the reviewed-input apply failed closed on alias ownership conflict and the fallback delivery surface that was actually created. | Accepted for final review |
+| 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている                                              | Task Contract, Implementation Notes, Spot Check Evidence, Evidence Mapping Table                                                                                                          | These sections preserve the file scope, validation path, and execution evidence basis for this work.                                                | Accepted for final review |
 
 ## Final Review Result
 
@@ -120,15 +120,16 @@ For Issue 39 implementation progress, the local issue record is the primary evid
 - 同日、fail-closed fallback として alias / certificate ARN を外した apply を実行し、production site bucket `multicloudproject-portal-production-web` と CloudFront distribution `E34CI3F0M5904O` を作成した
 - 同日、GitHub production environment へ `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID=E34CI3F0M5904O` を投入し、Issue 39 record と GitHub issue body へ execution evidence を同期する
 - 2026-03-09 formal review では production bucket、CloudFront distribution、GitHub production environment variables を live state で再確認し、issue 記録どおり `multicloudproject-portal-production-web`、`E34CI3F0M5904O`、`d168agpgcuvdqq.cloudfront.net`、`PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID=E34CI3F0M5904O` が成立していることを確認した
+- 2026-03-09 repository owner の明示承認を受けて Issue 39 を close した。close 直前の live state: S3 bucket `multicloudproject-portal-production-web` (versioning=Enabled)、CloudFront `E34CI3F0M5904O` (Status=Deployed, CloudFrontDefaultCertificate=true)、GitHub production env 5 変数すべて確認済み
 
 ## Current Status
 
-- OPEN
+- CLOSED
 
 - production site bucket と CloudFront distribution は作成済みであり、implementation sync と formal review は完了している
 - `portal-production-deploy`、external DNS validation、custom-domain cutover は後続ステップとして残る
 - reviewed alias / certificate ARN の attach は `CNAMEAlreadyExists` により fail-closed で停止しており、custom-domain ownership conflict の解消が別途必要である
-- Issue 39 は close 判定のみ未実施である
+- 2026-03-09 に repository owner の明示承認を受けて Issue 39 を close した
 
 ## Dependencies
 
