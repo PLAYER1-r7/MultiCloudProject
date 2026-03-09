@@ -109,7 +109,7 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Record the certificate ARN, `NotAfter`, `RenewalEligibility`, validation CNAME, check timestamp, and operator name before any certificate-related escalation so the team is not reconstructing renewal state mid-incident
 - Treat the validation CNAME as retained production configuration; do not remove or repoint it unless a reviewed replacement certificate path and rollback plan are recorded together
 - Re-check ACM describe-certificate state when custom-domain HTTPS fails unexpectedly, before any DNS reversal, and whenever the team is reviewing the current production baseline close to the recorded `NotAfter`
-- If ACM no longer reports `ISSUED`, `ELIGIBLE`, or `ValidationStatus=SUCCESS`, treat that as a certificate incident first and confirm certificate state plus validation CNAME retention before changing artifact or DNS state
+- If ACM no longer reports `ISSUED`, `ELIGIBLE`, or `ValidationStatus=SUCCESS`, treat that as a certificate incident first and confirm certificate state plus that the validation CNAME still matches the reviewed `acm-validations.aws` target before changing artifact or DNS state
 - Keep notification tooling, renewal automation, and provider account execution detail outside this memo; this section only fixes the minimum operator sequence and evidence path for certificate continuity
 
 ## Current Production Rollback Snapshot

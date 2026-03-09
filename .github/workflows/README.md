@@ -96,10 +96,10 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 
 ## Production Certificate Renewal Memo
 
-- Production certificate renewal remains ACM-managed, but the operator must still keep the reviewed certificate ARN, current `NotAfter`, `RenewalEligibility`, and DNS validation CNAME on the same review path as the custom-domain record
+- Production certificate renewal remains ACM-managed, but the operator must still record the reviewed certificate ARN, current `NotAfter`, `RenewalEligibility`, and DNS validation CNAME on the same review path as the custom-domain record
 - The current production certificate baseline is ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487`, domain `www.aws.ashnova.jp`, `ISSUED`, `ELIGIBLE`, attached to distribution `E34CI3F0M5904O`, with `NotAfter=2026-09-06T23:59:59+00:00`
 - Treat the ACM DNS validation CNAME as retained production state rather than one-time setup; do not remove or overwrite `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp -> _490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws` unless a reviewed replacement certificate path is ready
-- If custom-domain HTTPS fails while CloudFront deployment and artifact evidence still look healthy, check ACM certificate state and validation CNAME retention before treating the event as an artifact rollback or DNS reversal incident
+- If custom-domain HTTPS fails while CloudFront deployment and artifact evidence still look healthy, check ACM certificate state and whether the validation CNAME still matches the reviewed `acm-validations.aws` target before treating the event as an artifact rollback or DNS reversal incident
 - Renewal automation, notification routing, and certificate reissuance playbooks remain outside the current workflow contract; this memo only fixes the minimum evidence path and incident split
 
 ## Production Readiness Gate

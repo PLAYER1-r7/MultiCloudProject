@@ -80,7 +80,7 @@ Define the minimum rollback policy needed so the first portal release can recove
 
 - Treat certificate continuity as a separate failure class from artifact rollback and DNS reversal; if custom-domain HTTPS fails while deploy evidence, bucket sync, and CloudFront deployment still look healthy, inspect ACM certificate state first
 - Before any rollback or DNS action, confirm the current certificate ARN, `NotAfter`, `RenewalEligibility`, and validation CNAME retention so the recovery path is not chosen from incomplete certificate state
-- If the ACM certificate is no longer `ISSUED`, no longer `ELIGIBLE`, or the validation CNAME no longer resolves to the reviewed `acm-validations.aws` target, escalate as a certificate incident before changing artifact or DNS state
+- If the ACM certificate is no longer `ISSUED`, no longer `ELIGIBLE`, or the validation CNAME no longer matches the reviewed `acm-validations.aws` target, escalate as a certificate incident before changing artifact or DNS state
 - Treat certificate recovery as incomplete until custom-domain HTTPS, smoke paths `/`, `/overview`, and `/guidance`, and the reviewed certificate attachment on the production distribution have all been re-verified
 
 ## Decision Statement

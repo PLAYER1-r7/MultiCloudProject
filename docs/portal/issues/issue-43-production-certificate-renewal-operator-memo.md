@@ -84,7 +84,7 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 
 - renewal memo は ACM renewal automation や notification routing を実装するものではなく、current production certificate continuity を小規模運用で見失わないための operator evidence path に限定している
 - validation CNAME は issuance 時だけの一時レコードではなく、renewal continuity に必要な retained production state として扱う wording に揃えた
-- custom-domain incident は artifact restore や DNS reversal へ直行せず、certificate state、eligibility、validation retention を先に確認する triage に統一した
+- custom-domain incident は artifact restore や DNS reversal へ直行せず、certificate state、eligibility、validation CNAME が reviewed `acm-validations.aws` target を保っているかを先に確認する triage に統一した
 
 ## Spot Check Evidence
 
