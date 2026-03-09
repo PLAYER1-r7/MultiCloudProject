@@ -121,6 +121,17 @@ jobs:
           test -n "$certificate_related_reference"
           test -n "$selected_environment_entrypoint_reference"
 
+          cp "$reference_path" gcp-preview-resource-execution-reference.md
+
+          {
+            echo "RESOURCE_EXECUTION_STATUS=$execution_status"
+            echo "RESOURCE_EXECUTION_REFERENCE=$reference_path"
+            echo "PREVIEW_PUBLIC_URL=$preview_public_url"
+            echo "REVIEWED_TARGET_REFERENCE=$reviewed_target_reference"
+            echo "CERTIFICATE_RELATED_REFERENCE=$certificate_related_reference"
+            echo "SELECTED_ENVIRONMENT_ENTRYPOINT_REFERENCE=$selected_environment_entrypoint_reference"
+          } >> "$GITHUB_ENV"
+
           case "$execution_status" in
             ready|completed)
               ;;
@@ -133,16 +144,6 @@ jobs:
               exit 1
               ;;
           esac
-
-          cp "$reference_path" gcp-preview-resource-execution-reference.md
-
-          {
-            echo "RESOURCE_EXECUTION_REFERENCE=$reference_path"
-            echo "PREVIEW_PUBLIC_URL=$preview_public_url"
-            echo "REVIEWED_TARGET_REFERENCE=$reviewed_target_reference"
-            echo "CERTIFICATE_RELATED_REFERENCE=$certificate_related_reference"
-            echo "SELECTED_ENVIRONMENT_ENTRYPOINT_REFERENCE=$selected_environment_entrypoint_reference"
-          } >> "$GITHUB_ENV"
 
       - name: Validate GCP preview settings
         run: |
@@ -254,6 +255,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${RESOURCE_EXECUTION_STATUS:-}" == "blocked pending state" || "${RESOURCE_EXECUTION_STATUS:-}" == "blocked-pending-state" || "${RESOURCE_EXECUTION_STATUS:-}" == "blocked_pending_state" ]]; then
+            echo "| skipped | n/a | skipped | resource execution status blocked pending state |" >> gcp-preview-deployment-record.md
+            exit 0
+          fi
+
           if [[ -z "${GCP_PREVIEW_BASE_URL:-}" ]]; then
             echo "| skipped | n/a | skipped | GCP_PREVIEW_BASE_URL not configured |" >> gcp-preview-deployment-record.md
             exit 0
