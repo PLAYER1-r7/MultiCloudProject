@@ -76,6 +76,13 @@ Define the minimum rollback policy needed so the first portal release can recove
 - If DNS reversal is required, verify that the previous target still maps to a known-good delivery path and keep the reversal evidence with the same operator record used for artifact rollback decisions
 - Treat DNS reversal as incomplete until public DNS resolution, custom-domain HTTPS, and smoke paths `/`, `/overview`, and `/guidance` have all been re-verified
 
+## Current Certificate Incident Separation Direction
+
+- Treat certificate continuity as a separate failure class from artifact rollback and DNS reversal; if custom-domain HTTPS fails while deploy evidence, bucket sync, and CloudFront deployment still look healthy, inspect ACM certificate state first
+- Before any rollback or DNS action, confirm the current certificate ARN, `NotAfter`, `RenewalEligibility`, and validation CNAME retention so the recovery path is not chosen from incomplete certificate state
+- If the ACM certificate is no longer `ISSUED`, no longer `ELIGIBLE`, or the validation CNAME no longer resolves to the reviewed `acm-validations.aws` target, escalate as a certificate incident before changing artifact or DNS state
+- Treat certificate recovery as incomplete until custom-domain HTTPS, smoke paths `/`, `/overview`, and `/guidance`, and the reviewed certificate attachment on the production distribution have all been re-verified
+
 ## Decision Statement
 
 The first portal release should adopt a lightweight rollback policy centered on restoring the last known good application and infrastructure state quickly, with explicit delivery-path recovery steps and a mandatory post-rollback verification checklist.

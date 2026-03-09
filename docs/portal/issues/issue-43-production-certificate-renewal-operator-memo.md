@@ -55,17 +55,17 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 
 ## Tasks
 
-- [ ] current production certificate renewal evidence と watchpoint を固定する
-- [ ] validation CNAME retention check と renewal failure operator sequence を整理する
-- [ ] custom-domain incident と certificate renewal incident の切り分けを明文化する
-- [ ] renewal memo の根拠と非対象を issue 記録へ残す
+- [x] current production certificate renewal evidence と watchpoint を固定する
+- [x] validation CNAME retention check と renewal failure operator sequence を整理する
+- [x] custom-domain incident と certificate renewal incident の切り分けを明文化する
+- [x] renewal memo の根拠と非対象を issue 記録へ残す
 
 ## Definition of Done
 
-- [ ] renewal operator memo が current production certificate 状態を前提に読める
-- [ ] validation CNAME retention と renewal failure 時の確認順序が読める
-- [ ] automation / notification implementation がスコープ外として維持されている
-- [ ] 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている
+- [x] renewal operator memo が current production certificate 状態を前提に読める
+- [x] validation CNAME retention と renewal failure 時の確認順序が読める
+- [x] automation / notification implementation がスコープ外として維持されている
+- [x] 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている
 
 ## Initial Notes
 
@@ -73,9 +73,30 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 - ACM describe-certificate の live state では `RenewalEligibility=ELIGIBLE`、`NotAfter=2026-09-06T23:59:59+00:00`、`InUseBy=arn:aws:cloudfront::278280499340:distribution/E34CI3F0M5904O` を返している
 - current validation CNAME は `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` -> `_490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws` で、`ValidationStatus=SUCCESS` を返している
 
+## Implementation Notes
+
+- [.github/workflows/README.md](.github/workflows/README.md) に Production Certificate Renewal Memo を追加し、current certificate baseline、validation CNAME retention、custom-domain incident との切り分け、workflow contract 外の範囲を handoff wording として固定した
+- [infra/environments/production/README.md](infra/environments/production/README.md) に Production Certificate Renewal Snapshot と Production Certificate Renewal Operator Memo を追加し、current certificate state、watchpoint、validation CNAME retention、renewal failure 時の operator sequence を production operator path として明文化した
+- [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) に certificate renewal watchpoint を追加し、unexpected HTTPS failure 時に ACM state と validation CNAME retention を first-response triage に含めるよう整理した
+- [docs/portal/16_ROLLBACK_POLICY_DRAFT.md](docs/portal/16_ROLLBACK_POLICY_DRAFT.md) に certificate incident separation wording を追加し、artifact rollback / DNS reversal より前に certificate continuity を切り分ける recovery direction を固定した
+
+## Current Review Notes
+
+- renewal memo は ACM renewal automation や notification routing を実装するものではなく、current production certificate continuity を小規模運用で見失わないための operator evidence path に限定している
+- validation CNAME は issuance 時だけの一時レコードではなく、renewal continuity に必要な retained production state として扱う wording に揃えた
+- custom-domain incident は artifact restore や DNS reversal へ直行せず、certificate state、eligibility、validation retention を先に確認する triage に統一した
+
+## Spot Check Evidence
+
+- workflow handoff wording: [.github/workflows/README.md](.github/workflows/README.md) は current certificate ARN、`NotAfter`、`RenewalEligibility`、validation CNAME retention、workflow contract 外の境界を operator memo として保持している
+- operator memo wording: [infra/environments/production/README.md](infra/environments/production/README.md) は current certificate snapshot、validation CNAME retention、renewal failure 時の operator sequence を production operator context で保持している
+- monitoring wording: [docs/portal/14_MONITORING_POLICY_DRAFT.md](docs/portal/14_MONITORING_POLICY_DRAFT.md) は unexpected custom-domain HTTPS failure を certificate watchpoint として扱い、artifact / DNS との切り分けを明示している
+- rollback wording: [docs/portal/16_ROLLBACK_POLICY_DRAFT.md](docs/portal/16_ROLLBACK_POLICY_DRAFT.md) は certificate incident を artifact rollback と DNS reversal の前段で切り分ける recovery direction を明示している
+- live state basis: ACM describe-certificate は certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` について `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`NotAfter=2026-09-06T23:59:59+00:00`、`InUseBy=arn:aws:cloudfront::278280499340:distribution/E34CI3F0M5904O`、validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp -> _490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws`、`ValidationStatus=SUCCESS` を返している
+
 ## Current Status
 
 - OPEN
 
-- task contract intake は完了しており、implementation / formal review は未実施である
-- current production certificate renewal baseline の live state は採取済みである
+- implementation sync は完了しており、formal review は未実施である
+- current production certificate renewal baseline の live state は issue record と operator memo に反映済みである

@@ -94,6 +94,24 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - After reversal, verify public DNS resolution, custom-domain HTTPS, and the route smoke paths again before declaring user-facing recovery complete
 - Keep emergency override detail, provider account internals, and any DNS automation outside this memo; this section only fixes the minimum operator sequence and evidence path
 
+## Production Certificate Renewal Snapshot
+
+- Current production certificate ARN: `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487`
+- Current certificate domain and type: `www.aws.ashnova.jp`, `AMAZON_ISSUED`
+- Current certificate status: `ISSUED`
+- Current certificate renewal eligibility: `ELIGIBLE`
+- Current certificate `NotAfter`: `2026-09-06T23:59:59+00:00`
+- Current certificate in-use path: CloudFront distribution `E34CI3F0M5904O`
+- Current validation CNAME: `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` -> `_490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws`
+
+## Production Certificate Renewal Operator Memo
+
+- Record the certificate ARN, `NotAfter`, `RenewalEligibility`, validation CNAME, check timestamp, and operator name before any certificate-related escalation so the team is not reconstructing renewal state mid-incident
+- Treat the validation CNAME as retained production configuration; do not remove or repoint it unless a reviewed replacement certificate path and rollback plan are recorded together
+- Re-check ACM describe-certificate state when custom-domain HTTPS fails unexpectedly, before any DNS reversal, and whenever the team is reviewing the current production baseline close to the recorded `NotAfter`
+- If ACM no longer reports `ISSUED`, `ELIGIBLE`, or `ValidationStatus=SUCCESS`, treat that as a certificate incident first and confirm certificate state plus validation CNAME retention before changing artifact or DNS state
+- Keep notification tooling, renewal automation, and provider account execution detail outside this memo; this section only fixes the minimum operator sequence and evidence path for certificate continuity
+
 ## Current Production Rollback Snapshot
 
 - Current last known-good artifact: build run `22839426762` for commit `f9b395393a1bacd221541c5437e60fe23a2da0c2`
