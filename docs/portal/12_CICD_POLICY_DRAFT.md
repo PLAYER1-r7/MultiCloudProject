@@ -82,11 +82,12 @@ Define the minimum CI/CD policy that supports reliable staging delivery first, w
 - Monthly cost ceiling is fixed at USD 15/month before tax for the initial production footprint
 - Provider-specific workflow commands may remain AWS-specific, but smoke paths, release evidence, and operator-facing success criteria should stay app-level and cloud-neutral
 - The pipeline policy can now expose a manual approval-gated production deploy path that reuses the staging-validated artifact and evidence flow, while external DNS and certificate execution remain operator-managed follow-up steps
+- The production cutover baseline is an operator-managed sequence: complete certificate validation, apply aliases and reviewed certificate ARN, set `PRODUCTION_BASE_URL` and `PRODUCTION_SMOKE_PATHS`, coordinate DNS cutover, then review custom-domain reachability and rollback evidence
 
 ## First-Release Practical Flow
 
 ```text
-change -> review -> build -> test -> staging deploy -> staging check -> approval -> production deploy
+change -> review -> build -> test -> staging deploy -> staging check -> approval -> production deploy -> operator cutover -> production verify
 ```
 
 ## Decision Statement

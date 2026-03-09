@@ -62,13 +62,16 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Do not treat staging success as implicit approval to create production resources or a production GitHub Actions environment
 - Do not promote a production candidate unless the rollback target artifact, its supporting release evidence, and the post-rollback verification owner are all recorded in the same operator review path
 - Do not set production aliases or a production `acm_certificate_arn` until the approved custom-domain path, the reviewed us-east-1 ACM certificate ARN, and the external DNS validation record plan are all recorded
+- Do not treat production custom-domain verification as complete until `PRODUCTION_BASE_URL` and `PRODUCTION_SMOKE_PATHS` are both recorded for the selected cutover path
 - Do not assume external DNS validation, certificate issuance, or emergency override handling are workflow-complete until operator steps are written down and approved
 
 ## Expected Operator Steps After Gate Closure
 
 - Select the staging-validated promotion candidate explicitly before any production action starts
 - Select and record the last known-good rollback target artifact from the same reviewed evidence path before promotion starts
+- Prepare the reviewed us-east-1 ACM certificate ARN, the external DNS validation record plan, and the approved production aliases before any custom-domain apply or cutover starts
 - Dispatch `portal-production-deploy` with the selected source build run id, staging verification run id, rollback target reference, and verification owner after approval is granted
-- Record the approver, deploy operator, verification owner, and notification route for the production run
-- Coordinate external DNS and certificate validation as explicit operator-managed steps
-- Verify production reachability and rollback readiness evidence after promotion, using the same review discipline as staging
+- Record the approver, deploy operator, verification owner, notification route, production aliases, and reviewed certificate ARN in the same production review path
+- Set `PRODUCTION_BASE_URL` to the approved production custom-domain URL and `PRODUCTION_SMOKE_PATHS` to the release smoke list before custom-domain verification starts
+- Coordinate external DNS validation and custom-domain cutover as explicit operator-managed steps after the production artifact is published
+- Verify the production custom-domain reachability, smoke paths, and rollback readiness evidence after cutover, using the same review discipline as staging
