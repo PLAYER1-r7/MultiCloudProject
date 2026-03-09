@@ -4,7 +4,7 @@ production rollout baseline と cutover execution baseline は揃ったが、AWS
 
 ## Goal
 
-production delivery resource execution を行い、production site bucket / CloudFront distribution を作成して、review 済み certificate ARN と aliases を含む apply evidence、output capture、GitHub environment handoff を固定する。
+production delivery resource execution を行い、production site bucket / CloudFront distribution を作成して、review 済み certificate ARN と aliases の適用可否を fail-closed に確認しつつ、apply evidence、output capture、GitHub environment handoff を固定する。
 
 ## Task Contract
 
@@ -23,23 +23,23 @@ production delivery resource execution を行い、production site bucket / Clou
 
 目的
 - 解決する問題: production wiring と cutover handoff が repo に存在しても、実際の production site bucket / CloudFront distribution が未作成だと `portal-production-deploy` の publish surface と invalidation target が未確定のままで、custom-domain cutover 前の execution path を実体で検証できない
-- 期待する価値: reviewed certificate ARN、approved aliases、production outputs、`PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` を同じ execution record に束ね、production deploy と post-deploy verification が参照する delivery surface を fail-closed に固定できる
+- 期待する価値: reviewed certificate ARN、approved aliases、production outputs、`PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` を同じ execution record に束ね、custom-domain binding がその場で成立しない場合も fail-closed に止めながら、production deploy と post-deploy verification が参照する delivery surface を固定できる
 
 スコープ
-- 含むもの: production OpenTofu plan/apply 実行、reviewed certificate ARN と aliases を使った delivery resource 作成、production outputs の記録、`PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` の environment variable 反映、issue 記録への execution evidence 整理
+- 含むもの: production OpenTofu plan/apply 実行、reviewed certificate ARN と aliases の適用試行、delivery resource 作成、production outputs の記録、`PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` の environment variable 反映、issue 記録への execution evidence 整理
 - 含まないもの: `portal-production-deploy` の実行、external DNS validation 実施、custom-domain cutover 実施、automatic rollback 実装、incident runbook 全面整備
 - 編集可能パス: infra/environments/production/**, docs/portal/issues/issue-39-production-delivery-resource-execution.md, .github/workflows/README.md, infra/environments/production/README.md
 - 制限パス: apps/portal-web/**, closed issue records except explicit evidence references, docs/portal/03_PRODUCT_DEFINITION_DRAFT.md, docs/portal/06_AWS_ARCHITECTURE_DRAFT.md, docs/portal/11_IAC_POLICY_DRAFT.md, docs/portal/12_CICD_POLICY_DRAFT.md
 
 受け入れ条件
-- [ ] 条件 1: production OpenTofu apply が reviewed certificate ARN と approved aliases を含む current execution path として成功し、site bucket と CloudFront distribution outputs を確認できる
+- [ ] 条件 1: production OpenTofu apply により site bucket と CloudFront distribution outputs を確認でき、reviewed certificate ARN / approved aliases の適用可否も同じ execution record で fail-closed に確認できる
 - [ ] 条件 2: `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` と production output evidence が workflow / environment README / issue 記録で整合している
 - [ ] 条件 3: `portal-production-deploy` 実行、external DNS validation、custom-domain cutover、自動 rollback を本 issue に混ぜず、delivery resource execution に限定できている
 
 実装計画
 - 変更見込みファイル: infra/environments/production/terraform.tfvars, infra/environments/production/README.md, .github/workflows/README.md, docs/portal/issues/issue-39-production-delivery-resource-execution.md
-- アプローチ: Issue 36 と Issue 38 で固定した production rollout / cutover baseline を前提に、production entrypoint へ reviewed certificate ARN と aliases を投入して OpenTofu apply を実行し、output と environment handoff を同じ execution record に残す
-- 採用しなかった代替案と理由: `portal-production-deploy` を先に実行する案は publish target が未作成のため fail-closed 条件を崩す。external DNS cutover まで一度に実施する案は operator-managed boundary を越えて scope が広すぎるため採らない
+- アプローチ: Issue 36 と Issue 38 で固定した production rollout / cutover baseline を前提に、production entrypoint へ reviewed certificate ARN と aliases を投入して OpenTofu apply を試行し、CloudFront alias ownership conflict が起きる場合は default certificate の distribution へ fail-closed で切り替えて、output と environment handoff を同じ execution record に残す
+- 採用しなかった代替案と理由: `portal-production-deploy` を先に実行する案は publish target が未作成のため fail-closed 条件を崩す。external DNS cutover まで一度に実施する案は operator-managed boundary を越えて scope が広すぎるため採らない。CloudFront alias ownership conflict を無視して custom-domain bind を強行する案も、existing distribution ownership の解消前に進めると fail-closed にならないため採らない
 
 検証計画
 - 実行するテスト: tofu fmt; tofu init; tofu plan; tofu apply; tofu output; AWS CloudFront / S3 existence check; get_errors on edited files
@@ -47,56 +47,85 @@ production delivery resource execution を行い、production site bucket / Clou
 - 失敗時の切り分け経路: infra/environments/production/terraform.tfvars、OpenTofu plan/apply output、AWS CloudFront state、GitHub environment variable state を照合し、resource creation、certificate association、handoff recording のどこで止まったかを分ける
 
 リスクとロールバック
-- 主なリスク: production resource creation を deploy や DNS cutover と同一 issue に混ぜ、operator-managed boundary を崩すこと。あるいは reviewed certificate ARN / aliases の入力不整合で apply が失敗すること
+- 主なリスク: production resource creation を deploy や DNS cutover と同一 issue に混ぜ、operator-managed boundary を崩すこと。あるいは reviewed certificate ARN / aliases の入力不整合や CloudFront alias ownership conflict で apply が失敗すること
 - 影響範囲: production AWS resource state、future production deploy path、custom-domain readiness evidence
-- 緩和策: scope を delivery resource creation と output capture に限定し、deploy と DNS cutover は follow-up に分離する。apply 前に aliases と certificate ARN を再確認する
-- ロールバック手順: apply が不正な custom-domain binding を作った場合は reviewed input を見直したうえで再 apply し、必要なら aliases / certificate ARN を外して fail-closed state に戻す
+- 緩和策: scope を delivery resource creation と output capture に限定し、deploy と DNS cutover は follow-up に分離する。apply 前に aliases と certificate ARN を再確認し、CloudFront alias bind が失敗する場合は default certificate distribution で delivery surface だけを確定する
+- ロールバック手順: apply が不正な custom-domain binding を作った場合は reviewed input を見直したうえで再 apply し、必要なら aliases / certificate ARN を外して fail-closed state に戻す。alias ownership conflict の場合は custom-domain bind を行わず distribution domain のみを active delivery surface とする
 ```
 
 ## Tasks
 
-- [ ] production reviewed inputs を再確認する
-- [ ] production OpenTofu apply を実行して resources を作成する
-- [ ] production outputs と `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` handoff を記録する
-- [ ] issue 記録へ execution evidence と非対象を残す
+- [x] production reviewed inputs を再確認する
+- [x] production OpenTofu apply を実行して resources を作成する
+- [x] production outputs と `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` handoff を記録する
+- [x] issue 記録へ execution evidence と非対象を残す
 
 ## Definition of Done
 
-- [ ] production site bucket と CloudFront distribution が AWS 上で確認できる
-- [ ] `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` が GitHub environment に投入され、workflow handoff と整合している
-- [ ] reviewed certificate ARN と approved aliases を使った production delivery surface が記録されている
-- [ ] 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている
+- [x] production site bucket と CloudFront distribution が AWS 上で確認できる
+- [x] `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` が GitHub environment に投入され、workflow handoff と整合している
+- [x] reviewed certificate ARN と approved aliases の適用試行結果を含む production delivery surface が記録されている
+- [x] 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている
 
 ## Implementation Notes
 
-- Pending
+- production backend は preinstalled `tofu v1.8.8` では `use_lockfile = true` を backend で解釈できず `tofu init -reconfigure` が失敗したため、official release の `OpenTofu v1.11.0` をローカル展開して execution binary として使用した
+- reviewed input として `aliases=["www.aws.ashnova.jp"]`、`acm_certificate_arn=arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` を指定して plan/apply を試行したが、CloudFront `CreateDistributionWithTags` は `CNAMEAlreadyExists` で失敗した
+- fail-closed fallback として aliases / certificate ARN を外した plan/apply を実行し、production site bucket `multicloudproject-portal-production-web`、CloudFront distribution `E34CI3F0M5904O`、distribution domain `d168agpgcuvdqq.cloudfront.net` を作成した
+- GitHub production environment へ `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID=E34CI3F0M5904O` を投入し、production workflow handoff を update した
 
 ## Current Review Notes
 
-- Pending
+- production delivery surface 自体は AWS 上に作成できており、`portal-production-deploy` が参照する bucket / distribution id handoff は成立している
+- reviewed certificate ARN と approved alias `www.aws.ashnova.jp` の attach 試行は CloudFront `CNAMEAlreadyExists` により fail-closed で停止しており、custom-domain ownership conflict の解消前に alias bind を進めていない
+- custom-domain bind は Issue 38 で分離した operator-managed cutover 境界の範囲に残しつつ、Issue 39 では production deploy target を先に固定する形で scope を維持している
 
 ## Spot Check Evidence
 
-- Pending
+- OpenTofu execution: `OpenTofu v1.11.0` による `tofu init -reconfigure` と `tofu validate` は [infra/environments/production/versions.tf](infra/environments/production/versions.tf) の backend 設定で成功した
+- reviewed alias attempt: reviewed input を与えた `tofu apply` は `CNAMEAlreadyExists` で停止し、existing CloudFront alias ownership conflict があることを確認した
+- fallback apply: aliases / certificate ARN を外した `tofu apply` は成功し、`distribution_id = E34CI3F0M5904O`、`distribution_domain_name = d168agpgcuvdqq.cloudfront.net`、`site_bucket_name = multicloudproject-portal-production-web` を出力した
+- AWS / GitHub handoff: `aws cloudfront get-distribution --id E34CI3F0M5904O` は `Status = Deployed`、`Aliases = null`、`CloudFrontDefaultCertificate = true` を返し、`gh variable list --env production` は `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID=E34CI3F0M5904O` を確認できた
 
 ## Evidence Mapping Table
 
-Pending
+For Issue 39 implementation progress, the local issue record is the primary evidence source. [infra/environments/production/main.tf](infra/environments/production/main.tf), [infra/environments/production/outputs.tf](infra/environments/production/outputs.tf), and [infra/environments/production/README.md](infra/environments/production/README.md) provide the execution surface, while this issue record captures the reviewed-input attempt, fallback apply, and workflow handoff results.
+
+### Task Mapping
+
+| Checklist item | Primary evidence section | Why this is the evidence | Review state |
+| --- | --- | --- | --- |
+| production reviewed inputs を再確認する | Implementation Notes, Current Review Notes | These sections record the reviewed alias and ACM certificate ARN that were used for the first apply attempt. | Ready for review |
+| production OpenTofu apply を実行して resources を作成する | Implementation Notes, Spot Check Evidence, [infra/environments/production/main.tf](infra/environments/production/main.tf), [infra/environments/production/outputs.tf](infra/environments/production/outputs.tf) | These sources show both the failed reviewed-input attempt and the successful fallback apply that created the production delivery resources. | Ready for review |
+| production outputs と `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` handoff を記録する | Implementation Notes, Spot Check Evidence, [infra/environments/production/README.md](infra/environments/production/README.md) | These sources show the created distribution id, domain name, bucket name, and GitHub environment variable handoff. | Ready for review |
+| issue 記録へ execution evidence と非対象を残す | Task Contract, Implementation Notes, Current Review Notes, Spot Check Evidence | These sections preserve execution evidence, fallback reasoning, and the excluded DNS / deploy scope in one record. | Ready for review |
+
+### Definition Of Done Mapping
+
+| Checklist item | Primary evidence section | Why this is the evidence | Review state |
+| --- | --- | --- | --- |
+| production site bucket と CloudFront distribution が AWS 上で確認できる | Implementation Notes, Spot Check Evidence, [infra/environments/production/outputs.tf](infra/environments/production/outputs.tf) | These sources show the created bucket and deployed CloudFront distribution with concrete output values. | Ready for review |
+| `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID` が GitHub environment に投入され、workflow handoff と整合している | Implementation Notes, Spot Check Evidence, [infra/environments/production/README.md](infra/environments/production/README.md), [.github/workflows/README.md](.github/workflows/README.md) | These sources show the workflow contract expects the variable and the execution record confirms it is now set. | Ready for review |
+| reviewed certificate ARN と approved aliases の適用試行結果を含む production delivery surface が記録されている | Implementation Notes, Current Review Notes, Spot Check Evidence | These sections show the reviewed-input apply failed closed on alias ownership conflict and the fallback delivery surface that was actually created. | Ready for review |
+| 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている | Task Contract, Implementation Notes, Spot Check Evidence, Evidence Mapping Table | These sections preserve the file scope, validation path, and execution evidence basis for this work. | Ready for review |
 
 ## Final Review Result
 
-- Pending
+- Pending formal review
 
 ## Process Review Notes
 
-- Pending
+- 2026-03-09 に production reviewed input として alias `www.aws.ashnova.jp` および ACM certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` を使った apply を試行したが、CloudFront `CNAMEAlreadyExists` で停止した
+- 同日、fail-closed fallback として alias / certificate ARN を外した apply を実行し、production site bucket `multicloudproject-portal-production-web` と CloudFront distribution `E34CI3F0M5904O` を作成した
+- 同日、GitHub production environment へ `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID=E34CI3F0M5904O` を投入し、Issue 39 record と GitHub issue body へ execution evidence を同期する
 
 ## Current Status
 
 - OPEN
 
-- production delivery resources は未作成であり、Issue 39 は production apply と output capture の execution record を残すための active intake である
+- production site bucket と CloudFront distribution は作成済みであり、Issue 39 は implementation sync と formal review 待ちの状態である
 - `portal-production-deploy`、external DNS validation、custom-domain cutover は後続ステップとして残る
+- reviewed alias / certificate ARN の attach は `CNAMEAlreadyExists` により fail-closed で停止しており、custom-domain ownership conflict の解消が別途必要である
 
 ## Dependencies
 
