@@ -102,10 +102,11 @@ production monitoring の first-response baseline を実運用レベルで固め
 - 2026-03-09 に Issue 41 を follow-up として起票し、initial task contract を GitHub Issue #41 へ同期した
 - 同日、monitoring draft、workflow README、production README を同期し、current production monitoring baseline、first-response triage path、verification checklist、scope boundary を current operations baseline として整理した
 - 2026-03-09 formal review では build run `22839426762`、staging verification run `22839434387`、production deploy run `22839461795` がすべて success で同一 commit `f9b395393a1bacd221541c5437e60fe23a2da0c2` を指していること、CloudFront `E34CI3F0M5904O` が `Deployed` かつ alias `www.aws.ashnova.jp` と reviewed ACM certificate ARN を保持していること、Google Public DNS が `www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net` を返すこと、custom-domain 相当の HTTPS 応答が 200 と SPA shell を返すこと、production deploy run に `portal-production-deployment-record` artifact が存在することを live state で再確認した
+- 2026-03-09 に repository owner から close approval を受領し、CloudSonnet review でも blocking issue がないことを再確認したため、本 issue を CLOSED として確定し、GitHub Issue #41 とローカル記録を同期する
 
 ## Current Status
 
-- OPEN
+- CLOSED
 
-- implementation sync と formal review は完了しており、close approval は未実施である
+- implementation sync、formal review、close approval が完了している
 - current production release の monitoring baseline は deploy evidence path と custom-domain verification path に接続済みである
