@@ -107,17 +107,18 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 - repository owner による external DNS provider での CNAME 登録後に再確認したが、`dns.google` と `cloudflare-dns.com` はなお同じ validation CNAME に対して `Status=3` を返し、公開 DNS からは反映を確認できていない。`www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net` の production CNAME は引き続き正常である
 - 追加の再確認では `cloudflare-dns.com` と `dns.google` の `cd=1` で validation CNAME が `_490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws` を返した一方、通常の `dns.google` は同じ名前に対してなお `Status=3` を返したため、完全な未反映ではなく resolver validation 差分が残っている状態と判断した
 - その後の再チェックでは `dns.google` と `cloudflare-dns.com` の通常問い合わせがともに validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp -> _490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws` を返し、ACM describe-certificate も `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`ValidationStatus=SUCCESS` を維持し、`www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net`、custom-domain HTTPS 200、`/guidance` の SPA shell を再確認できたため、blocking finding を解消して formal review を PASS へ更新した
+- 2026-03-09 に repository owner から close approval を受領し、CloudSonnet review の指摘を踏まえて stale な open/action-needed wording を解消したため、本 issue を CLOSED として確定し、GitHub Issue #43 とローカル記録を同期する
 
-## External DNS Action Needed
+## External DNS Recovery Record
 
-- authoritative NS for `ashnova.jp` are `01.dnsv.jp`, `02.dnsv.jp`, `03.dnsv.jp`, and `04.dnsv.jp`, so the missing validation record must be checked in that external DNS provider path
-- required validation record to restore or confirm is: `Name=_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp`, `Type=CNAME`, `Value=_490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws`
-- current production custom-domain CNAME remains healthy in public DNS as `www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net`, so the follow-up scope is limited to the ACM validation CNAME rather than the production cutover record
-- after external DNS update, re-verify with `https://dns.google/resolve?name=_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp&type=CNAME` and `https://cloudflare-dns.com/dns-query?name=_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp&type=CNAME` before re-running formal review
+- authoritative NS for `ashnova.jp` are `01.dnsv.jp`, `02.dnsv.jp`, `03.dnsv.jp`, and `04.dnsv.jp`, and the validation record that required recovery was `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp CNAME _490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws`
+- repository owner による external DNS provider 側の反映後、`dns.google` と `cloudflare-dns.com` の通常問い合わせで同 validation CNAME を再確認でき、public re-resolution mismatch は解消した
+- current production custom-domain CNAME `www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net` は再確認期間を通して正常であり、Issue 43 の external DNS 対応は ACM validation CNAME の復旧確認として完了した
 
 ## Current Status
 
-- OPEN
+- CLOSED
 
-- implementation sync と formal review は完了しており、close approval は未実施である
+- implementation sync、formal review、close approval が完了している
 - current production certificate renewal baseline の live state は issue record と operator memo に反映済みである
+- external DNS recovery record は historical evidence として保持し、追加の action-needed state は残っていない
