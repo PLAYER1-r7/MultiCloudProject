@@ -86,6 +86,14 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - CloudFront distribution status and external DNS resolution are supporting diagnostics used to split propagation delay from artifact-path failure; they are not a substitute for the reviewed custom-domain check
 - External alert tooling, broader notification integrations, and 24x7 on-call process remain outside the current workflow contract until response ownership is recorded more tightly
 
+## External DNS Operations Memo
+
+- External DNS cutover remains operator-managed and must stay outside workflow-complete automation even after `portal-production-deploy` succeeds
+- Before applying or re-applying production aliases on CloudFront, record the current external DNS CNAME target, TTL, reviewed certificate ARN, and the intended production CloudFront domain in the same operator review path
+- If CloudFront alias attachment is blocked by an existing external DNS binding, release the old CNAME path first, wait for the alias to be attachable on the target distribution, and only then re-apply the reviewed alias plus certificate on the production distribution
+- Treat Google Public DNS resolution and custom-domain HTTPS verification as the minimum post-change evidence for external DNS operations; do not declare cutover complete from control-plane changes alone
+- DNS reversal remains a separate operator decision from artifact rollback and should only be used when the current production distribution path cannot recover service through artifact restore or normal propagation wait
+
 ## Production Readiness Gate
 
 - Production automation remains blocked until the production design gate is recorded tightly enough to fail closed instead of relying on operator memory

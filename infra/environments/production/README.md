@@ -76,6 +76,24 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Coordinate external DNS validation and custom-domain cutover as explicit operator-managed steps after the production artifact is published
 - Verify the production custom-domain reachability, smoke paths, and rollback readiness evidence after cutover, using the same review discipline as staging
 
+## External DNS Cutover Operator Memo
+
+- Current production custom-domain: `www.aws.ashnova.jp`
+- Current production CloudFront target: `d168agpgcuvdqq.cloudfront.net`
+- Current observed public DNS TTL baseline: 3600 seconds from Google Public DNS during the 2026-03-09 cutover evidence check
+- Record the pre-change CNAME target, intended target, TTL, change operator, and timestamp before any external DNS edit so reversal has a concrete reference
+- If the reviewed alias cannot be attached to the target CloudFront distribution because it is still bound elsewhere, release the previous external CNAME path first, then retry alias attachment on the reviewed production distribution before publishing the new CNAME target
+- After alias attachment and certificate wiring are confirmed on the production distribution, update the external DNS CNAME to the reviewed CloudFront domain and wait for public resolution to show the new target before declaring cutover complete
+- Post-cutover minimum evidence is Google Public DNS showing `www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net`, custom-domain HTTPS returning HTTP 200, and `/`, `/overview`, `/guidance` returning the SPA shell markers
+
+## External DNS Reversal Decision Memo
+
+- Do not treat DNS reversal as the first rollback action; try artifact restore on the current production distribution path first unless the issue is clearly caused by external DNS state
+- Use DNS reversal only when the current production distribution path cannot recover service through artifact restore or normal propagation wait and the previous DNS target is still known-good
+- Before reversing DNS, record the current target, previous target, TTL, reason for reversal, approver, and expected verification owner in the same operator review path
+- After reversal, verify public DNS resolution, custom-domain HTTPS, and the route smoke paths again before declaring user-facing recovery complete
+- Keep emergency override detail, provider account internals, and any DNS automation outside this memo; this section only fixes the minimum operator sequence and evidence path
+
 ## Current Production Rollback Snapshot
 
 - Current last known-good artifact: build run `22839426762` for commit `f9b395393a1bacd221541c5437e60fe23a2da0c2`
