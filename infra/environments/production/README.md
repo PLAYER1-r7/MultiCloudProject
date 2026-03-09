@@ -11,8 +11,8 @@ This directory is reserved for the production entrypoint of the portal delivery 
 
 ## Current Guardrail
 
-- Production backend configuration can exist before full production rollout, but production delivery resources and deploy automation must stay blocked until the remaining production gate is closed
-- Do not add production module wiring, deploy workflow definitions, or cutover scripts before the remaining production entry conditions are recorded explicitly
+- Production rollout baseline can exist before operator-managed cutover execution is fully written down, but external DNS cutover, certificate issuance execution, and emergency rollback detail must stay outside workflow-complete automation
+- Do not execute production apply, production deploy, or cutover scripts unless the recorded production gate inputs are present and the production environment approval boundary is satisfied
 
 ## Current Backend Baseline
 
@@ -20,7 +20,27 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - backend key: portal/production/terraform.tfstate
 - backend region: ap-northeast-1
 - native S3 state locking is enabled with use_lockfile = true
-- production backend configuration is present, but production delivery resources are still intentionally absent
+- production backend configuration and delivery resource wiring are present as the current rollout baseline
+
+## GitHub Environment Variables
+
+- Required secret:
+  - `AWS_ROLE_TO_ASSUME_PRODUCTION`
+- Required variable:
+  - `PRODUCTION_SITE_BUCKET_NAME`
+- Recommended variable:
+  - `PRODUCTION_AWS_REGION`
+- Optional variables:
+  - `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID`
+  - `PRODUCTION_BASE_URL`
+  - `PRODUCTION_SMOKE_PATHS`
+- Required dispatch inputs for `portal-production-deploy`:
+  - `source_build_run_id`
+  - `source_build_commit_sha`
+  - `staging_deploy_run_id`
+  - `rollback_target_reference`
+- Optional dispatch input for `portal-production-deploy`:
+  - `verification_owner`
 
 ## Production Readiness Gate Snapshot
 
@@ -33,11 +53,12 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Monthly cost ceiling: USD 15/month before tax for the first public release while the footprint remains a small static site centered on S3 + CloudFront
 - State locking strategy: use native S3 locking via `use_lockfile = true`; production backend configuration now preserves that strategy through the dedicated production state key
 - Portability boundary: keep provider-specific delivery choices inside infrastructure and workflow internals, while product structure, routes, frontend configuration contracts, frontend architecture, and monitoring wording remain cloud-neutral
+- Rollout implementation baseline: use dedicated production module wiring plus the approval-gated `portal-production-deploy` workflow to promote the staging-validated artifact, while keeping external DNS cutover and certificate validation execution as operator-managed steps
 
 ## Fail-Closed Rules
 
-- Do not add production module wiring, deploy workflow definitions, or cutover scripts unless the production footprint still fits the USD 15/month ceiling or the ceiling is explicitly revised
-- Do not allow any production apply path until the remaining production entry conditions are recorded and approved, even though the backend configuration now exists
+- Do not execute a production apply path or `portal-production-deploy` run unless the production footprint still fits the USD 15/month ceiling or the ceiling is explicitly revised
+- Do not execute a production apply path or `portal-production-deploy` run unless the production gate inputs are recorded and the production environment approval boundary is satisfied
 - Do not treat staging success as implicit approval to create production resources or a production GitHub Actions environment
 - Do not promote a production candidate unless the rollback target artifact, its supporting release evidence, and the post-rollback verification owner are all recorded in the same operator review path
 - Do not set production aliases or a production `acm_certificate_arn` until the approved custom-domain path, the reviewed us-east-1 ACM certificate ARN, and the external DNS validation record plan are all recorded
@@ -47,6 +68,7 @@ This directory is reserved for the production entrypoint of the portal delivery 
 
 - Select the staging-validated promotion candidate explicitly before any production action starts
 - Select and record the last known-good rollback target artifact from the same reviewed evidence path before promotion starts
+- Dispatch `portal-production-deploy` with the selected source build run id, staging verification run id, rollback target reference, and verification owner after approval is granted
 - Record the approver, deploy operator, verification owner, and notification route for the production run
 - Coordinate external DNS and certificate validation as explicit operator-managed steps
 - Verify production reachability and rollback readiness evidence after promotion, using the same review discipline as staging

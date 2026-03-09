@@ -1,0 +1,290 @@
+name: portal-production-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_build_run_id:
+        description: "portal-build run id for the staging-validated promotion candidate"
+        required: true
+        type: string
+      source_build_commit_sha:
+        description: "Commit SHA selected for production promotion"
+        required: true
+        type: string
+      staging_deploy_run_id:
+        description: "portal-staging-deploy run id that verified the promotion candidate"
+        required: true
+        type: string
+      rollback_target_reference:
+        description: "Run URL or evidence reference for the last known-good rollback target artifact"
+        required: true
+        type: string
+      verification_owner:
+        description: "Owner responsible for post-deploy production verification"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: portal-production-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    environment: production
+    env:
+      AWS_REGION: ${{ vars.PRODUCTION_AWS_REGION != '' && vars.PRODUCTION_AWS_REGION || 'ap-northeast-1' }}
+      BUILD_ARTIFACT_NAME: portal-web-dist
+      BUILD_EVIDENCE_ARTIFACT_NAME: portal-build-evidence
+      STAGING_EVIDENCE_ARTIFACT_NAME: portal-staging-monitoring-record
+      DEPLOYMENT_RECORD_ARTIFACT_NAME: portal-production-deployment-record
+      PRODUCTION_SITE_BUCKET_NAME: ${{ vars.PRODUCTION_SITE_BUCKET_NAME }}
+      PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID }}
+      PRODUCTION_BASE_URL: ${{ vars.PRODUCTION_BASE_URL }}
+      PRODUCTION_SMOKE_PATHS: ${{ vars.PRODUCTION_SMOKE_PATHS != '' && vars.PRODUCTION_SMOKE_PATHS || '/,/overview,/guidance' }}
+    steps:
+      - name: Verify promotion source runs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const buildRunId = Number('${{ inputs.source_build_run_id }}');
+            const stagingRunId = Number('${{ inputs.staging_deploy_run_id }}');
+            const requestedCommit = '${{ inputs.source_build_commit_sha }}';
+
+            const { data: buildRun } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: buildRunId,
+            });
+
+            const { data: stagingRun } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: stagingRunId,
+            });
+
+            if (buildRun.name !== 'portal-build' || buildRun.conclusion !== 'success') {
+              core.setFailed(`source_build_run_id must reference a successful portal-build run. got ${buildRun.name} / ${buildRun.conclusion}`);
+              return;
+            }
+
+            if (stagingRun.name !== 'portal-staging-deploy' || stagingRun.conclusion !== 'success') {
+              core.setFailed(`staging_deploy_run_id must reference a successful portal-staging-deploy run. got ${stagingRun.name} / ${stagingRun.conclusion}`);
+              return;
+            }
+
+            if (buildRun.head_branch !== 'main' || stagingRun.head_branch !== 'main') {
+              core.setFailed('production promotion baseline only accepts runs from main');
+              return;
+            }
+
+            if (buildRun.head_sha !== requestedCommit) {
+              core.setFailed(`source_build_commit_sha does not match source_build_run_id. expected ${buildRun.head_sha}, got ${requestedCommit}`);
+              return;
+            }
+
+            if (stagingRun.head_sha !== requestedCommit) {
+              core.setFailed(`staging_deploy_run_id does not match source_build_commit_sha. expected ${stagingRun.head_sha}, got ${requestedCommit}`);
+            }
+
+      - name: Download build artifact from portal-build
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_build_run_id }}
+          name: ${{ env.BUILD_ARTIFACT_NAME }}
+          path: portal-dist
+
+      - name: Download build evidence artifact from portal-build
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_build_run_id }}
+          name: ${{ env.BUILD_EVIDENCE_ARTIFACT_NAME }}
+          path: build-evidence
+
+      - name: Download staging verification artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.staging_deploy_run_id }}
+          name: ${{ env.STAGING_EVIDENCE_ARTIFACT_NAME }}
+          path: staging-evidence
+
+      - name: Prepare promotion evidence snapshots
+        run: |
+          cp build-evidence/portal-build-evidence.md production-source-build-evidence.md
+          cp staging-evidence/staging-monitoring-record.md production-staging-verification-evidence.md
+
+      - name: Validate production settings
+        env:
+          AWS_ROLE_TO_ASSUME_PRODUCTION: ${{ secrets.AWS_ROLE_TO_ASSUME_PRODUCTION }}
+        run: |
+          test -f portal-dist/index.html
+          test -f production-source-build-evidence.md
+          test -f production-staging-verification-evidence.md
+          test -n "$PRODUCTION_SITE_BUCKET_NAME"
+          test -n "$AWS_ROLE_TO_ASSUME_PRODUCTION"
+          test -n "${{ inputs.rollback_target_reference }}"
+
+      - name: Show deploy inputs
+        run: |
+          release_owner='${{ github.repository_owner }}'
+          deploy_operator='${{ github.triggering_actor != '' && github.triggering_actor || github.actor }}'
+          verification_owner='${{ inputs.verification_owner != '' && inputs.verification_owner || github.repository_owner }}'
+          notification_route='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          echo "aws_region=$AWS_REGION"
+          echo "bucket=$PRODUCTION_SITE_BUCKET_NAME"
+          echo "distribution_id=${PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID:-<none>}"
+          echo "base_url=${PRODUCTION_BASE_URL:-<none>}"
+          echo "smoke_paths=$PRODUCTION_SMOKE_PATHS"
+          echo "release_owner=$release_owner"
+          echo "deploy_operator=$deploy_operator"
+          echo "verification_owner=$verification_owner"
+          echo "source_build_run_id=${{ inputs.source_build_run_id }}"
+          echo "staging_deploy_run_id=${{ inputs.staging_deploy_run_id }}"
+          echo "rollback_target_reference=${{ inputs.rollback_target_reference }}"
+          echo "notification_route=$notification_route"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_PRODUCTION }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync portal artifact to production bucket
+        run: |
+          aws s3 sync portal-dist/ "s3://${PRODUCTION_SITE_BUCKET_NAME}" --delete
+
+      - name: Invalidate production CloudFront cache
+        if: env.PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID != ''
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths '/*'
+
+      - name: Wait for edge propagation window
+        if: env.PRODUCTION_BASE_URL != ''
+        run: sleep 15
+
+      - name: Initialize production deployment record
+        if: always()
+        run: |
+          release_owner='${{ github.repository_owner }}'
+          deploy_operator='${{ github.triggering_actor != '' && github.triggering_actor || github.actor }}'
+          verification_owner='${{ inputs.verification_owner != '' && inputs.verification_owner || github.repository_owner }}'
+          notification_route='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          cat > production-deployment-record.md <<EOF
+          ## Production deployment record
+
+          - Workflow: portal-production-deploy
+          - Run ID: ${{ github.run_id }}
+          - Run attempt: ${{ github.run_attempt }}
+          - Event: ${{ github.event_name }}
+          - Bucket: ${PRODUCTION_SITE_BUCKET_NAME:-not configured}
+          - CloudFront distribution: ${PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID:-not configured}
+          - Base URL: ${PRODUCTION_BASE_URL:-not configured}
+          - Smoke paths: ${PRODUCTION_SMOKE_PATHS}
+          - Release owner: ${release_owner}
+          - Deploy operator: ${deploy_operator}
+          - Verification owner: ${verification_owner}
+          - Notification route: ${notification_route}
+          - Source build run ID: ${{ inputs.source_build_run_id }}
+          - Source build commit SHA: ${{ inputs.source_build_commit_sha }}
+          - Source build run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.source_build_run_id }}
+          - Staging verification run ID: ${{ inputs.staging_deploy_run_id }}
+          - Staging verification run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.staging_deploy_run_id }}
+          - Rollback target reference: ${{ inputs.rollback_target_reference }}
+
+          ### Source build evidence snapshot
+
+          EOF
+          cat production-source-build-evidence.md >> production-deployment-record.md
+          cat <<EOF >> production-deployment-record.md
+
+          ### Staging verification snapshot
+
+          EOF
+          cat production-staging-verification-evidence.md >> production-deployment-record.md
+          cat <<EOF >> production-deployment-record.md
+
+          ### Production reachability results
+
+          | Path | HTTP status | Result | Expected marker |
+          | --- | --- | --- | --- |
+          EOF
+
+      - name: Run post-deploy smoke checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${PRODUCTION_BASE_URL:-}" ]]; then
+            echo "| skipped | n/a | skipped | PRODUCTION_BASE_URL not configured |" >> production-deployment-record.md
+            exit 0
+          fi
+
+          IFS=',' read -r -a paths <<< "$PRODUCTION_SMOKE_PATHS"
+          failure=0
+          for raw_path in "${paths[@]}"; do
+            path="${raw_path//[[:space:]]/}"
+            [[ -z "$path" ]] && continue
+            url="${PRODUCTION_BASE_URL%/}${path}"
+            expected='MultiCloudProject Portal'
+            case "$path" in
+              "/")
+                expected='MultiCloudProject Portal'
+                ;;
+              "/overview")
+                expected='Overview'
+                ;;
+              "/guidance")
+                expected='Guidance'
+                ;;
+            esac
+            echo "Checking $url"
+            response_file="$(mktemp)"
+            status_code='curl-failed'
+            result='failed'
+            if status_code="$(curl --show-error --silent --location --output "$response_file" --write-out '%{http_code}' "$url")"; then
+              if [[ "$status_code" =~ ^2[0-9][0-9]$ ]] && grep -q "$expected" "$response_file"; then
+                result='passed'
+              else
+                failure=1
+              fi
+            else
+              failure=1
+            fi
+            echo "| $path | $status_code | $result | $expected |" >> production-deployment-record.md
+            rm -f "$response_file"
+          done
+
+          echo "" >> production-deployment-record.md
+          echo "Owner note: release owner defaults to repository owner, deploy operator defaults to the triggering actor, and verification owner defaults to repository owner unless explicitly overridden at dispatch time." >> production-deployment-record.md
+
+          exit "$failure"
+
+      - name: Upload production deployment record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.DEPLOYMENT_RECORD_ARTIFACT_NAME }}
+          path: production-deployment-record.md
+
+      - name: Record deployment summary
+        if: always()
+        run: |
+          {
+            echo "## Portal production deployment summary"
+            echo "- Source build run ID: ${{ inputs.source_build_run_id }}"
+            echo "- Source build commit SHA: ${{ inputs.source_build_commit_sha }}"
+            echo "- Staging verification run ID: ${{ inputs.staging_deploy_run_id }}"
+            echo "- Rollback target reference: ${{ inputs.rollback_target_reference }}"
+            echo "- Deployment record artifact: ${DEPLOYMENT_RECORD_ARTIFACT_NAME}"
+            echo ""
+            cat production-deployment-record.md
+          } >> "$GITHUB_STEP_SUMMARY"

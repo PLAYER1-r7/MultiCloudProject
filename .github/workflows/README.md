@@ -26,6 +26,18 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
   - optional variable `STAGING_CLOUDFRONT_DISTRIBUTION_ID`
   - optional variable `STAGING_BASE_URL`
   - optional variable `STAGING_SMOKE_PATHS`
+- Production deploy workflow:
+  - secret `AWS_ROLE_TO_ASSUME_PRODUCTION`
+  - variable `PRODUCTION_AWS_REGION`
+  - variable `PRODUCTION_SITE_BUCKET_NAME`
+  - optional variable `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID`
+  - optional variable `PRODUCTION_BASE_URL`
+  - optional variable `PRODUCTION_SMOKE_PATHS`
+  - required dispatch input `source_build_run_id`
+  - required dispatch input `source_build_commit_sha`
+  - required dispatch input `staging_deploy_run_id`
+  - required dispatch input `rollback_target_reference`
+  - optional dispatch input `verification_owner`
 
 ## Post-Deploy Check Direction
 
@@ -58,5 +70,5 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - The certificate sourcing baseline is an AWS-managed ACM public certificate in us-east-1, but DNS validation records and cutover timing still remain explicit operator-managed steps outside workflow automation
 - The rollback target baseline reuses the staging-first evidence path: operators should identify the last known-good artifact through the run URL, step summary, `portal-build-evidence`, and `portal-staging-monitoring-record`, then apply the same verification discipline after recovery
 - The accepted portability boundary keeps provider-specific commands and secrets inside workflow internals, while smoke paths, release evidence, and release-check wording stay app-level and cloud-neutral
-- The selected state locking strategy is now wired into a production backend configuration, but this repository must still stop at staging and must not add a production deploy workflow or production apply path until the remaining production entry conditions are completed
+- The selected state locking strategy is now wired into a production backend configuration, and this repository now includes an approval-gated `portal-production-deploy` baseline that promotes a staging-validated artifact together with its build, staging, and rollback evidence references
 - External DNS cutover and certificate validation remain operator-managed steps that follow approval; they are not treated as workflow-complete automation in the current phase

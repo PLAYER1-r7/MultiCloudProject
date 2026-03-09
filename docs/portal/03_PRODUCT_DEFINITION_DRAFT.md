@@ -684,7 +684,7 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
 ## Current Working Constraint
 
 - The repository may continue refining the staging path and planning documents
-- New production implementation work should stay blocked until the remaining production entry conditions are recorded explicitly
+- Production rollout implementation can now proceed through a dedicated approval-gated baseline, while external DNS cutover execution, certificate issuance execution, and emergency rollback detail remain operator-managed follow-up work
 
 ## One-Page Summary
 

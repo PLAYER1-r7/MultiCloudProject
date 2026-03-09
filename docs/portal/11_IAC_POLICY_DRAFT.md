@@ -70,7 +70,7 @@ infra/
 - State locking baseline is native S3 locking via `use_lockfile = true`, enabled in staging and now wired into the production backend configuration through a dedicated production state key
 - Monthly cost ceiling for the first public release is fixed at USD 15/month before tax for the current small static-site footprint
 - The portability boundary is explicit: provider-specific backends, modules, and workflow commands may stay AWS-specific, while user-facing routes, frontend configuration contracts, frontend architecture, and monitoring wording stay cloud-neutral
-- Production IaC should still stay blocked until the remaining production entry conditions are recorded, even though the selected backend strategy is now wired into production
+- Production IaC can now expose the approved rollout baseline through dedicated module wiring and outputs, while external DNS cutover execution and emergency rollback automation remain outside IaC automation
 
 ## Operational Rules
 
