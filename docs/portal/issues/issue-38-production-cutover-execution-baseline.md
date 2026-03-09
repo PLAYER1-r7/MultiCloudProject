@@ -120,12 +120,19 @@ For Issue 38 implementation sync, the local issue record is the primary evidence
 - Published evidence commit は `0310b60` であり、formal review 記録は cutover execution baseline の受理と、環境値の確定状況を追補するものである
 - 2026-03-09 に明示的な close 承認を受け、local issue record と GitHub Issue #38 を close 状態へ同期する
 
+## Post-Close Operational Evidence
+
+- 2026-03-09 に external DNS から旧 CloudFront 向きの `www.aws.ashnova.jp` CNAME を解放した後、production distribution `E34CI3F0M5904O` へ alias `www.aws.ashnova.jp` と reviewed ACM certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` を再適用し、CloudFront `Deployed` 状態を確認した
+- 同日、deploy workflow 側の smoke check が SPA route path を raw HTML の route-specific text で誤判定していたため、[.github/workflows/portal-staging-deploy.yml](.github/workflows/portal-staging-deploy.yml) と [.github/workflows/portal-production-deploy.yml](.github/workflows/portal-production-deploy.yml) を SPA shell marker 検証へ補正し、[.github/workflows/portal-build.yml](.github/workflows/portal-build.yml) の path filter に deploy workflows を加えて pipeline-only 修正でも新しい promotion candidate を生成できるようにした
+- 修正後の promotion candidate は build run `22839426762`、staging verification run `22839434387`、production deploy run `22839461795` ですべて success となり、対象 commit `f9b395393a1bacd221541c5437e60fe23a2da0c2` が production bucket `multicloudproject-portal-production-web` と CloudFront `E34CI3F0M5904O` へ配布された
+- Google Public DNS は `www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net` を返し、custom-domain 相当の HTTPS 応答確認と repository owner によるブラウザ表示確認で production custom-domain cutover 完了を確認した
+
 ## Current Status
 
 - CLOSED
 
 - production cutover execution baseline は operator-managed sequence、handoff input、post-cutover verification を含む current path として同期済みである
-- implementation sync、formal review、`PRODUCTION_BASE_URL` / `PRODUCTION_SMOKE_PATHS` の環境投入、Issue 38 close は完了している
+- implementation sync、formal review、`PRODUCTION_BASE_URL` / `PRODUCTION_SMOKE_PATHS` の環境投入、Issue 38 close、post-close operational cutover evidence の同期は完了している
 - DNS provider account detail、automatic rollback、emergency override depth は後続 issue の対象に残る
 
 ## Dependencies
