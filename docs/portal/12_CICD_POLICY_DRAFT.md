@@ -78,6 +78,7 @@ Define the minimum CI/CD policy that supports reliable staging delivery first, w
 - Staging should use a controlled manual dispatch path before deeper trigger automation is enabled
 - Native S3 state locking via `use_lockfile = true` is now the selected backend locking strategy
 - Monthly cost ceiling is fixed at USD 15/month before tax for the initial production footprint
+- Provider-specific workflow commands may remain AWS-specific, but smoke paths, release evidence, and operator-facing success criteria should stay app-level and cloud-neutral
 - The pipeline policy should continue to stop at staging until the remaining production entry conditions are completed, even though the selected backend strategy is now wired into the production backend configuration
 
 ## First-Release Practical Flow

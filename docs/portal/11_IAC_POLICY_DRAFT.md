@@ -68,6 +68,7 @@ infra/
 - Certificate sourcing therefore has to be designed together with the external DNS validation flow
 - State locking baseline is native S3 locking via `use_lockfile = true`, enabled in staging and now wired into the production backend configuration through a dedicated production state key
 - Monthly cost ceiling for the first public release is fixed at USD 15/month before tax for the current small static-site footprint
+- The portability boundary is explicit: provider-specific backends, modules, and workflow commands may stay AWS-specific, while user-facing routes, frontend configuration contracts, frontend architecture, and monitoring wording stay cloud-neutral
 - Production IaC should still stay blocked until the remaining production entry conditions are recorded, even though the selected backend strategy is now wired into production
 
 ## Operational Rules
@@ -78,4 +79,4 @@ infra/
 
 ## Decision Statement
 
-The initial portal infrastructure should be managed with OpenTofu using reusable modules and isolated environment definitions so that staging and production remain reproducible and future multi-cloud expansion stays tractable.
+The initial portal infrastructure should be managed with OpenTofu using reusable modules and isolated environment definitions so that staging and production remain reproducible, while product and app-facing contracts remain cloud-neutral enough to keep future multi-cloud expansion tractable.

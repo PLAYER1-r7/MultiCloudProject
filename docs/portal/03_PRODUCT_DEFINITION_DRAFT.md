@@ -670,7 +670,7 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
   - ACM certificate ownership and renewal responsibility
   - production deploy approver and emergency override owner
   - acceptable monthly cost ceiling for the first public release
-  - which parts of the current solution are intentionally AWS-specific versus required to stay cloud-portable
+- The portability boundary is already fixed: AWS-specific delivery choices may remain inside infrastructure and workflow internals, while product structure, user-facing routes, frontend configuration contracts, frontend architecture, and monitoring wording stay cloud-neutral
 
 ## Current Decision Snapshot
 
@@ -678,7 +678,7 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
 - Production deploy approver: the repository owner can approve alone in the current phase
 - Monthly cost ceiling: USD 15/month before tax for the first public release, based on a small static site footprint centered on S3 + CloudFront
 - OpenTofu state locking: native S3 locking via `use_lockfile = true` is the selected baseline, and the production backend is now wired to a dedicated production state key
-- Multi-cloud portability boundary: still needs an explicit statement separating AWS-specific delivery choices from cloud-neutral product constraints
+- Multi-cloud portability boundary: AWS-specific choices stay in infrastructure delivery and workflow internals, while product structure, user-facing routes, frontend configuration contracts, frontend architecture, and monitoring wording remain cloud-neutral
 
 ## Current Working Constraint
 

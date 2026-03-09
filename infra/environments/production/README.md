@@ -31,6 +31,7 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Artifact evidence baseline: rely on `portal-build-evidence` and `portal-staging-monitoring-record` as the minimum promotion traceability set
 - Monthly cost ceiling: USD 15/month before tax for the first public release while the footprint remains a small static site centered on S3 + CloudFront
 - State locking strategy: use native S3 locking via `use_lockfile = true`; production backend configuration now preserves that strategy through the dedicated production state key
+- Portability boundary: keep provider-specific delivery choices inside infrastructure and workflow internals, while product structure, routes, frontend configuration contracts, frontend architecture, and monitoring wording remain cloud-neutral
 
 ## Fail-Closed Rules
 
