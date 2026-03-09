@@ -94,9 +94,21 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 - rollback wording: [docs/portal/16_ROLLBACK_POLICY_DRAFT.md](docs/portal/16_ROLLBACK_POLICY_DRAFT.md) は certificate incident を artifact rollback と DNS reversal の前段で切り分ける recovery direction を明示している
 - live state basis: ACM describe-certificate は certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` について `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`NotAfter=2026-09-06T23:59:59+00:00`、`InUseBy=arn:aws:cloudfront::278280499340:distribution/E34CI3F0M5904O`、validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp -> _490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws`、`ValidationStatus=SUCCESS` を返している
 
+## Final Review Result
+
+- BLOCKED: wording sync 自体は整っているが、公開 resolver の live state では validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` が `dns.google` と `cloudflare-dns.com` の双方で `Status=3` を返しており、issue / operator memo が前提にしている「retained production state として外部から再確認できる validation CNAME」が現在の public DNS では確認できない
+- NOTE: ACM describe-certificate はなお `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`ValidationStatus=SUCCESS` を返し、CloudFront distribution `E34CI3F0M5904O` には reviewed ACM certificate ARN と alias `www.aws.ashnova.jp` が attach されたままであり、custom-domain HTTPS も 200 と SPA shell を返しているため、現在の user-facing path は継続している
+- REQUIRED FOLLOW-UP: external DNS 側で validation CNAME の現況を確認し、public DNS から再確認可能な retained state に戻すか、もしくは current operating model が public re-resolution を前提にしないことを根拠付きで整理し直す必要がある
+
+## Process Review Notes
+
+- 2026-03-09 に implementation sync 後の wording を再確認し、validation CNAME drift 判定を `reviewed acm-validations.aws target` 基準に揃える微調整を追加した
+- formal review では ACM describe-certificate が certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` について `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`NotAfter=2026-09-06T23:59:59+00:00`、`ValidationStatus=SUCCESS`、`InUseBy=arn:aws:cloudfront::278280499340:distribution/E34CI3F0M5904O` を返すこと、CloudFront `E34CI3F0M5904O` が alias `www.aws.ashnova.jp` と同一 ACM certificate ARN を保持すること、`https://www.aws.ashnova.jp` が HTTP 200 を返し、`/guidance` が SPA shell を返すこと、production deploy run `22839461795` に `portal-production-deployment-record` artifact が存在することを live state で再確認した
+- 同 review で validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` の public DNS 再確認を行ったところ、`https://dns.google/resolve?...` と `https://cloudflare-dns.com/dns-query?...` の双方が `Status=3` を返し、issue と operator memo が retained state として前提にしている validation CNAME を public resolver から確認できなかった
+
 ## Current Status
 
 - OPEN
 
-- implementation sync は完了しており、formal review は未実施である
+- implementation sync は完了しているが、formal review は validation CNAME の public re-resolution mismatch により blocking finding ありの状態である
 - current production certificate renewal baseline の live state は issue record と operator memo に反映済みである
