@@ -118,13 +118,14 @@ For Issue 38 implementation sync, the local issue record is the primary evidence
 - 2026-03-09 formal review では [docs/portal/03_PRODUCT_DEFINITION_DRAFT.md](docs/portal/03_PRODUCT_DEFINITION_DRAFT.md)、[docs/portal/06_AWS_ARCHITECTURE_DRAFT.md](docs/portal/06_AWS_ARCHITECTURE_DRAFT.md)、[docs/portal/11_IAC_POLICY_DRAFT.md](docs/portal/11_IAC_POLICY_DRAFT.md)、[docs/portal/12_CICD_POLICY_DRAFT.md](docs/portal/12_CICD_POLICY_DRAFT.md)、[.github/workflows/README.md](.github/workflows/README.md)、[infra/environments/production/README.md](infra/environments/production/README.md) を再確認し、cutover sequence と fail-closed boundary が Issue 38 の scope どおりに同期されていることを確認した
 - route baseline と staging verification posture から `PRODUCTION_SMOKE_PATHS=/,/overview,/guidance` は確定できたため GitHub environment variable へ投入済みである。さらに、us-east-1 の唯一の ISSUED ACM certificate `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` が `www.aws.ashnova.jp` を対象としていることを確認し、`PRODUCTION_BASE_URL=https://www.aws.ashnova.jp` を production environment variable へ投入済みである
 - Published evidence commit は `0310b60` であり、formal review 記録は cutover execution baseline の受理と、環境値の確定状況を追補するものである
+- 2026-03-09 に明示的な close 承認を受け、local issue record と GitHub Issue #38 を close 状態へ同期する
 
 ## Current Status
 
-- OPEN
+- CLOSED
 
 - production cutover execution baseline は operator-managed sequence、handoff input、post-cutover verification を含む current path として同期済みである
-- implementation sync、formal review、`PRODUCTION_BASE_URL` / `PRODUCTION_SMOKE_PATHS` の環境投入は完了しており、close 判定のみ未実施である
+- implementation sync、formal review、`PRODUCTION_BASE_URL` / `PRODUCTION_SMOKE_PATHS` の環境投入、Issue 38 close は完了している
 - DNS provider account detail、automatic rollback、emergency override depth は後続 issue の対象に残る
 
 ## Dependencies
