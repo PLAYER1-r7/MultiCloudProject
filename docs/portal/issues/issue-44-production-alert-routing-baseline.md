@@ -101,12 +101,13 @@ production alert routing baseline を実運用レベルで固め、alert trigger
 - 2026-03-09 に Issue 44 を follow-up として起票し、initial task contract を GitHub Issue #44 へ同期した
 - 同日、monitoring draft、workflow README、production README を同期し、current production alert trigger set、notification owner baseline、first-response notification path、scope boundary を current operations baseline として整理した
 - formal review では existing production evidence path を起点に wording drift がないことを確認し、`portal-production-deploy` run URL、step summary、`portal-production-deployment-record` artifact が default notification route として一貫して参照されること、failed deploy、custom-domain reachability failure、smoke-path failure、certificate continuity fault が同じ owner path で扱われることを再確認した
+- 2026-03-09 に repository owner から close approval を受領し、Tasks・DoD 全 [x]・Final Review PASS を確認のうえ CLOSED とした
 
 ## Current Status
 
-- OPEN
+- CLOSED
 
-- implementation sync と formal review は完了しており、close approval は未実施である
+- implementation sync と formal review は完了しており、repository owner の close approval を受領して CLOSED とした
 - current production alert routing baseline は monitoring policy、workflow guidance、production operator memo に反映済みである
 
 ## Dependencies
