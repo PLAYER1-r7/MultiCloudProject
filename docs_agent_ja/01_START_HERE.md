@@ -58,3 +58,11 @@
 - 14-32 と PR 引き継ぎでは、`08_ESCALATION_AND_HANDOFF.md` の正規 Execution Record 形式を使う。
 - 変更後は必ず検証結果を残す。
 - `docs_agent/` と `docs_agent_ja/` の同期を維持する。
+
+## 現在のリポジトリ到達点
+
+- 2026-03-09 時点で Issue 46 まで完了している。
+- Issue 45 と Issue 46 はローカル issue 記録と GitHub Issue の両方でクローズ済みである。
+- 現在の production governance baseline は、external DNS を source of truth として維持し、current phase では Route 53 へ移行せず、DNS automation は operator-assist only に限定する判断まで固定済みである。
+- 次の候補スコープは GCP baseline design だが、別チャットで新しい task contract から開始する。
+- 次の follow-up に入る前に、まず `08_ESCALATION_AND_HANDOFF.md` の current project handoff record を読み、その後 `docs/portal/issues/` の最新 issue 記録を確認する。

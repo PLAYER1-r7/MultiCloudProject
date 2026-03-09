@@ -58,3 +58,11 @@ Use this incident entry rule when choosing the first document:
 - Use the canonical execution record in `08_ESCALATION_AND_HANDOFF.md` for docs 14-32 and PR handoff packaging.
 - Treat tests, rollback, and handoff as part of delivery.
 - Keep `docs_agent/` and `docs_agent_ja/` synchronized.
+
+## Current Repository Checkpoint
+
+- Completed through Issue 46 as of 2026-03-09.
+- Issues 45 and 46 are closed and synchronized to local issue records plus GitHub Issues.
+- Current production governance baseline is fixed around external DNS source of truth, Route 53 non-adoption in the current phase, and operator-assist-only DNS automation.
+- The next candidate scope is GCP baseline design, but it should start in a separate chat with a new task contract.
+- Before starting the next follow-up, read `08_ESCALATION_AND_HANDOFF.md` for the current project handoff record and then inspect the latest issue records under `docs/portal/issues/`.

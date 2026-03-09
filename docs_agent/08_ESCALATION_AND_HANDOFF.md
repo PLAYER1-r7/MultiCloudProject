@@ -77,3 +77,15 @@ Evidence: markdown review completed; /sns/ staging smoke checklist recorded for 
 Risks or blockers: staging /sns/ smoke validation still needs confirmation from the handoff owner
 Next action: sns-reviewer checks the /sns/ route behavior and handoff package before sns-approval-owner decides on deploy-sns-aws.yml
 ```
+
+## Current Project Handoff Record
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject portal governance checkpoint after closing Issues 45 and 46
+Outcome: Handoff ready
+Actions taken: closed Issue 45 for the production alert delivery baseline and Issue 46 for the external DNS automation / Route 53 migration judgment; synchronized the local issue records, shared governance docs, and GitHub Issue bodies; fixed the current production governance wording around external DNS source of truth, Route 53 non-adoption in the current phase, and operator-assist-only DNS automation
+Evidence: local issue records for Issues 45 and 46 are marked CLOSED; GitHub Issues 45 and 46 are closed; architecture, IaC, workflow README, and production README contain the synchronized governance wording added by Issue 46
+Risks or blockers: GCP baseline design, deeper incident runbook follow-up, and alert product implementation remain intentionally out of scope and should not be mixed into the completed DNS governance decision
+Next action: start the next chat from a fresh task contract, read the latest records under docs/portal/issues/, and treat GCP baseline design as a separate follow-up scope rather than reopening the closed DNS governance work
+```
