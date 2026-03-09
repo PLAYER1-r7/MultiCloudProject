@@ -15,6 +15,14 @@ locals {
     "Referrer-Policy: strict-origin-when-cross-origin",
     "Strict-Transport-Security: max-age=31536000; includeSubDomains"
   ]
+
+  spa_fallback_routes = [
+    "/overview",
+    "/guidance",
+    "/platform",
+    "/delivery",
+    "/operations"
+  ]
 }
 
 resource "google_storage_bucket" "site" {
@@ -90,6 +98,26 @@ resource "google_compute_url_map" "https" {
   path_matcher {
     name            = "all-routes"
     default_service = google_compute_backend_bucket.site.id
+
+    dynamic "route_rules" {
+      for_each = local.spa_fallback_routes
+      iterator = route
+
+      content {
+        priority = 1000 + route.key
+        service  = google_compute_backend_bucket.site.id
+
+        match_rules {
+          full_path_match = route.value
+        }
+
+        route_action {
+          url_rewrite {
+            path_prefix_rewrite = "/index.html"
+          }
+        }
+      }
+    }
   }
 }
 

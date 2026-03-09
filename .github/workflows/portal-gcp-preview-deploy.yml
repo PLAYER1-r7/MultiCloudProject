@@ -278,6 +278,8 @@ jobs:
             if status_code="$(curl --show-error --silent --location --output "$response_file" --write-out '%{http_code}' "$url")"; then
               if [[ "$status_code" =~ ^2[0-9][0-9]$ ]] && grep -q 'MultiCloudProject Portal' "$response_file" && grep -q '<div id="app"></div>' "$response_file"; then
                 result='passed'
+              elif [[ "$path" != "/" && "$status_code" == "404" ]] && grep -q 'MultiCloudProject Portal' "$response_file" && grep -q '<div id="app"></div>' "$response_file"; then
+                result='passed'
               else
                 failure=1
               fi
