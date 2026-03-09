@@ -1,0 +1,9 @@
+project_id                               = "your-gcp-project-id"
+google_region                            = "asia-northeast1"
+preview_hostname                         = "preview.gcp.ashnova.jp"
+resource_name_suffix                     = "preview"
+selected_environment_entrypoint_reference = "infra/environments/gcp-preview"
+
+common_labels = {
+  owner = "repository-owner"
+}

@@ -5,6 +5,7 @@ on:
     paths:
       - apps/portal-web/**
       - .github/workflows/portal-build.yml
+      - .github/workflows/portal-gcp-preview-deploy.yml
       - .github/workflows/portal-staging-deploy.yml
       - .github/workflows/portal-production-deploy.yml
   push:
@@ -13,6 +14,7 @@ on:
     paths:
       - apps/portal-web/**
       - .github/workflows/portal-build.yml
+      - .github/workflows/portal-gcp-preview-deploy.yml
       - .github/workflows/portal-staging-deploy.yml
       - .github/workflows/portal-production-deploy.yml
 

@@ -1,0 +1,311 @@
+name: portal-gcp-preview-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_build_run_id:
+        description: "portal-build run id for the preview deployment candidate"
+        required: true
+        type: string
+      source_build_commit_sha:
+        description: "Commit SHA selected for GCP preview deployment"
+        required: true
+        type: string
+      resource_execution_reference:
+        description: "Path to the committed GCP preview resource execution evidence markdown file"
+        required: true
+        type: string
+      verification_owner:
+        description: "Owner responsible for post-deploy preview verification"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: portal-gcp-preview-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    environment: gcp-preview
+    env:
+      BUILD_ARTIFACT_NAME: portal-web-dist
+      BUILD_EVIDENCE_ARTIFACT_NAME: portal-build-evidence
+      DEPLOYMENT_RECORD_ARTIFACT_NAME: portal-gcp-preview-deployment-record
+      GCP_PREVIEW_PROJECT_ID: ${{ vars.GCP_PREVIEW_PROJECT_ID }}
+      GCP_PREVIEW_SITE_BUCKET_NAME: ${{ vars.GCP_PREVIEW_SITE_BUCKET_NAME }}
+      GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL: ${{ vars.GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL }}
+      GCP_PREVIEW_BASE_URL: ${{ vars.GCP_PREVIEW_BASE_URL }}
+      GCP_PREVIEW_SMOKE_PATHS: ${{ vars.GCP_PREVIEW_SMOKE_PATHS != '' && vars.GCP_PREVIEW_SMOKE_PATHS || '/,/overview,/guidance' }}
+      GCP_PREVIEW_URL_MAP_NAME: ${{ vars.GCP_PREVIEW_URL_MAP_NAME }}
+    steps:
+      - name: Verify build provenance
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const buildRunId = Number('${{ inputs.source_build_run_id }}');
+            const requestedCommit = '${{ inputs.source_build_commit_sha }}';
+
+            const { data: buildRun } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: buildRunId,
+            });
+
+            if (buildRun.name !== 'portal-build' || buildRun.conclusion !== 'success') {
+              core.setFailed(`source_build_run_id must reference a successful portal-build run. got ${buildRun.name} / ${buildRun.conclusion}`);
+              return;
+            }
+
+            if (buildRun.head_branch !== 'main') {
+              core.setFailed('GCP preview deployment only accepts reviewed portal-build runs from main');
+              return;
+            }
+
+            if (buildRun.head_sha !== requestedCommit) {
+              core.setFailed(`source_build_commit_sha does not match source_build_run_id. expected ${buildRun.head_sha}, got ${requestedCommit}`);
+            }
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifact from portal-build
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_build_run_id }}
+          name: ${{ env.BUILD_ARTIFACT_NAME }}
+          path: portal-dist
+
+      - name: Download build evidence artifact from portal-build
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.source_build_run_id }}
+          name: ${{ env.BUILD_EVIDENCE_ARTIFACT_NAME }}
+          path: build-evidence
+
+      - name: Prepare source build evidence snapshot
+        run: cp build-evidence/portal-build-evidence.md gcp-preview-source-build-evidence.md
+
+      - name: Resolve resource execution reference
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          reference_path='${{ inputs.resource_execution_reference }}'
+          test -n "$reference_path"
+          test -f "$reference_path"
+
+          extract_value() {
+            local label="$1"
+            local value
+            value="$(grep -F -m1 -- "- ${label}:" "$reference_path" | sed -E "s/^- ${label}: //")"
+            printf '%s' "$value"
+          }
+
+          execution_status="$(extract_value 'Resource execution status')"
+          preview_public_url="$(extract_value 'Preview public URL')"
+          reviewed_target_reference="$(extract_value 'Reviewed target reference')"
+          certificate_related_reference="$(extract_value 'Certificate-related reference')"
+          selected_environment_entrypoint_reference="$(extract_value 'Selected environment entrypoint reference')"
+
+          test -n "$preview_public_url"
+          test -n "$reviewed_target_reference"
+          test -n "$certificate_related_reference"
+          test -n "$selected_environment_entrypoint_reference"
+
+          case "$execution_status" in
+            ready|completed)
+              ;;
+            blocked\ pending\ state|blocked-pending-state|blocked_pending_state)
+              echo "resource_execution_reference indicates blocked pending state; deploy must fail closed"
+              exit 1
+              ;;
+            *)
+              echo "resource_execution_reference must include '- Resource execution status: ready' or 'completed'"
+              exit 1
+              ;;
+          esac
+
+          cp "$reference_path" gcp-preview-resource-execution-reference.md
+
+          {
+            echo "RESOURCE_EXECUTION_REFERENCE=$reference_path"
+            echo "PREVIEW_PUBLIC_URL=$preview_public_url"
+            echo "REVIEWED_TARGET_REFERENCE=$reviewed_target_reference"
+            echo "CERTIFICATE_RELATED_REFERENCE=$certificate_related_reference"
+            echo "SELECTED_ENVIRONMENT_ENTRYPOINT_REFERENCE=$selected_environment_entrypoint_reference"
+          } >> "$GITHUB_ENV"
+
+      - name: Validate GCP preview settings
+        run: |
+          test -f portal-dist/index.html
+          test -f gcp-preview-source-build-evidence.md
+          test -f gcp-preview-resource-execution-reference.md
+          test -n "$GCP_PREVIEW_PROJECT_ID"
+          test -n "$GCP_PREVIEW_SITE_BUCKET_NAME"
+          test -n "$GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER"
+          test -n "$GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL"
+
+      - name: Show deploy inputs
+        run: |
+          release_owner='${{ github.repository_owner }}'
+          deploy_operator='${{ github.triggering_actor != '' && github.triggering_actor || github.actor }}'
+          verification_owner='${{ inputs.verification_owner != '' && inputs.verification_owner || github.repository_owner }}'
+          notification_route='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          echo "project_id=$GCP_PREVIEW_PROJECT_ID"
+          echo "bucket=$GCP_PREVIEW_SITE_BUCKET_NAME"
+          echo "base_url=${GCP_PREVIEW_BASE_URL:-<none>}"
+          echo "url_map_name=${GCP_PREVIEW_URL_MAP_NAME:-<none>}"
+          echo "smoke_paths=$GCP_PREVIEW_SMOKE_PATHS"
+          echo "release_owner=$release_owner"
+          echo "deploy_operator=$deploy_operator"
+          echo "verification_owner=$verification_owner"
+          echo "resource_execution_reference=$RESOURCE_EXECUTION_REFERENCE"
+          echo "preview_public_url=$PREVIEW_PUBLIC_URL"
+          echo "reviewed_target_reference=$REVIEWED_TARGET_REFERENCE"
+          echo "certificate_related_reference=$CERTIFICATE_RELATED_REFERENCE"
+          echo "notification_route=$notification_route"
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL }}
+          project_id: ${{ env.GCP_PREVIEW_PROJECT_ID }}
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Sync portal artifact to GCS bucket
+        run: |
+          gcloud storage rsync portal-dist "gs://${GCP_PREVIEW_SITE_BUCKET_NAME}" \
+            --recursive \
+            --delete-unmatched-destination-objects
+
+      - name: Invalidate Cloud CDN cache
+        if: env.GCP_PREVIEW_URL_MAP_NAME != ''
+        run: |
+          gcloud compute url-maps invalidate-cdn-cache "$GCP_PREVIEW_URL_MAP_NAME" \
+            --path '/*' \
+            --global \
+            --async
+
+      - name: Wait for edge propagation window
+        if: env.GCP_PREVIEW_BASE_URL != ''
+        run: sleep 15
+
+      - name: Initialize deployment record
+        if: always()
+        run: |
+          release_owner='${{ github.repository_owner }}'
+          deploy_operator='${{ github.triggering_actor != '' && github.triggering_actor || github.actor }}'
+          verification_owner='${{ inputs.verification_owner != '' && inputs.verification_owner || github.repository_owner }}'
+          notification_route='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          cat > gcp-preview-deployment-record.md <<EOF
+          ## GCP preview deployment record
+
+          - Workflow: portal-gcp-preview-deploy
+          - Run ID: ${{ github.run_id }}
+          - Run attempt: ${{ github.run_attempt }}
+          - Event: ${{ github.event_name }}
+          - Project ID: ${GCP_PREVIEW_PROJECT_ID:-not configured}
+          - Preview bucket: ${GCP_PREVIEW_SITE_BUCKET_NAME:-not configured}
+          - Preview public URL: ${PREVIEW_PUBLIC_URL:-not configured}
+          - Reviewed target reference: ${REVIEWED_TARGET_REFERENCE:-not configured}
+          - Certificate-related reference: ${CERTIFICATE_RELATED_REFERENCE:-not configured}
+          - Selected environment entrypoint reference: ${SELECTED_ENVIRONMENT_ENTRYPOINT_REFERENCE:-not configured}
+          - Resource execution reference: ${RESOURCE_EXECUTION_REFERENCE:-not configured}
+          - Release owner: ${release_owner}
+          - Deploy operator: ${deploy_operator}
+          - Verification owner: ${verification_owner}
+          - Notification route: ${notification_route}
+          - Source build run ID: ${{ inputs.source_build_run_id }}
+          - Source build commit SHA: ${{ inputs.source_build_commit_sha }}
+          - Source build run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.source_build_run_id }}
+
+          ### Source build evidence snapshot
+
+          EOF
+          cat gcp-preview-source-build-evidence.md >> gcp-preview-deployment-record.md
+          cat <<EOF >> gcp-preview-deployment-record.md
+
+          ### Resource execution reference snapshot
+
+          EOF
+          cat gcp-preview-resource-execution-reference.md >> gcp-preview-deployment-record.md
+          cat <<EOF >> gcp-preview-deployment-record.md
+
+          ### Reachability results
+
+          | Path | HTTP status | Result | Expected marker |
+          | --- | --- | --- | --- |
+          EOF
+
+      - name: Run post-deploy smoke checks
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${GCP_PREVIEW_BASE_URL:-}" ]]; then
+            echo "| skipped | n/a | skipped | GCP_PREVIEW_BASE_URL not configured |" >> gcp-preview-deployment-record.md
+            exit 0
+          fi
+
+          IFS=',' read -r -a paths <<< "$GCP_PREVIEW_SMOKE_PATHS"
+          failure=0
+          for raw_path in "${paths[@]}"; do
+            path="${raw_path//[[:space:]]/}"
+            [[ -z "$path" ]] && continue
+            url="${GCP_PREVIEW_BASE_URL%/}${path}"
+            expected='SPA shell markers: MultiCloudProject Portal + <div id="app"></div>'
+            response_file="$(mktemp)"
+            status_code='curl-failed'
+            result='failed'
+            if status_code="$(curl --show-error --silent --location --output "$response_file" --write-out '%{http_code}' "$url")"; then
+              if [[ "$status_code" =~ ^2[0-9][0-9]$ ]] && grep -q 'MultiCloudProject Portal' "$response_file" && grep -q '<div id="app"></div>' "$response_file"; then
+                result='passed'
+              else
+                failure=1
+              fi
+            else
+              failure=1
+            fi
+            echo "| $path | $status_code | $result | $expected |" >> gcp-preview-deployment-record.md
+            rm -f "$response_file"
+          done
+
+          echo "" >> gcp-preview-deployment-record.md
+          echo "Owner note: release owner defaults to repository owner, deploy operator defaults to the triggering actor, and verification owner defaults to repository owner unless explicitly overridden at dispatch time." >> gcp-preview-deployment-record.md
+
+          exit "$failure"
+
+      - name: Upload GCP preview deployment record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.DEPLOYMENT_RECORD_ARTIFACT_NAME }}
+          path: gcp-preview-deployment-record.md
+
+      - name: Record deployment summary
+        if: always()
+        run: |
+          {
+            echo "## GCP preview deployment summary"
+            echo "- Source build run ID: ${{ inputs.source_build_run_id }}"
+            echo "- Source build commit SHA: ${{ inputs.source_build_commit_sha }}"
+            echo "- Resource execution reference: ${RESOURCE_EXECUTION_REFERENCE}"
+            echo "- Preview public URL: ${PREVIEW_PUBLIC_URL}"
+            echo "- Reviewed target reference: ${REVIEWED_TARGET_REFERENCE}"
+            echo "- Certificate-related reference: ${CERTIFICATE_RELATED_REFERENCE}"
+            echo "- Deployment record artifact: ${DEPLOYMENT_RECORD_ARTIFACT_NAME}"
+            echo ""
+            cat gcp-preview-deployment-record.md
+          } >> "$GITHUB_STEP_SUMMARY"

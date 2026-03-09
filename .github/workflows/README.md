@@ -19,6 +19,18 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - Build workflow:
   - no deployment secrets required
   - emits `portal-web-dist` and `portal-build-evidence` artifacts with a 14-day retention baseline
+- GCP preview deploy workflow:
+  - required variable `GCP_PREVIEW_PROJECT_ID`
+  - required variable `GCP_PREVIEW_SITE_BUCKET_NAME`
+  - required variable `GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER`
+  - required variable `GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL`
+  - optional variable `GCP_PREVIEW_BASE_URL`
+  - optional variable `GCP_PREVIEW_SMOKE_PATHS`
+  - optional variable `GCP_PREVIEW_URL_MAP_NAME`
+  - required dispatch input `source_build_run_id`
+  - required dispatch input `source_build_commit_sha`
+  - required dispatch input `resource_execution_reference`
+  - optional dispatch input `verification_owner`
 - Staging deploy workflow:
   - secret `AWS_ROLE_TO_ASSUME_STAGING`
   - variable `STAGING_AWS_REGION`
@@ -49,6 +61,12 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 
 ## Post-Deploy Check Direction
 
+- If `GCP_PREVIEW_BASE_URL` is set, the GCP preview deploy workflow performs smoke checks after the artifact sync
+- Default GCP preview smoke paths are `/`, `/overview`, and `/guidance`
+- Cloud CDN invalidation is optional and only runs when `GCP_PREVIEW_URL_MAP_NAME` is provided
+- The GCP preview workflow writes a `portal-gcp-preview-deployment-record` artifact and copies the same evidence into the step summary for operator review
+- GCP preview deploy requires a committed markdown file referenced by `resource_execution_reference` that includes these labels: `Resource execution status`, `Preview public URL`, `Reviewed target reference`, `Certificate-related reference`, and `Selected environment entrypoint reference`
+- The GCP preview workflow fails closed when the referenced resource execution file is missing, missing required labels, or reports `blocked pending state`
 - If `STAGING_BASE_URL` is set, the staging deploy workflow performs smoke checks after sync
 - Default smoke paths are `/`, `/overview`, and `/guidance`
 - CloudFront invalidation is optional and only runs when a distribution id is provided
