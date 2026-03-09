@@ -78,7 +78,7 @@ production rollout implementation baseline を定義し、production resource wi
 - production rollout baseline は dedicated production module wiring と manual approval-gated workflow に限定し、external DNS cutover 実施、certificate issuance 実行、自動 rollback は本 issue に含めていない
 - production promotion evidence は source build evidence、staging verification evidence、rollback target reference、post-deploy verification owner を同じ production deployment record に集約する形で整理し、失敗した staging run や commit 不一致の build/staging run を promotion source として使えないようにした
 - provider-specific 実装は Terraform entrypoint と workflow internals に閉じ込め、release evidence、smoke paths、verification handoff wording は app-level review surface として維持している
-- GitHub production environment は作成済みで、required variable の `PRODUCTION_AWS_REGION` と `PRODUCTION_SITE_BUCKET_NAME` は投入済みである。初回 production 実行前の残件は sensitive value である `AWS_ROLE_TO_ASSUME_PRODUCTION` secret の設定に限定される
+- GitHub production environment には required variable の `PRODUCTION_AWS_REGION` と `PRODUCTION_SITE_BUCKET_NAME`、required secret の `AWS_ROLE_TO_ASSUME_PRODUCTION` を投入済みであり、workflow の必須 environment contract は充足している
 
 ## Spot Check Evidence
 
@@ -112,12 +112,12 @@ For Issue 36 final review, the local issue record is the primary evidence source
 ## Final Review Result
 
 - PASS: production rollout implementation baseline は production resource wiring、approval-gated workflow、promotion evidence path、post-deploy verification handoff を repo 上で一貫して示しており、formal review 時点で blocking finding はない
-- FOLLOW-UP: 初回 production 実行には GitHub environment secret `AWS_ROLE_TO_ASSUME_PRODUCTION` の投入がまだ必要である。これは credential 値を伴う運用設定であり、本 issue の code baseline 自体の不整合ではない
+- NOTE: formal review 時点で残っていた GitHub environment secret `AWS_ROLE_TO_ASSUME_PRODUCTION` は review 後フォローアップで投入済みであり、production workflow の必須実行前提は満たされている
 
 ## Process Review Notes
 
 - 2026-03-09 formal review では [infra/environments/production/main.tf](infra/environments/production/main.tf)、[infra/environments/production/outputs.tf](infra/environments/production/outputs.tf)、[.github/workflows/portal-production-deploy.yml](.github/workflows/portal-production-deploy.yml)、[infra/environments/production/README.md](infra/environments/production/README.md) を再確認し、production rollout baseline が Issue 36 の scope どおりに固定されていることを確認した
-- GitHub 側では `production` environment を作成し、`PRODUCTION_AWS_REGION=ap-northeast-1` と `PRODUCTION_SITE_BUCKET_NAME=multicloudproject-portal-production-web` を投入済みである。optional variable は未投入でも workflow contract 上は非必須であり、required secret `AWS_ROLE_TO_ASSUME_PRODUCTION` は owner-managed follow-up として残す
+- GitHub 側では `production` environment を作成し、`PRODUCTION_AWS_REGION=ap-northeast-1`、`PRODUCTION_SITE_BUCKET_NAME=multicloudproject-portal-production-web`、`AWS_ROLE_TO_ASSUME_PRODUCTION=arn:aws:iam::278280499340:role/GitHubActionsMultiCloudProjectProductionDeploy` を投入済みである。role trust policy は `repo:PLAYER1-r7/MultiCloudProject:environment:production` に限定し、inline policy は production bucket と CloudFront invalidation に必要な最小権限へ絞っている
 - Published evidence commit は `2887c0e` であり、formal review 記録の更新と issue body sync はこの review state を明示するための追補である
 
 ## Current Status
@@ -125,7 +125,7 @@ For Issue 36 final review, the local issue record is the primary evidence source
 - OPEN
 
 - production rollout implementation baseline は production resource wiring、approval-gated deploy workflow、promotion evidence path、post-deploy verification handoff を含む current execution path として同期済みである
-- implementation sync と formal review は完了しており、close 判定と `AWS_ROLE_TO_ASSUME_PRODUCTION` secret の投入は未実施である
+- implementation sync、formal review、production workflow の必須 environment contract 投入は完了しており、close 判定のみ未実施である
 - external DNS cutover execution、certificate issuance execution、自動 rollback、incident runbook 全面整備 は後続 issue の対象に残る
 
 ## Dependencies
