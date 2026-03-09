@@ -106,6 +106,7 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 - formal review では ACM describe-certificate が certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` について `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`NotAfter=2026-09-06T23:59:59+00:00`、`ValidationStatus=SUCCESS`、`InUseBy=arn:aws:cloudfront::278280499340:distribution/E34CI3F0M5904O` を返すこと、CloudFront `E34CI3F0M5904O` が alias `www.aws.ashnova.jp` と同一 ACM certificate ARN を保持すること、`https://www.aws.ashnova.jp` が HTTP 200 を返し、`/guidance` が SPA shell を返すこと、production deploy run `22839461795` に `portal-production-deployment-record` artifact が存在することを live state で再確認した
 - 同 review で validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` の public DNS 再確認を行ったところ、`https://dns.google/resolve?...` と `https://cloudflare-dns.com/dns-query?...` の双方が `Status=3` を返し、issue と operator memo が retained state として前提にしている validation CNAME を public resolver から確認できなかった
 - repository owner による external DNS provider での CNAME 登録後に再確認したが、`dns.google` と `cloudflare-dns.com` はなお同じ validation CNAME に対して `Status=3` を返し、公開 DNS からは反映を確認できていない。`www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net` の production CNAME は引き続き正常である
+- 追加の再確認では `cloudflare-dns.com` と `dns.google` の `cd=1` で validation CNAME が `_490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws` を返した一方、通常の `dns.google` は同じ名前に対してなお `Status=3` を返したため、完全な未反映ではなく resolver validation 差分が残っている状態と判断した
 
 ## External DNS Action Needed
 
