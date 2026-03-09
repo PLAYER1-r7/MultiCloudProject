@@ -46,6 +46,22 @@ Define the minimum monitoring and alerting policy needed so the first release ca
 - Static asset delivery integrity for the main experience
 - Basic confirmation that the expected public route responds after release
 
+## Current Production Monitoring Baseline
+
+- The current production monitoring baseline should reuse the evidence already emitted by `portal-production-deploy` instead of introducing a separate monitoring stack before the response path is agreed
+- The first-response route should be the production deploy run URL, the step summary, and the `portal-production-deployment-record` artifact kept on the same workflow path as promotion
+- Production health confirmation should start with `https://www.aws.ashnova.jp` plus smoke paths `/`, `/overview`, and `/guidance`, because these are the current public routes and the workflow already records route-by-route HTTP results for them
+- CloudFront distribution state and external DNS resolution are supporting diagnostics, not the primary health signal; user-facing reachability and reviewed deploy evidence remain the declaration baseline
+- Verification ownership should stay explicit on the production deploy record so the small team can tell who is expected to confirm restoration before incident close
+
+## First-Response Triage Direction
+
+- Treat failed `portal-production-deploy`, custom-domain reachability failure, or route-level smoke failure as the primary production monitoring signals for the first release
+- Use the production deploy record together with the linked build and staging evidence to decide whether the fault is promotion-related, rollback-related, or external to the reviewed artifact path
+- Distinguish artifact restore needs from DNS propagation wait and CloudFront propagation wait before escalating to rollback or external DNS change
+- Keep alert routing tied to the operator path that can actually respond; do not enable broader alert tooling until the response owner and channel are recorded tightly enough
+- Keep 24x7 on-call design, dashboard depth, SLO/SLI thresholds, and provider-specific alert products outside the current first-release monitoring baseline
+
 ## Decision Statement
 
 The first release should implement lightweight monitoring focused on reachability, deploy success, and user-facing health, with alerts limited to failures the team is prepared to act on.

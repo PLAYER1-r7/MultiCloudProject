@@ -78,6 +78,14 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - Post-rollback verification must confirm `https://www.aws.ashnova.jp` reachability plus smoke paths `/`, `/overview`, and `/guidance` before service restoration is declared complete
 - External DNS reversal detail, automation depth, and incident-commander process remain outside the current workflow contract
 
+## Production Monitoring Follow-Up
+
+- The current production first-response route is the `portal-production-deploy` run URL together with the step summary and the `portal-production-deployment-record` artifact emitted by the same run
+- `portal-production-deploy` already records release owner, deploy operator, verification owner, source build run, staging verification run, rollback target reference, and route-by-route reachability results for `/`, `/overview`, and `/guidance`
+- Production monitoring review should start with `https://www.aws.ashnova.jp` reachability and the recorded smoke-path results before falling back to CloudFront state or external DNS diagnostics
+- CloudFront distribution status and external DNS resolution are supporting diagnostics used to split propagation delay from artifact-path failure; they are not a substitute for the reviewed custom-domain check
+- External alert tooling, broader notification integrations, and 24x7 on-call process remain outside the current workflow contract until response ownership is recorded more tightly
+
 ## Production Readiness Gate
 
 - Production automation remains blocked until the production design gate is recorded tightly enough to fail closed instead of relying on operator memory

@@ -100,3 +100,32 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Confirm the current custom-domain certificate is still valid for `www.aws.ashnova.jp`
 - Confirm the production deploy run summary and `portal-production-deployment-record` artifact are attached to the rollback evidence path
 - Confirm the selected rollback target artifact, staging verification run, and production restore run are all recorded together before closing the incident
+
+## Current Production Monitoring Snapshot
+
+- Current custom-domain monitoring target: `https://www.aws.ashnova.jp`
+- Current primary monitoring evidence path: production deploy run `22839461795`, its step summary, and the `portal-production-deployment-record` artifact
+- Current supporting promotion evidence path: build run `22839426762`, staging verification run `22839434387`, and the linked `portal-build-evidence` plus `portal-staging-monitoring-record` artifacts
+- Current route health baseline: `/`, `/overview`, and `/guidance` must return the SPA shell markers on the custom-domain path
+- Current owner baseline: release owner is the repository owner, deploy operator is the triggering actor, and verification owner is the dispatch input or repository owner default recorded on the deploy run
+
+## Production Monitoring First-Response Sequence
+
+- Confirm whether the signal is a failed production deploy run, a custom-domain reachability failure, or a route-level smoke failure recorded on the production deployment record
+- Open the latest reviewed `portal-production-deploy` run first and inspect the step summary plus `portal-production-deployment-record` before using secondary diagnostics
+- Compare the production record with the linked build and staging evidence to decide whether the issue started during promotion or after the artifact was already known-good
+- Use CloudFront distribution state and external DNS resolution only to distinguish propagation or edge-state delay from artifact-path failure on the custom domain
+- Escalate to rollback readiness only after the first-response evidence shows the current production artifact path is not recovering through normal propagation windows
+
+## Production Monitoring Verification Checklist
+
+- Confirm the latest reviewed `portal-production-deploy` run URL is recorded in the operator path for the incident or follow-up
+- Confirm `portal-production-deployment-record` exists and includes reachability results for `/`, `/overview`, and `/guidance`
+- Confirm `https://www.aws.ashnova.jp` returns HTTP 200 and the SPA shell for the current incident check
+- Confirm the verification owner and notification route on the production deploy record are still the intended first-response path
+- Confirm any use of CloudFront state or external DNS diagnostics is recorded as supporting evidence rather than the sole declaration of service health
+
+## Monitoring Scope Boundary
+
+- This repository does not yet treat external alert products, 24x7 on-call staffing, dashboard depth, or numeric SLO/SLI thresholds as part of the first production monitoring baseline
+- The current production monitoring baseline is limited to operator-facing deploy evidence, custom-domain reachability, smoke-path verification, and supporting distribution or DNS diagnostics
