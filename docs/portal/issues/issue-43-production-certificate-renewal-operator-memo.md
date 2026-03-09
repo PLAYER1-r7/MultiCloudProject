@@ -96,9 +96,8 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 
 ## Final Review Result
 
-- BLOCKED: wording sync 自体は整っているが、公開 resolver の live state では validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` が `dns.google` と `cloudflare-dns.com` の双方で `Status=3` を返しており、issue / operator memo が前提にしている「retained production state として外部から再確認できる validation CNAME」が現在の public DNS では確認できない
-- NOTE: ACM describe-certificate はなお `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`ValidationStatus=SUCCESS` を返し、CloudFront distribution `E34CI3F0M5904O` には reviewed ACM certificate ARN と alias `www.aws.ashnova.jp` が attach されたままであり、custom-domain HTTPS も 200 と SPA shell を返しているため、現在の user-facing path は継続している
-- REQUIRED FOLLOW-UP: external DNS 側で validation CNAME の現況を確認し、public DNS から再確認可能な retained state に戻すか、もしくは current operating model が public re-resolution を前提にしないことを根拠付きで整理し直す必要がある
+- PASS: workflow README、production README、monitoring policy、rollback policy、issue record の wording sync は整合しており、ACM renewal state、validation CNAME、CloudFront certificate attachment、custom-domain HTTPS、deployment artifact の live state も current operator memo と矛盾しない
+- NOTE: validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` は再チェック時点で `dns.google` と `cloudflare-dns.com` の通常問い合わせから `_490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws` を返しており、blocking finding だった public re-resolution mismatch は解消した
 
 ## Process Review Notes
 
@@ -107,6 +106,7 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 - 同 review で validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` の public DNS 再確認を行ったところ、`https://dns.google/resolve?...` と `https://cloudflare-dns.com/dns-query?...` の双方が `Status=3` を返し、issue と operator memo が retained state として前提にしている validation CNAME を public resolver から確認できなかった
 - repository owner による external DNS provider での CNAME 登録後に再確認したが、`dns.google` と `cloudflare-dns.com` はなお同じ validation CNAME に対して `Status=3` を返し、公開 DNS からは反映を確認できていない。`www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net` の production CNAME は引き続き正常である
 - 追加の再確認では `cloudflare-dns.com` と `dns.google` の `cd=1` で validation CNAME が `_490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws` を返した一方、通常の `dns.google` は同じ名前に対してなお `Status=3` を返したため、完全な未反映ではなく resolver validation 差分が残っている状態と判断した
+- その後の再チェックでは `dns.google` と `cloudflare-dns.com` の通常問い合わせがともに validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp -> _490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws` を返し、ACM describe-certificate も `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`ValidationStatus=SUCCESS` を維持し、`www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net`、custom-domain HTTPS 200、`/guidance` の SPA shell を再確認できたため、blocking finding を解消して formal review を PASS へ更新した
 
 ## External DNS Action Needed
 
@@ -119,5 +119,5 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 
 - OPEN
 
-- implementation sync は完了しているが、formal review は validation CNAME の public re-resolution mismatch により blocking finding ありの状態である
+- implementation sync と formal review は完了しており、close approval は未実施である
 - current production certificate renewal baseline の live state は issue record と operator memo に反映済みである
