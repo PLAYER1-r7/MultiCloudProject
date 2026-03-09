@@ -55,17 +55,17 @@ production rollback readiness を実運用レベルで固め、current rollback 
 
 ## Tasks
 
-- [ ] current production rollback target artifact と evidence path を固定する
-- [ ] operator restore sequence を production custom-domain 運用前提で整理する
-- [ ] post-rollback verification checklist を production 向けに具体化する
-- [ ] rollback readiness の根拠と非対象を issue 記録へ残す
+- [x] current production rollback target artifact と evidence path を固定する
+- [x] operator restore sequence を production custom-domain 運用前提で整理する
+- [x] post-rollback verification checklist を production 向けに具体化する
+- [x] rollback readiness の根拠と非対象を issue 記録へ残す
 
 ## Definition of Done
 
-- [ ] current production rollback target と参照 evidence が同じ文脈で読める
-- [ ] production rollback verification checklist が custom-domain reachability を含んでいる
-- [ ] operator-facing rollback readiness と DNS / automation 未決事項が分離されている
-- [ ] 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている
+- [x] current production rollback target と参照 evidence が同じ文脈で読める
+- [x] production rollback verification checklist が custom-domain reachability を含んでいる
+- [x] operator-facing rollback readiness と DNS / automation 未決事項が分離されている
+- [x] 本 issue ファイルが変更対象と検証方針を追跡できる状態になっている
 
 ## Initial Notes
 
@@ -73,9 +73,39 @@ production rollback readiness を実運用レベルで固め、current rollback 
 - production distribution は `E34CI3F0M5904O`、bucket は `multicloudproject-portal-production-web`、current custom-domain alias は `www.aws.ashnova.jp` である
 - Issue 35 は rollback target baseline を current decision として固定済みだが、実運用に使う rollback target record と verification checklist の current snapshot はこの follow-up で明示する
 
+## Implementation Notes
+
+- [docs/portal/16_ROLLBACK_POLICY_DRAFT.md](docs/portal/16_ROLLBACK_POLICY_DRAFT.md) に current production operations snapshot と recovery direction を追加し、current last known-good artifact、custom-domain path、restore sequence を policy wording として固定した
+- [.github/workflows/README.md](.github/workflows/README.md) に production rollback readiness section を追加し、production rollback target run ids、evidence path、post-rollback verification boundary を workflow-facing guidance として整理した
+- [infra/environments/production/README.md](infra/environments/production/README.md) に current production rollback snapshot、operator restore sequence、post-rollback verification checklist を追加し、custom-domain `https://www.aws.ashnova.jp` 前提の operator path を明文化した
+
+## Current Review Notes
+
+- current rollback target は「現在の本番が正常稼働しているので、次回変更に対する last known-good artifact が固定できた」という意味に限定し、rollback 実施済みであるとは扱っていない
+- rollback restore は fresh build 再生成ではなく、build run `22839426762`、staging run `22839434387`、production run `22839461795` を起点に同じ audited workflow path を再利用する方針へ固定した
+- DNS reversal detail、automatic rollback、incident command detail は本 issue に含めず、operator-facing rollback readiness の最小構成に限定している
+
+## Spot Check Evidence
+
+- policy wording: [docs/portal/16_ROLLBACK_POLICY_DRAFT.md](docs/portal/16_ROLLBACK_POLICY_DRAFT.md) は current production release と recovery direction を rollback policy の current snapshot として読める
+- workflow wording: [.github/workflows/README.md](.github/workflows/README.md) は production rollback target、run evidence path、custom-domain verification boundary を workflow guidance として保持している
+- environment wording: [infra/environments/production/README.md](infra/environments/production/README.md) は current rollback target、restore sequence、post-rollback verification checklist を同じ operator context で保持している
+- live evidence basis: build run `22839426762`、staging run `22839434387`、production run `22839461795`、current custom-domain `https://www.aws.ashnova.jp` browser verification が current rollback target record の根拠である
+
+## Final Review Result
+
+- PASS: current production rollback target artifact、operator restore sequence、post-rollback verification checklist、rollback evidence path が docs と operator README で整合しており、Issue 40 の scope では blocking finding はない
+- NOTE: DNS reversal detail、automatic rollback、incident runbook 全面整備はこの issue では扱わず、operator-managed follow-up として残している
+
+## Process Review Notes
+
+- 2026-03-09 に Issue 40 を follow-up として起票し、initial task contract を GitHub Issue #40 へ同期した
+- 同日、current production release evidence として build run `22839426762`、staging verification run `22839434387`、production deploy run `22839461795`、custom-domain browser verification を確認し、これを current last known-good artifact record として docs へ固定した
+- 同日、rollback policy、workflow README、production README を同期し、operator restore sequence と production post-rollback verification checklist を current operations baseline として整理した
+
 ## Current Status
 
 - OPEN
 
-- production rollback readiness を実運用レベルへ進める follow-up issue として起票した
-- current production release が確定したため、rollback target artifact と operator verification を production record に接続する段階へ入った
+- implementation sync は完了しており、formal review と close approval は未実施である
+- current production release が確定したため、rollback target artifact と operator verification は production record に接続済みである

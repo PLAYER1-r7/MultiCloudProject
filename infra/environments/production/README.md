@@ -75,3 +75,28 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - Set `PRODUCTION_BASE_URL` to the approved production custom-domain URL and `PRODUCTION_SMOKE_PATHS` to the release smoke list before custom-domain verification starts
 - Coordinate external DNS validation and custom-domain cutover as explicit operator-managed steps after the production artifact is published
 - Verify the production custom-domain reachability, smoke paths, and rollback readiness evidence after cutover, using the same review discipline as staging
+
+## Current Production Rollback Snapshot
+
+- Current last known-good artifact: build run `22839426762` for commit `f9b395393a1bacd221541c5437e60fe23a2da0c2`
+- Matching staging verification: run `22839434387`
+- Matching production deploy: run `22839461795`
+- Current custom-domain URL: `https://www.aws.ashnova.jp`
+- Current production bucket and distribution: `multicloudproject-portal-production-web` and `E34CI3F0M5904O`
+- Current rollback evidence path: build run URL, staging run URL, production deploy run URL, `portal-production-deployment-record` artifact, and repository owner browser verification note
+
+## Production Rollback Operator Sequence
+
+- Confirm the incident really requires artifact restore rather than DNS propagation wait, CloudFront propagation wait, or a smaller infrastructure correction
+- Select the last known-good build run id and matching staging verification run id from the current rollback snapshot or the latest verified production record
+- Re-dispatch `portal-production-deploy` with the selected known-good build run id, matching staging verification run id, and a rollback target reference that points to the same reviewed evidence path
+- Wait for production bucket sync and CloudFront invalidation to finish on the workflow path before checking the custom domain
+- Record the rollback operator, verification owner, run URL, and recovery reason in the same operator review path used for forward promotion
+
+## Production Post-Rollback Verification Checklist
+
+- Confirm `https://www.aws.ashnova.jp` returns HTTP 200
+- Confirm `/`, `/overview`, and `/guidance` return the SPA shell successfully
+- Confirm the current custom-domain certificate is still valid for `www.aws.ashnova.jp`
+- Confirm the production deploy run summary and `portal-production-deployment-record` artifact are attached to the rollback evidence path
+- Confirm the selected rollback target artifact, staging verification run, and production restore run are all recorded together before closing the incident

@@ -70,6 +70,14 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - The staging rollback verification checklist lives in [infra/environments/staging/README.md](../../infra/environments/staging/README.md) and should be reviewed in the same operator handoff as the deploy evidence
 - This repository does not treat production DNS cutover, production rollback automation, or state-locking resolution as part of the staging rollback readiness baseline
 
+## Production Rollback Readiness
+
+- The current production rollback target is the artifact promoted by successful build run `22839426762`, staging verification run `22839434387`, and production deploy run `22839461795`
+- Production rollback should reuse the same `portal-production-deploy` workflow with the selected known-good build and staging evidence rather than rebuilding a fresh artifact during the incident
+- Operator-facing production rollback evidence should stay attached to the production deploy run URL, the step summary, the `portal-production-deployment-record` artifact, and the matching staging and build evidence runs
+- Post-rollback verification must confirm `https://www.aws.ashnova.jp` reachability plus smoke paths `/`, `/overview`, and `/guidance` before service restoration is declared complete
+- External DNS reversal detail, automation depth, and incident-commander process remain outside the current workflow contract
+
 ## Production Readiness Gate
 
 - Production automation remains blocked until the production design gate is recorded tightly enough to fail closed instead of relying on operator memory

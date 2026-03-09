@@ -55,6 +55,20 @@ Define the minimum rollback policy needed so the first portal release can recove
 - Run a short post-rollback verification checklist
 - Record the incident and chosen recovery path
 
+## Current Production Operations Snapshot
+
+- The current production release is the portal artifact built in GitHub Actions run `22839426762`, staging-validated in run `22839434387`, and promoted by `portal-production-deploy` run `22839461795`
+- The current custom-domain path is `https://www.aws.ashnova.jp`, backed by production bucket `multicloudproject-portal-production-web` and CloudFront distribution `E34CI3F0M5904O`
+- For the next production change, this current release becomes the last known-good rollback target unless a newer release is promoted and verified successfully
+- Production rollback should re-dispatch the reviewed artifact through the same promotion path instead of rebuilding a fresh artifact during the incident
+
+## Current Production Recovery Direction
+
+- Select the last known-good production artifact by build run id, matching staging verification run id, production deploy run URL, and operator verification note
+- Re-run `portal-production-deploy` with the selected known-good build and staging evidence so bucket contents and CloudFront invalidation stay on the same audited path as forward promotion
+- Keep DNS reversal decisions separate from artifact restore; only change DNS when artifact restore cannot recover service on the current production distribution path
+- Treat service restoration as incomplete until custom-domain reachability, smoke paths `/`, `/overview`, and `/guidance`, and rollback evidence synchronization are all confirmed
+
 ## Decision Statement
 
 The first portal release should adopt a lightweight rollback policy centered on restoring the last known good application and infrastructure state quickly, with explicit delivery-path recovery steps and a mandatory post-rollback verification checklist.
