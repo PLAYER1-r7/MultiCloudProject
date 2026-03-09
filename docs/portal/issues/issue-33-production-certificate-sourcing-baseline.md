@@ -113,11 +113,12 @@ For Issue 33 final review, the local issue record is the primary evidence source
 
 ## Current Status
 
-- OPEN
+- CLOSED
 
 - certificate sourcing baseline は us-east-1 ACM public certificate と external DNS validation boundary を current decision として同期済みである
 - reviewed certificate ARN を production configuration に渡す責務境界は明記済みである
 - domain ownership、rollback target、production rollout implementation は後続 issue の対象に残る
+- Closed on 2026-03-09 after final review and CloudeSonnet follow-up wording alignment.
 
 ## Dependencies
 
