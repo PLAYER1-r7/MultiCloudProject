@@ -110,6 +110,13 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - Treat Google Public DNS resolution and custom-domain HTTPS verification as the minimum post-change evidence for external DNS operations; do not declare cutover complete from control-plane changes alone
 - DNS reversal remains a separate operator decision from artifact rollback and should only be used when the current production distribution path cannot recover service through artifact restore or normal propagation wait
 
+## External DNS Automation Judgment
+
+- Workflow support for DNS in the current phase is limited to operator-assist output: reviewed targets, evidence capture, handoff notes, and verification guidance may be emitted, but authoritative DNS writes must not be executed from the workflow contract
+- Route 53 is not a current workflow target for the production domain; the workflow should assume the source of truth remains external and that any migration would require a separate ownership and rollback redesign
+- If a future helper script or workflow step prepares DNS change material, it must point operators back to the same reviewed production evidence path and must not be treated as approval to execute live record changes automatically
+- Automatic DNS cutover, automatic reversal, and provider-credential-driven change batches remain outside the current workflow contract even if they would appear to reduce manual steps
+
 ## Production Certificate Renewal Memo
 
 - Production certificate renewal remains ACM-managed, but the operator must still record the reviewed certificate ARN, current `NotAfter`, `RenewalEligibility`, and DNS validation CNAME on the same review path as the custom-domain record

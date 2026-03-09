@@ -94,6 +94,20 @@ This directory is reserved for the production entrypoint of the portal delivery 
 - After reversal, verify public DNS resolution, custom-domain HTTPS, and the route smoke paths again before declaring user-facing recovery complete
 - Keep emergency override detail, provider account internals, and any DNS automation outside this memo; this section only fixes the minimum operator sequence and evidence path
 
+## External DNS Automation Judgment Snapshot
+
+- Current authoritative DNS source of truth: external DNS remains authoritative for `www.aws.ashnova.jp`; Route 53 is not adopted for the current production path
+- Current allowed automation boundary: helper automation may collect the reviewed CloudFront target, certificate references, TTL records, and public-resolution evidence, but it may not execute authoritative DNS writes on the live production name
+- Current disallowed automation boundary: Route 53 hosted-zone adoption, workflow-complete DNS record writes, and automatic cutover or reversal against the live domain remain outside the current production baseline
+- Current migration judgment: reconsider Route 53 only if ownership transfer, credential model, rollback sequence, and operator review path are redesigned together under a separate decision record
+
+## External DNS Automation Operator Direction
+
+- Use automation only to reduce transcription and evidence drift; do not let helper scripts or generated change plans become the approval boundary for live DNS changes
+- Keep the final DNS write under explicit human review with the same pre-change record, approver, and post-change verification path already required by the cutover memo
+- If any helper output conflicts with the reviewed production evidence path, treat the helper as stale and fall back to the manually reviewed values already recorded in the operator path
+- Do not treat Route 53 migration as an emergency shortcut during incidents; incident handling should continue on the current external DNS path unless a separate approved migration plan already exists
+
 ## Production Certificate Renewal Snapshot
 
 - Current production certificate ARN: `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487`

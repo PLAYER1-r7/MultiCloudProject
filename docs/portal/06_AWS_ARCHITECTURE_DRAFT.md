@@ -58,6 +58,13 @@ User
 - Backend assumption: treat guidance, contact direction, and operational notice as static-first content for the first release
   - reason: the current MVP scope does not validate a need for API-backed inquiry handling or server-side business processing
 
+## Current External DNS Governance Judgment
+
+- The current authoritative DNS source of truth remains outside AWS; Route 53 is still not adopted for the production custom-domain path in the current phase
+- Approved DNS automation in the current phase is limited to operator-assist functions such as collecting reviewed targets, preparing change records, and verifying public resolution after a human-approved change
+- Disallowed DNS automation includes workflow-complete authoritative record writes, Route 53 hosted-zone creation for the current production domain, and automatic cutover or reversal execution against the live source of truth
+- Route 53 migration should only be reconsidered if domain ownership, credential boundaries, rollback expectations, and operator review paths are intentionally redesigned together rather than as a narrow implementation shortcut
+
 ## Why This Fits The Current Plan
 
 - Aligns with the product definition baseline of a public entry portal

@@ -65,6 +65,7 @@ infra/
 ## Current Decision Status
 
 - The production domain baseline is an approved custom-domain path owned outside AWS, with external DNS remaining the primary source of truth and DNS record changes handled as operator-managed steps
+- The external DNS governance judgment is to keep authoritative DNS outside AWS for the current phase; production IaC may expose reviewed targets, validation values, and evidence surfaces, but it must not create Route 53 authority or write live DNS records for the current domain
 - Certificate sourcing baseline is an AWS-managed ACM public certificate in us-east-1 for the approved CloudFront custom-domain path, with external DNS validation CNAMEs applied outside AWS and the reviewed certificate ARN passed into production configuration explicitly
 - Production cutover execution baseline records the operator sequence to apply production aliases and reviewed certificate ARN, set `PRODUCTION_BASE_URL` and `PRODUCTION_SMOKE_PATHS`, coordinate DNS cutover, and verify the custom-domain path after promotion
 - Rollback target baseline is the last known-good artifact already validated through the staging delivery path, with rollback evidence and post-rollback verification kept in the same operator review path
@@ -77,6 +78,7 @@ infra/
 
 - Avoid manual drift by treating console changes as exceptional and back-porting them into code if they occur
 - Review OpenTofu changes before apply
+- Do not use OpenTofu or adjacent automation in this repository to perform authoritative DNS writes for the current production domain; IaC may document and surface reviewed values, but live DNS changes remain outside the apply contract
 - Do not apply production aliases or a reviewed `acm_certificate_arn` until the external DNS validation record plan, cutover owner, and rollback target evidence are recorded together
 - Do not treat `PRODUCTION_BASE_URL` or `PRODUCTION_SMOKE_PATHS` as optional once the custom-domain cutover path is selected for release verification
 - Keep secrets and sensitive values outside versioned frontend code and outside hard-coded infrastructure files
