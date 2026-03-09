@@ -208,6 +208,7 @@ Issue 53 の判断結果は次の通りとする。
 - preinstalled `tofu v1.8.8` では fresh backend init が `use_lockfile = true` を解釈できず停止したため、production execution precedent と同様に local execution binary として `OpenTofu v1.11.0` を配置し、[infra/environments/gcp-preview/versions.tf](infra/environments/gcp-preview/versions.tf) の S3 backend で `init -reconfigure` と `validate` が成功することを確認した
 - 再検証により、current devcontainer では Google Application Default Credentials が存在するため、`OpenTofu v1.11.0` による `plan` は dummy `project_id` 指定で 12 resource の create plan まで到達することを確認した
 - `infra/modules/portal-gcp-static-delivery/main.tf` の Cloud Armor policy を `type = "CLOUD_ARMOR_EDGE"` に修正し、`OpenTofu v1.11.0 apply` で backend bucket、HTTPS URL map、target HTTPS proxy、HTTPS forwarding rule を含む GCP preview delivery resource 一式が live project `ashnova` に収束した
+- root path が `index.html` を返すよう Cloud Storage bucket に website metadata を追加し、known SPA routes `/overview`、`/guidance`、`/platform`、`/delivery`、`/operations`` は HTTPS URL map の rewrite rule で `index.html` へ流す構成へ補正した
 - Resource execution status: ready
 - Preview public URL: https://preview.gcp.ashnova.jp
 - Reviewed target reference: A 34.128.181.172
@@ -215,6 +216,7 @@ Issue 53 の判断結果は次の通りとする。
 - Selected environment entrypoint reference: infra/environments/gcp-preview
 - `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md` は run `22849331033` の `resource_execution_reference` として live dispatch に使用し、`blocked pending state` により deploy を開始せず fail-closed に停止することを確認した
 - preview hostname `preview.gcp.ashnova.jp` は public DNS と local resolver の双方で `34.128.181.172` へ解決し、managed certificate も `ACTIVE` になったため、positive-path deploy validation を開始できる状態へ遷移した
+- live deploy validation を通じて、run `22850350743` / `22850451691` の失敗は GCP backend bucket preview path の SPA fallback 振る舞いを露出し、最終的に run `22850625525` で preview deploy が success になるところまで確認した
 
 ## Dependencies
 
