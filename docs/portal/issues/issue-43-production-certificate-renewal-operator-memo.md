@@ -106,6 +106,13 @@ production certificate renewal operator memo を実運用レベルで固め、AC
 - formal review では ACM describe-certificate が certificate ARN `arn:aws:acm:us-east-1:278280499340:certificate/fafdb594-5de6-4072-9576-e4af6b6e3487` について `Status=ISSUED`、`RenewalEligibility=ELIGIBLE`、`NotAfter=2026-09-06T23:59:59+00:00`、`ValidationStatus=SUCCESS`、`InUseBy=arn:aws:cloudfront::278280499340:distribution/E34CI3F0M5904O` を返すこと、CloudFront `E34CI3F0M5904O` が alias `www.aws.ashnova.jp` と同一 ACM certificate ARN を保持すること、`https://www.aws.ashnova.jp` が HTTP 200 を返し、`/guidance` が SPA shell を返すこと、production deploy run `22839461795` に `portal-production-deployment-record` artifact が存在することを live state で再確認した
 - 同 review で validation CNAME `_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp` の public DNS 再確認を行ったところ、`https://dns.google/resolve?...` と `https://cloudflare-dns.com/dns-query?...` の双方が `Status=3` を返し、issue と operator memo が retained state として前提にしている validation CNAME を public resolver から確認できなかった
 
+## External DNS Action Needed
+
+- authoritative NS for `ashnova.jp` are `01.dnsv.jp`, `02.dnsv.jp`, `03.dnsv.jp`, and `04.dnsv.jp`, so the missing validation record must be checked in that external DNS provider path
+- required validation record to restore or confirm is: `Name=_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp`, `Type=CNAME`, `Value=_490fda060ddd8ee1bdd8cea81aa90467.jkddzztszm.acm-validations.aws`
+- current production custom-domain CNAME remains healthy in public DNS as `www.aws.ashnova.jp -> d168agpgcuvdqq.cloudfront.net`, so the follow-up scope is limited to the ACM validation CNAME rather than the production cutover record
+- after external DNS update, re-verify with `https://dns.google/resolve?name=_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp&type=CNAME` and `https://cloudflare-dns.com/dns-query?name=_f02889f0b607223c221b8b35338f4793.www.aws.ashnova.jp&type=CNAME` before re-running formal review
+
 ## Current Status
 
 - OPEN
