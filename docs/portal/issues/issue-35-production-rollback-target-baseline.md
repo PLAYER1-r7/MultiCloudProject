@@ -124,14 +124,13 @@ Final checkbox review completed against the latest wording in [docs/portal/issue
 - Issue 35 は Issue 14、Issue 26、Issue 27、Issue 28 の rollback / evidence / production gate baseline を接続し、production promotion 前に復旧対象 artifact を fail-closed に固定する documentation work として整理した。
 - 2026-03-09 時点で、formal review evidence を含む最新文言は commit 109a044 として公開済みであり、formal review に使う根拠は GitHub 上の公開状態と一致している。
 - 2026-03-09: formal review を完了し、blocking issue は確認されなかった。close approval は未受領であるため、close は別途 explicit approval を受領するまで実施しない。
+- 2026-03-09: repository owner より explicit close approval を受領。問題なしと合意。CLOSED に移行した。
 
 ## Current Status
 
-- OPEN
-
 - production rollback target baseline は staging-validated last known-good artifact、artifact evidence path、post-rollback verification boundary を含む current decision として同期済みである
-- formal review は完了しており、close approval 待ちである
 - production DNS rollback detail、automatic rollback、production rollout implementation、cutover execution details は後続 issue の対象に残る
+- **CLOSED** — 2026-03-09 に repository owner の close approval を受領し、クローズ済み
 
 ## Dependencies
 
