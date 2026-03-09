@@ -212,6 +212,7 @@ Issue 53 の判断結果は次の通りとする。
 - Reviewed target reference: pending live apply for `global_ip_address` output from `infra/environments/gcp-preview`
 - Certificate-related reference: pending live apply for managed certificate output from `infra/environments/gcp-preview`
 - Selected environment entrypoint reference: infra/environments/gcp-preview
+- `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md` は run `22849331033` の `resource_execution_reference` として live dispatch に使用し、`blocked pending state` により deploy を開始せず fail-closed に停止することを確認した
 - `tofu apply`、external DNS change、certificate validation 実作業は未実施であり、残存 blocker は operator-side execution と live GCP project / DNS 側の実施判断である
 
 ## Dependencies

@@ -222,8 +222,10 @@ Issue 52 の判断結果は次の通りとする。
 - 再検証により、`GCP_PREVIEW_PROJECT_ID=ashnova` と `GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL=github-actions-deploy@ashnova.iam.gserviceaccount.com` は `gcp-preview` environment variable として登録済みであることを確認した
 - 再検証により、`GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER=projects/899621454670/locations/global/workloadIdentityPools/github-actions/providers/github-actions` を登録し、`github-actions` pool/provider と `github-actions-deploy@ashnova.iam.gserviceaccount.com` への `roles/iam.workloadIdentityUser` binding も作成した
 - optional variable `GCP_PREVIEW_URL_MAP_NAME` は CDN invalidation を使う段階での後続登録対象に残る
-- `gcp-preview` environment の required variable は揃ったが、`.github/workflows/portal-gcp-preview-deploy.yml` と `resource_execution_reference` 候補ファイルはまだ `origin/main` に publish されていないため、remote live dispatch は未実施である
-- preview deploy 実行の現時点の blocker は GitHub default branch 側に workflow と参照ファイルが未公開であることだけである
+- workflow と `resource_execution_reference` 候補ファイルは commit `4fe69ea97c5e91fb0ca7dd28c7206123e9d5fa8e` で `origin/main` に publish した
+- fail-closed path の live 検証として `portal-build` run `22849311870` を入力に `portal-gcp-preview-deploy` run `22849331033` を dispatch し、`docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md` の `blocked pending state` を検知して `Resolve resource execution reference` step で停止することを確認した
+- commit `201b829519f37709642b955276d68c1324e322d4` では blocked pending state 検知後も deployment record artifact を残せるよう fail-closed path を修正し、run `22849331033` で二次失敗なしに record upload と summary 出力まで完了することを確認した
+- preview deploy の positive path は未実施であり、残存 blocker は live `tofu apply` と reviewed target / certificate reference の ready 化である
 
 ## Dependencies
 
