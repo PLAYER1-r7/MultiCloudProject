@@ -76,6 +76,7 @@ Define the minimum CI/CD policy that supports reliable staging delivery first, w
 - The production domain baseline uses an approved custom-domain path owned outside AWS, so DNS record changes and cutover steps must allow for explicit external DNS coordination
 - Certificate sourcing baseline uses an AWS-managed ACM public certificate in us-east-1, while DNS validation records and cutover timing remain explicit operator-managed steps outside workflow automation
 - The first production promotion candidate should be a staging-validated `main` commit selected explicitly for promotion
+- The production rollback target baseline should reuse the last known-good artifact already validated through the staging delivery path, together with the same release evidence path and post-rollback verification discipline
 - Staging should use a controlled manual dispatch path before deeper trigger automation is enabled
 - Native S3 state locking via `use_lockfile = true` is now the selected backend locking strategy
 - Monthly cost ceiling is fixed at USD 15/month before tax for the initial production footprint

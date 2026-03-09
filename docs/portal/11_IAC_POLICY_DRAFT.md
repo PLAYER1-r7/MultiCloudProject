@@ -66,6 +66,7 @@ infra/
 
 - The production domain baseline is an approved custom-domain path owned outside AWS, with external DNS remaining the primary source of truth and DNS record changes handled as operator-managed steps
 - Certificate sourcing baseline is an AWS-managed ACM public certificate in us-east-1 for the approved CloudFront custom-domain path, with external DNS validation CNAMEs applied outside AWS and the reviewed certificate ARN passed into production configuration explicitly
+- Rollback target baseline is the last known-good artifact already validated through the staging delivery path, with rollback evidence and post-rollback verification kept in the same operator review path
 - State locking baseline is native S3 locking via `use_lockfile = true`, enabled in staging and now wired into the production backend configuration through a dedicated production state key
 - Monthly cost ceiling for the first public release is fixed at USD 15/month before tax for the current small static-site footprint
 - The portability boundary is explicit: provider-specific backends, modules, and workflow commands may stay AWS-specific, while user-facing routes, frontend configuration contracts, frontend architecture, and monitoring wording stay cloud-neutral

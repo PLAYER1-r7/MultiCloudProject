@@ -47,6 +47,8 @@ User
   - reason: authoritative DNS already lives outside AWS, so Route 53 is not required, and the repository only needs an approved custom-domain path rather than in-AWS domain control
 - ACM responsibility boundary: use an AWS-managed ACM public certificate in us-east-1 for the CloudFront custom-domain path, keep certificate request and renewal in AWS, and treat external DNS validation plus cutover approval as explicit operator-managed production steps
   - reason: CloudFront requires ACM integration for the custom-domain path, while external DNS remains the source of truth for validation records and cutover timing
+- Production rollback target model: restore the last known-good artifact that was already validated through the staging delivery path, and keep release evidence plus post-rollback checks in the same operator review path
+  - reason: a previously validated artifact is a narrower and more repeatable recovery target than a fresh rebuild, and it fits the current staging-first evidence model without implying DNS reversal automation
 - Origin model: keep CloudFront in front of S3 and do not use S3 website hosting as the primary public entry model
   - reason: this keeps HTTPS delivery, caching behavior, and request routing consistent between staging and production-oriented operation
 - Backend assumption: treat guidance, contact direction, and operational notice as static-first content for the first release
@@ -91,7 +93,7 @@ Unless a later issue introduces a validated need for authentication or backend l
 ## Downstream Implication
 
 - Issue 7 should remain the decision point for any later backend or persistence introduction
-- Production rollback target and cutover approval stay governed by the product-definition design gate rather than being forced into the first-release baseline
+- DNS reversal detail and cutover approval stay governed by the product-definition design gate rather than being forced into the first-release baseline
 - Infrastructure and delivery work can optimize for staging-first validation without adding speculative Route 53, API Gateway, Lambda, or DynamoDB resources
 
 ## Current Coverage Notes For Issue 4

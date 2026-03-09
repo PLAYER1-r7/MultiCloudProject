@@ -675,6 +675,7 @@ Only after those five items are agreed should the Issue 1 checklist be reconside
 
 - Production domain ownership and DNS operating model: use an approved production custom-domain path owned outside AWS, keep DNS managed outside AWS, and treat DNS record changes as operator-managed work after repository-owner approval
 - Certificate sourcing baseline: use an AWS-managed ACM public certificate in us-east-1 for the CloudFront custom-domain path, with external DNS validation records applied by the operator and the reviewed certificate ARN passed into production configuration explicitly
+- Production rollback target baseline: use the last known-good artifact already validated through the staging delivery path, and keep rollback evidence plus post-rollback verification attached to the same operator-reviewed promotion record
 - Production deploy approver: the repository owner can approve alone in the current phase
 - Monthly cost ceiling: USD 15/month before tax for the first public release, based on a small static site footprint centered on S3 + CloudFront
 - OpenTofu state locking: native S3 locking via `use_lockfile = true` is the selected baseline, and the production backend is now wired to a dedicated production state key
