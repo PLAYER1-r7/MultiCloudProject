@@ -24,6 +24,11 @@ resource "google_storage_bucket" "site" {
   uniform_bucket_level_access = true
   labels                      = local.common_labels
 
+  website {
+    main_page_suffix = "index.html"
+    not_found_page   = "index.html"
+  }
+
   versioning {
     enabled = true
   }
