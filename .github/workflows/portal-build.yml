@@ -5,12 +5,16 @@ on:
     paths:
       - apps/portal-web/**
       - .github/workflows/portal-build.yml
+      - .github/workflows/portal-staging-deploy.yml
+      - .github/workflows/portal-production-deploy.yml
   push:
     branches:
       - main
     paths:
       - apps/portal-web/**
       - .github/workflows/portal-build.yml
+      - .github/workflows/portal-staging-deploy.yml
+      - .github/workflows/portal-production-deploy.yml
 
 jobs:
   build:
