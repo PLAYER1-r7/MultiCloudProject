@@ -353,6 +353,105 @@ a {
   color: var(--muted);
 }
 
+.panel-status-cards {
+  background:
+    linear-gradient(180deg, rgba(255, 248, 234, 0.96), rgba(246, 236, 215, 0.94));
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.status-card {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(24, 33, 39, 0.09);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(41, 48, 52, 0.08);
+}
+
+.status-card-header {
+  display: grid;
+  gap: 6px;
+}
+
+.status-card-kicker {
+  margin: 0;
+  color: var(--accent-deep);
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.status-card h3,
+.status-card h4 {
+  margin: 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Yu Mincho", serif;
+}
+
+.status-metadata {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.status-metadata div {
+  display: grid;
+  gap: 4px;
+}
+
+.status-metadata dt {
+  color: var(--accent-deep);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.status-metadata dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.status-card-body {
+  display: grid;
+  gap: 10px;
+}
+
+.status-task-list {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.status-task-item {
+  position: relative;
+  padding-left: 18px;
+}
+
+.status-task-item::before {
+  position: absolute;
+  left: 0;
+  top: 0.42rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  content: "";
+}
+
+.status-next-move {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(24, 33, 39, 0.08);
+  color: var(--muted);
+}
+
 .story-list {
   margin: 14px 0 0;
   padding: 0;
@@ -389,6 +488,7 @@ a {
 
   .hero-meta,
   .story-grid,
+  .status-grid,
   .hero-actions,
   .action-grid {
     grid-template-columns: 1fr;

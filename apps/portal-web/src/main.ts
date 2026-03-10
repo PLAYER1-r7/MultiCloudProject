@@ -11,6 +11,15 @@ type RouteSection = {
   points: string[];
 };
 
+type StatusTaskCard = {
+  title: string;
+  state: string;
+  entryPoint: string;
+  referenceChain: string;
+  remainingTasks: string[];
+  nextMove: string;
+};
+
 type RouteDefinition = {
   title: string;
   eyebrow: string;
@@ -20,6 +29,7 @@ type RouteDefinition = {
   bullets: string[];
   checklist: string[];
   sections: RouteSection[];
+  statusCards?: StatusTaskCard[];
   actions: ActionLink[];
   note: string;
 };
@@ -34,321 +44,511 @@ type RouteValidationIssue = {
   message: string;
 };
 
-const requiredMajorFlowRoutes = ["/", "/overview", "/guidance"] as const;
+const requiredMajorFlowRoutes = ["/", "/overview", "/guidance", "/status"] as const;
 const importMetaEnv = (import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env;
 const browserRuntimeAvailable = typeof window !== "undefined" && typeof document !== "undefined";
 
 export const routeDefinitions: Record<string, RouteDefinition> = {
   "/": {
     title: "MultiCloudProject Portal",
-    eyebrow: "Public entry experience",
+    eyebrow: "AWS production | GCP production-equivalent",
     summary:
-      "AWS から小さく始める公開ポータルとして、プロジェクトの目的、想定ユーザー、配信と運用の導線を静的フロントエンドで明快に届ける。",
+      "AWS production custom domain と GCP production-equivalent / retained preview の現在地を一つの入口に集約し、live surface と後続 hardening を混同せずに読める portal とする。",
     audience:
-      "主対象は public に到達する初回訪問者であり、同時に運用担当と技術関係者が staging-first の delivery baseline を共有できることを重視する。",
+      "主対象は current live state と次の hardening batch をすばやく確認したい stakeholder、operator、reviewer であり、public-facing route から同じ前提を共有できることを重視する。",
     outcome:
-      "トップページ自体が smoke check の第一確認点となり、staging deploy 後に最初に開く public route として機能する。",
+      "トップページから AWS/GCP の現状、delivery baseline、operations path、canonical docs へ短く辿れる。",
     bullets: [
-      "公開ファーストの小さな portal として、認証なしで主要情報へ到達できること。",
-      "S3 と CloudFront にそのまま配備できる static build を維持すること。",
-      "CI、staging deploy、monitoring、rollback の導線が後から接続しやすい構成にすること。"
+      "AWS production custom domain は live であり、現行の browser-facing production surface として扱う。",
+      "GCP は retained preview と production-equivalent hostname の 2 面を持ち、今後の中心は hardening と lifecycle follow-up である。",
+      "この portal は closed issue records の要約面であり、source of truth そのものは canonical docs に残す。"
     ],
     checklist: [
-      "トップページが安定表示できる。",
-      "主要ナビゲーションから他の公開 route へ遷移できる。",
-      "hero、導入説明、次アクション導線が崩れず見える。"
+      "トップページから status route へ遷移できる。",
+      "AWS/GCP の current state を誤読しない文言になっている。",
+      "delivery と operations の導線が generic scaffold のまま残っていない。"
     ],
     sections: [
       {
-        title: "この portal が担う役割",
+        title: "Current cross-cloud snapshot",
         body:
-          "初回リリースでは、プロダクトの入口、MVP の説明、公開配信の安定性を一つの小さな surface で検証する。",
-        points: ["what the portal is", "who it is for", "what the next action is"]
+          "現時点では AWS production と GCP production-equivalent のどちらも live であり、portal はその current state と next batch の境界を読む入口として機能する。",
+        points: [
+          "AWS production custom domain is live on the current delivery path",
+          "GCP retained preview remains live while production-equivalent hostname is also live",
+          "remaining work is follow-up hardening and lifecycle depth, not missing public delivery"
+        ]
       },
       {
-        title: "最初に確認すべきこと",
+        title: "How to read this portal",
         body:
-          "build 成功後はトップページ、主要 nav、主要 static asset が正常に表示されることを確認する。",
-        points: ["top page reachability", "navigation visibility", "static asset delivery"]
+          "各 route は cloud status の source of truth ではなく、summary と routing を担う。判断や follow-up の詳細は status route から canonical docs へ進んで確認する。",
+        points: [
+          "use Overview for scope and intended readers",
+          "use Platform and Release Path for delivery framing",
+          "use Cloud Status for AWS/GCP current state and next batches"
+        ]
       }
     ],
     actions: [
       {
-        label: "Overview を見る",
-        href: "/overview",
-        hint: "想定ユーザー、利用シーン、提供価値を確認する。",
+        label: "Cloud Status を見る",
+        href: "/status",
+        hint: "AWS/GCP の現状と次の batch を確認する。",
         emphasis: "primary"
       },
       {
-        label: "Guidance を見る",
-        href: "/guidance",
-        hint: "次アクションと公開導線のまとめを見る。"
+        label: "Platform Outline を見る",
+        href: "/platform",
+        hint: "AWS production と GCP delivery surface の役割を確認する。"
       },
       {
-        label: "Platform Outline へ",
-        href: "/platform",
-        hint: "AWS 静的配信の delivery baseline を確認する。"
+        label: "Operations View へ",
+        href: "/operations",
+        hint: "cloud ごとの運用導線と follow-up 境界を見る。"
+      },
+      {
+        label: "Overview を見る",
+        href: "/overview",
+        hint: "portal の役割とスコープを短く確認する。"
       }
     ],
     note:
-      "staging deploy 後は、このページ、主要ナビゲーション、主要 route の到達性を最優先で確認する。"
+      "このトップページは live confirmation の代替ではなく、AWS/GCP の current repository state へ入る最短導線として扱う。"
   },
   "/overview": {
     title: "Overview",
-    eyebrow: "Product and MVP context",
+    eyebrow: "Current scope and readers",
     summary:
-      "portal の目的、対象ユーザー、コア利用シーン、MVP の境界を短く共有し、公開エントリとしての価値を先に固定する。",
+      "portal-web を generic MVP seed ではなく、AWS/GCP の current delivery state と operator-managed follow-up を説明する summary surface として位置付け直す。",
     audience:
-      "このページは、訪問者と関係者の両方に対して first release の狙いと範囲を同じ言葉で伝えるために使う。",
+      "このページは、repository owner、reviewer、operator、status を確認したい stakeholder が portal の読み方を揃えるために使う。",
     outcome:
-      "Issue 1 と Issue 2 で整理した product definition と MVP scope を UI 上の説明へ接続できる。",
+      "portal の route 群が AWS-first scaffold から cross-cloud current-state portal へ変わった理由を短く共有できる。",
     bullets: [
-      "初回リリースは public-first である。",
-      "MVP は小さなページ集合と明快な導線に絞る。",
-      "backend persistence や user-specific workflow は初回には含めない。"
+      "portal は public route shell を保ちながら、現在は cloud status summary の役割を強く持つ。",
+      "AWS は current production surface、GCP は retained preview と production-equivalent follow-up の整理対象として扱う。",
+      "closed issue records を reopening せず、summary route から次 batch を切れることを優先する。"
     ],
     checklist: [
-      "target users が読み取れる。",
-      "MVP の境界が読み取れる。",
-      "この portal が何をしないかも説明されている。"
+      "portal の primary readers が読み取れる。",
+      "current scope と out-of-scope が読み取れる。",
+      "source of truth が canonical docs であることが崩れていない。"
     ],
     sections: [
       {
-        title: "想定ユーザー",
+        title: "Primary readers",
         body:
-          "primary user は公開 URL から入る visitor、secondary user は release と content freshness を担う internal operator である。",
-        points: ["public visitor", "internal operator", "future platform stakeholder"]
+          "この portal の primary readers は marketing visitor ではなく、AWS/GCP の現行状態、運用境界、次の hardening batch を見たい project-side readers である。",
+        points: ["repository owner", "operator and reviewer", "cloud status stakeholder"]
       },
       {
-        title: "MVP の成立条件",
+        title: "Current scope boundary",
         body:
-          "ユーザーが portal の目的を理解し、主要情報へ辿り着き、意図した next action を取れることが最小の成功条件になる。",
-        points: ["stable public URL", "small page set", "clear next action"]
+          "この app は current state の説明、delivery baseline の確認、operations path への routing を担うが、issue close judgment や live execution approval はここでは行わない。",
+        points: ["summary and routing", "delivery and operations framing", "no live approval or issue-state mutation"]
       }
     ],
     actions: [
       {
-        label: "Home に戻る",
-        href: "/",
-        hint: "トップページの public entry view に戻る。",
+        label: "Cloud Status へ",
+        href: "/status",
+        hint: "AWS/GCP の summary route を開く。",
         emphasis: "primary"
       },
       {
         label: "Guidance へ",
         href: "/guidance",
-        hint: "visitor が次に取る行動の整理を見る。"
-      }
-    ],
-    note:
-      "このページの説明は product definition と MVP scope の要約面として保ち、後で文章量を増やしすぎない。"
-  },
-  "/guidance": {
-    title: "Guidance",
-    eyebrow: "Next action and support path",
-    summary:
-      "visitor が portal 上で迷わないように、次に取るべき action、参照先、運用上の案内を短く整理する。",
-    audience:
-      "このページは visitor の next step と operator の support path を橋渡しする最小の guidance page として使う。",
-    outcome:
-      "Contact or guidance page の候補を route として固定し、MVP の page set を具体化できる。",
-    bullets: [
-      "visitor に次の action を明示する。",
-      "operator が更新・案内を追加しやすい page にする。",
-      "inquiry backend を持たない前提でも guidance と notice を載せられるようにする。"
-    ],
-    checklist: [
-      "next step が明示されている。",
-      "support or operational notice の置き場がある。",
-      "public route として単独表示できる。"
-    ],
-    sections: [
-      {
-        title: "初回 release の guidance",
-        body:
-          "first release では complex inquiry form を持たず、guidance text と link を中心に next action を示す。",
-        points: ["learn more", "operational notice", "release-friendly content updates"]
-      },
-      {
-        title: "後続拡張の余地",
-        body:
-          "later phase で contact flow や richer support path が必要になれば、この route を起点に拡張する。",
-        points: ["contact detail", "support channel", "future inquiry workflow"]
-      }
-    ],
-    actions: [
-      {
-        label: "Overview を見る",
-        href: "/overview",
-        hint: "portal の目的と scope を再確認する。",
-        emphasis: "primary"
-      },
-      {
-        label: "Operations View へ",
-        href: "/operations",
-        hint: "運用導線と monitoring/rollback の位置づけを見る。"
-      }
-    ],
-    note:
-      "この route は初回では text 中心でもよいが、visitor が次に何をすべきか不明な状態を残さないことを優先する。"
-  },
-  "/platform": {
-    title: "Platform Outline",
-    eyebrow: "AWS static delivery baseline",
-    summary:
-      "external DNS または CloudFront domain、CloudFront、S3 を軸にした AWS 静的配信の前提を説明し、Issue 17 の IaC 実装へ自然につなぐ。",
-    audience:
-      "このページは、構成判断を確認したい開発者と運用担当に向けた delivery baseline の要約面として使う。",
-    outcome:
-      "frontend の route shell から infrastructure 実装方針へ飛べる状態を作り、CloudFront 配信前提の UI 文脈を先に固定する。",
-    bullets: [
-      "S3 を静的 asset の配信元とする。",
-      "CloudFront で HTTPS と edge 配信を担う。",
-      "将来 Azure と GCP に広げても route 命名は維持できるようにする。"
-    ],
-    checklist: [
-      "配信経路の説明が見える。",
-      "HTTPS 前提の説明がある。",
-      "platform route が直接表示できる。"
-    ],
-    sections: [
-      {
-        title: "初期 AWS 経路",
-        body:
-          "first release では User から CloudFront を経由し、S3 の静的 asset を配信する流れを基本とする。",
-        points: [
-          "custom domain を使う場合は external DNS または CloudFront domain の運用前提を先に確認する",
-          "ACM は HTTPS の証明書管理に使用",
-          "backend runtime は baseline に含めない"
-        ]
-      },
-      {
-        title: "実装への接続",
-        body:
-          "Issue 17 ではこの route に対応する OpenTofu 雛形を staging から実装し、後で出力値と deploy 先を接続する。",
-        points: [
-          "infra/modules で reusable module 化",
-          "infra/environments/staging で最初の wiring",
-          "production は staging の後に追従"
-        ]
-      }
-    ],
-    actions: [
-      {
-        label: "Delivery を見る",
-        href: "/delivery",
-        hint: "artifact から staging deploy までの流れへ進む。",
-        emphasis: "primary"
+        hint: "reader 別の導線を確認する。"
       },
       {
         label: "Home に戻る",
         href: "/",
-        hint: "public entry view に戻る。"
+        hint: "cross-cloud snapshot の入口へ戻る。"
       }
     ],
     note:
-      "Issue 17 の OpenTofu 雛形は、この route の説明を実インフラ構成へ落とし込む最初の足場になる。"
+      "Overview は product marketing copy ではなく、portal の運用上の読み方を合わせるための短い説明面として保つ。"
   },
-  "/delivery": {
-    title: "Release Path",
-    eyebrow: "Build to staging route",
+  "/guidance": {
+    title: "Guidance",
+    eyebrow: "Where to look next",
     summary:
-      "build、validation、artifact、staging deploy の流れを視覚的に固定し、Issue 18 の workflow 実装とずれない導線を先に用意する。",
+      "reader の目的が current state 確認、delivery 理解、operations 確認のどれかを素早く分岐できるように、portal 内の導線を AWS/GCP 前提で整理する。",
     audience:
-      "このページは、変更がどの順序で build され staging へ届くかを確認したい開発者向けの release outline として使う。",
+      "このページは、repository を初めて開いた collaborator と current batch を再開する operator の両方に向けた route guide である。",
     outcome:
-      "最小 workflow 実装後に、build artifact と staging deploy の結果説明を結び付けやすい route になる。",
+      "どの route が AWS/GCP の何を説明しているかを迷わず判断できる。",
     bullets: [
-      "validation と deploy の責務を分離する。",
-      "staging deploy を production より先に固定する。",
-      "artifact の生成と受け渡しを workflow の中心に置く。"
+      "Cloud Status は current live state と remaining tasks の要約面である。",
+      "Platform Outline と Release Path は cloud delivery の枠組みを見るページである。",
+      "Operations View は monitoring、rollback、follow-up boundary を読むページである。"
     ],
     checklist: [
-      "release path の説明が見える。",
-      "staging 優先の流れがわかる。",
-      "delivery route が smoke check の確認導線として使える。"
+      "目的別の route が明示されている。",
+      "status route が canonical docs へつながる前提が崩れていない。",
+      "generic contact page のような誤読を招かない。"
     ],
     sections: [
       {
-        title: "最小 workflow の分離",
+        title: "If you need current state",
         body:
-          "最初に追加するのは build workflow であり、staging deploy は artifact を受け取る別 workflow として分ける。",
-        points: [
-          "pull request と push で build を検証",
-          "artifact を upload して deploy workflow が取得",
-          "production 承認は別 workflow に残す"
-        ]
+          "AWS/GCP の現在地、remaining tasks、next execution batch を知りたい場合は、まず status route を開き、その後 canonical docs へ進む。",
+        points: ["read Cloud Status", "open the cloud summary doc", "use issue maps only as closed references"]
       },
       {
-        title: "staging までの流れ",
+        title: "If you need implementation framing",
         body:
-          "frontend build 成功後に artifact を staging bucket へ反映し、必要に応じて CloudFront invalidation を実行する。",
-        points: ["build success", "artifact download", "S3 sync and optional invalidation"]
+          "delivery や operations の説明が必要なら、Platform Outline、Release Path、Operations View の順で読むと AWS/GCP の責務分離を追いやすい。",
+        points: ["platform first", "delivery second", "operations for handoff and rollback context"]
       }
     ],
     actions: [
       {
+        label: "Cloud Status へ",
+        href: "/status",
+        hint: "current state と next batches を確認する。",
+        emphasis: "primary"
+      },
+      {
         label: "Operations View へ",
         href: "/operations",
-        hint: "deploy 後の確認と rollback 導線を見る。",
-        emphasis: "primary"
+        hint: "monitoring と rollback の導線を見る。"
       },
       {
         label: "Platform Outline へ",
         href: "/platform",
-        hint: "配信基盤の前提に戻る。"
+        hint: "cloud 別の delivery surface を確認する。"
       }
     ],
     note:
-      "Issue 18 では build artifact を staging deploy workflow へ引き継ぎ、後で verification と approval flow を足せるように保つ。"
+      "Guidance は support form の代替ではなく、reader がどの route を読むべきかを揃えるための lightweight index として扱う。"
   },
-  "/operations": {
-    title: "Operations View",
-    eyebrow: "Monitoring and rollback hooks",
+  "/platform": {
+    title: "Platform Outline",
+    eyebrow: "AWS production | GCP delivery surfaces",
     summary:
-      "監視、rollback、運用判断の導線を置くための route として、Issue 12 と 14 の成果を後で UI に接続しやすい形を保つ。",
+      "AWS production custom domain と GCP retained preview / production-equivalent hostname を並べて、cloud ごとの browser-facing surface と delivery role を読みやすく整理する。",
     audience:
-      "運用担当と開発者が、monitoring と rollback の確認導線をどこに置くかを共有するための route である。",
+      "このページは、cloud ごとの公開面がどう分かれているかを確認したい開発者と運用担当に向けた platform summary である。",
     outcome:
-      "今は説明中心でも、後で staging health や rollback checklist を差し込める route として生かせる。",
+      "AWS が current production path を担い、GCP が retained preview と production-equivalent hardening follow-up を抱える理由を route 文脈で共有できる。",
     bullets: [
-      "監視方針への導線を置く。",
-      "rollback 判断の入口を固定する。",
-      "クラウド固有名に寄りすぎない route を維持する。"
+      "AWS は production custom domain を持つ current production surface である。",
+      "GCP は retained preview と production-equivalent hostname の 2 系統を維持している。",
+      "どちらの cloud も現在の論点は new surface creation ではなく hardening depth と operator path である。"
     ],
     checklist: [
-      "operations route が表示できる。",
-      "将来の monitoring 情報を差し込める余地がある。",
-      "rollback 導線を増やしても route を変えずに済む。"
+      "AWS の production role が読める。",
+      "GCP の preview と production-equivalent の違いが読める。",
+      "cloud ごとの remaining concerns が delivery 不足ではないとわかる。"
     ],
     sections: [
       {
-        title: "運用の最初の責務",
+        title: "AWS production surface",
         body:
-          "first release の operations は、サイト到達性、deploy の成否、復旧判断を短い確認フローにまとめることを重視する。",
-        points: ["top page reachability", "primary route health", "rollback decision path"]
+          "AWS は production custom domain、monitoring baseline、external DNS cutover / reversal memo まで current production path に接続済みであり、現在の primary live surface を担う。",
+        points: [
+          "https://www.aws.ashnova.jp is the current production domain",
+          "monitoring baseline and first-response path are fixed",
+          "DNS verification chain through Issue 95 is already closed as a reference set",
+          "remaining work is DNS automation depth beyond that closed chain, alert tooling depth, and rollback depth"
+        ]
       },
       {
-        title: "後続の拡張余地",
+        title: "GCP retained preview and production-equivalent",
         body:
-          "後で health summary、monitoring link、rollback checklist をここへ追加できるように UI の位置だけ先に確保する。",
-        points: ["monitoring summary", "deploy verification links", "rollback readiness notes"]
+          "GCP は preview surface を retained しつつ production-equivalent hostname も live にしており、今後の中心は retained preview の lifecycle 判断と hardening branch の扱いになる。",
+        points: [
+          "https://preview.gcp.ashnova.jp remains available as retained preview",
+          "https://www.gcp.ashnova.jp passed certificate and route verification close gates",
+          "retained preview shutdown should only start from a fresh trigger before the 2026-03-31 retention deadline",
+          "notification, Cloud Armor, credential rotation, and destructive rollback remain separate follow-up concerns"
+        ]
       }
     ],
     actions: [
       {
-        label: "Guidance へ",
-        href: "/guidance",
-        hint: "visitor 向け next action の view に戻る。",
+        label: "Cloud Status を見る",
+        href: "/status",
+        hint: "platform summary から remaining tasks の view へ進む。",
+        emphasis: "primary"
+      },
+      {
+        label: "Release Path を見る",
+        href: "/delivery",
+        hint: "delivery と verification の整理へ進む。"
+      },
+      {
+        label: "Home に戻る",
+        href: "/",
+        hint: "cross-cloud snapshot の入口へ戻る。"
+      }
+    ],
+    note:
+      "Platform Outline は cloud topology の完全記録ではなく、AWS/GCP の live surface と hardening の境界を読むための要約面として保つ。"
+  },
+  "/delivery": {
+    title: "Release Path",
+    eyebrow: "Build, verification, and live evidence",
+    summary:
+      "portal-web の build から validation、cloud-specific verification、さらに content update の標準手順までを整理し、AWS production と GCP production-equivalent の evidence path を同じ route で読めるようにする。",
+    audience:
+      "このページは、変更がどの順序で build され、どの evidence を伴って AWS/GCP の surface へ反映されるかを見たい開発者向けである。",
+    outcome:
+      "shared build と cloud-specific verification の違いを short route copy で追える。",
+    bullets: [
+      "route validation と build は portal-web の baseline evidence である。",
+      "AWS は current production path の verification を持ち、GCP は retained preview と production-equivalent の evidence path を持つ。",
+      "新しい portal update も source-of-truth docs と fresh task contract を起点にし、README と route copy を同一タスクで揃える。"
+    ],
+    checklist: [
+      "local build / route validation の baseline が読める。",
+      "cloud ごとの verification path の違いが読める。",
+      "execution issue と closed reference chain を混同しない。"
+    ],
+    sections: [
+      {
+        title: "Shared portal-web baseline",
+        body:
+          "portal-web 自体は static-first の TypeScript application であり、route validation と build success が UI 変更の最小 evidence になる。",
+        points: [
+          "npm run test:baseline checks type safety and route metadata",
+          "npm run build verifies the static bundle still compiles",
+          "route copy changes should stay aligned with cloud status docs"
+        ]
+      },
+      {
+        title: "Cloud-specific evidence paths",
+        body:
+          "AWS と GCP はどちらも live surface を持つが、今後の変更は hardening batch ごとに evidence path を分けて扱う必要がある。",
+        points: [
+          "AWS production path emphasizes DNS, alerting, and rollback depth",
+          "GCP path emphasizes retained preview lifecycle and hardening branches",
+          "closed records remain references while new work starts from a fresh task contract"
+        ]
+      },
+      {
+        title: "Portal update loop",
+        body:
+          "portal-web 自体を更新するときは、canonical docs 確認、task contract 作成、route copy 更新、README 同期、validation の順を毎回同じ流れで踏む。これにより、portal が source-of-truth を追い越さず summary layer に留まる。",
+        points: [
+          "read docs_agent and docs/portal before editing route copy",
+          "create a task contract before touching main.ts or README",
+          "run npm run test:baseline and npm run build after every portal update"
+        ]
+      }
+    ],
+    actions: [
+      {
+        label: "Portal Update Workflow を開く",
+        href: "https://github.com/PLAYER1-r7/MultiCloudProject/blob/main/docs/portal/21_PORTAL_UPDATE_WORKFLOW.md",
+        hint: "portal 更新の標準手順と validation baseline を確認する。",
+        emphasis: "primary"
+      },
+      {
+        label: "Operations View へ",
+        href: "/operations",
+        hint: "cloud ごとの monitoring と rollback の導線を見る。"
+      },
+      {
+        label: "Cloud Status へ",
+        href: "/status",
+        hint: "current state と remaining tasks の view に戻る。"
+      },
+      {
+        label: "Platform Outline へ",
+        href: "/platform",
+        hint: "cloud surfaces の整理に戻る。"
+      }
+    ],
+    note:
+      "Release Path は deploy workflow の完全仕様ではなく、portal-web の更新が cloud status summary と矛盾しないこと、そして update workflow が validation まで閉じていることを確認するための整理面である。"
+  },
+  "/operations": {
+    title: "Operations View",
+    eyebrow: "Monitoring, rollback, and follow-up boundaries",
+    summary:
+      "AWS と GCP の現行 operator path を短く並べ、monitoring baseline、rollback readiness、follow-up hardening の責務境界を route copy で読めるようにする。",
+    audience:
+      "運用担当と開発者が、どこまでが current path で、どこからが separate follow-up issue なのかを共有するための route である。",
+    outcome:
+      "current path と future hardening batch の境界を UI 上で読み分けやすくする。",
+    bullets: [
+      "AWS current path には production monitoring baseline と DNS reversal memo が含まれる。",
+      "GCP current path には retained preview と production-equivalent verification close gate が含まれる。",
+      "AWS DNS verification chain は closed reference に移行済みであり、alert tooling depth、credential rotation、destructive rollback などは separate follow-up として残る。"
+    ],
+    checklist: [
+      "AWS の current operator path が読める。",
+      "GCP の current operator path が読める。",
+      "future follow-up と current path の境界が読める。"
+    ],
+    sections: [
+      {
+        title: "AWS operations baseline",
+        body:
+          "AWS 側では production monitoring baseline、first-response path、external DNS cutover / reversal memo、rollback readiness が current path に含まれる。",
+        points: [
+          "production custom domain reachability is already part of the current path",
+          "deploy evidence path is the current first-response anchor",
+          "DNS verification chain through Issue 95 is closed and remains reference-only",
+          "deeper DNS automation, alert tooling, and rollback automation remain future work"
+        ]
+      },
+      {
+        title: "GCP operations baseline",
+        body:
+          "GCP 側では retained preview を維持しつつ production-equivalent hostname の verification を通しており、今後は retained preview shutdown 判断と hardening branch の深度整理が中心になる。",
+        points: [
+          "retained preview is still an active surface until a new shutdown issue is cut",
+          "production-equivalent verification is completed and closed as a reference chain",
+          "shutdown planning stays conditional on fresh trigger evidence before the retention deadline",
+          "notification uplift, Cloud Armor tuning, credential rotation, and destructive rollback stay separate"
+        ]
+      }
+    ],
+    actions: [
+      {
+        label: "Cloud Status へ",
+        href: "/status",
+        hint: "current state と next batch の summary に戻る。",
         emphasis: "primary"
       },
       {
         label: "Release Path へ",
         href: "/delivery",
-        hint: "workflow と deploy の導線を見直す。"
+        hint: "validation と evidence path を見直す。"
+      },
+      {
+        label: "Guidance へ",
+        href: "/guidance",
+        hint: "route guide に戻る。"
       }
     ],
     note:
-      "Issue 12 と 14 の具体実装が入ってきたら、この route に monitoring と rollback の要点を集約する。"
+      "Operations View は incident runbook の代替ではなく、current operator path と separate follow-up issue の境界を短く示す面として保つ。"
+  },
+  "/status": {
+    title: "Cloud Status",
+    eyebrow: "AWS live | GCP live",
+    summary:
+      "AWS production と GCP production-equivalent / retained preview の current state を同じ view に置き、closed reference chain と future follow-up batch を切り分けて読めるようにする。",
+    audience:
+      "このページは、どの cloud が live で、どの follow-up が closed reference で、次に何を fresh task contract から始めるべきかを確認したい stakeholder 向けの summary route である。",
+    outcome:
+      "AWS と GCP の current live state、cloud ごとの remaining tasks、canonical docs への参照導線を 1 画面で確認できる。",
+    bullets: [
+      "AWS と GCP はどちらも browser-facing portal surface を持つ。",
+      "残タスクは delivery 不足ではなく、hardening と lifecycle follow-up が中心である。",
+      "closed issue records を source of truth にしつつ、次の execution batch は fresh task contract から分けて起こす。"
+    ],
+    checklist: [
+      "AWS current live state が読める。",
+      "GCP current live state が読める。",
+      "canonical docs と next batches への導線が見える。"
+    ],
+    sections: [
+      {
+        title: "AWS current state",
+        body:
+          "production custom domain は live であり、cutover、monitoring baseline、external DNS cutover / reversal memo は current production path に接続済みである。",
+        points: [
+          "https://www.aws.ashnova.jp is live on the current production surface",
+          "production monitoring baseline and first-response path are fixed",
+          "external DNS cutover and reversal memo are documented as the operator path",
+          "remaining work is DNS automation depth beyond the closed DNS verification chain, alert tooling depth, and rollback depth"
+        ]
+      },
+      {
+        title: "GCP current state",
+        body:
+          "retained preview を維持しつつ、production-equivalent hostname も live になっている。今後の中心は live display ではなく retained preview の lifecycle 判断と hardening follow-up である。",
+        points: [
+          "https://preview.gcp.ashnova.jp remains the retained preview surface",
+          "https://www.gcp.ashnova.jp passed certificate and route verification close gates",
+          "remaining work is retained preview shutdown planning and hardening depth",
+          "notification routing, Cloud Armor tuning, credential rotation, and destructive rollback remain separate follow-up work"
+        ]
+      },
+      {
+        title: "Next execution batches",
+        body:
+          "次の作業は closed records を reopen せず、AWS hardening と GCP lifecycle / hardening を別 batch に分けた方が review と rollback の境界が保ちやすい。",
+        points: [
+          "AWS: DNS automation, alert tooling depth, rollback and runbook depth",
+          "GCP: retained preview shutdown decision, external notification uplift, Cloud Armor, credential rotation, and destructive rollback depth",
+          "start each batch from a fresh task contract instead of editing closed records",
+          "use Issue 69 and Issue 91 only as closed parent-map references"
+        ]
+      },
+      {
+        title: "Canonical references",
+        body:
+          "この route 自体は summary であり、最終的な確認は cloud summary doc と parent-map docs を開いて行う。",
+        points: [
+          "cloud summary doc is the top-level source for current live state and remaining tasks",
+          "Issue 69 is the closed parent map for AWS hardening references",
+          "Issue 91 is the closed parent map for GCP hardening references"
+        ]
+      }
+    ],
+    statusCards: [
+      {
+        title: "AWS hardening batch",
+        state: "production custom domain live | follow-up hardening only",
+        entryPoint:
+          "Issue 69 closed parent map | latest references Issue 75, Issue 77, Issue 79 | DNS verification chain Issue 92-95 closed reference",
+        referenceChain:
+          "DNS assistive automation | alert tooling depth | rollback and runbook depth | DNS verification chain closed at Issue 95",
+        remainingTasks: [
+          "external DNS provider credentials, provider API boundary, and full DNS automation remain separate follow-up work beyond the closed DNS verification chain",
+          "automatic rollback, emergency override depth, and deeper incident runbook execution remain separate batches",
+          "24x7 on-call, automatic remediation, broad chat fan-out, and dashboard or SLO design remain outside the current baseline"
+        ],
+        nextMove:
+          "新しい AWS follow-up は Issue 69 chain と DNS verification chain Issue 92-95 を reopen せず、fresh task contract から起こす。"
+      },
+      {
+        title: "GCP lifecycle and hardening batch",
+        state: "production-equivalent live | retained preview still active",
+        entryPoint: "Issue 91 closed parent map | latest references Issue 80, Issue 84, Issue 86, Issue 88, Issue 90",
+        referenceChain: "retained preview decisioning | notification uplift | Cloud Armor | credential rotation | destructive rollback",
+        remainingTasks: [
+          "retained preview shutdown planning remains conditional on fresh trigger evidence before the 2026-03-31 retention deadline",
+          "Cloud Armor tuning, credential rotation execution, and destructive rollback execution remain review-only references today",
+          "owner-bound external notification uplift remains separate from live delivery automation",
+          "new GCP execution should start from a fresh task contract rather than extending the closed reference chain"
+        ],
+        nextMove:
+          "新しい GCP follow-up は Issue 80 から 91 を再利用せず、新しい task contract と新しい follow-up issue chain で開始する。"
+      }
+    ],
+    actions: [
+      {
+        label: "Cloud Summary Doc を開く",
+        href: "https://github.com/PLAYER1-r7/MultiCloudProject/blob/main/docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md",
+        hint: "AWS/GCP current state と remaining tasks の canonical doc を開く。",
+        emphasis: "primary"
+      },
+      {
+        label: "AWS Parent Map を開く",
+        href: "https://github.com/PLAYER1-r7/MultiCloudProject/blob/main/docs/portal/issues/issue-69-aws-hardening-batch-follow-up-map.md",
+        hint: "AWS hardening batch の closed parent map を確認する。"
+      },
+      {
+        label: "GCP Parent Map を開く",
+        href: "https://github.com/PLAYER1-r7/MultiCloudProject/blob/main/docs/portal/issues/issue-91-gcp-hardening-batch-follow-up-map.md",
+        hint: "GCP lifecycle and hardening batch の closed parent map を確認する。"
+      },
+      {
+        label: "Operations View へ",
+        href: "/operations",
+        hint: "monitoring と rollback の route に戻る。"
+      }
+    ],
+    note:
+      "この route は closed issue records の summary であり、新しい approval や live execution を代行するものではない。"
   }
 };
 
@@ -359,7 +559,7 @@ export const navGroups: NavGroup[] = [
   },
   {
     title: "Delivery Pages",
-    paths: ["/platform", "/delivery", "/operations"]
+    paths: ["/platform", "/delivery", "/operations", "/status"]
   }
 ];
 
@@ -412,7 +612,11 @@ function normalizePath(pathname: string): string {
 }
 
 function getReferencedRoutePaths(): string[] {
-  return Object.values(routeDefinitions).flatMap((route) => route.actions.map((action) => action.href));
+  return Object.values(routeDefinitions).flatMap((route) =>
+    route.actions
+      .map((action) => action.href)
+      .filter((href) => !/^https?:\/\//.test(href))
+  );
 }
 
 export function validateRouteMetadata(): RouteValidationIssue[] {
@@ -532,10 +736,14 @@ function renderActionLinks(actions: ActionLink[], className: string): string {
   return actions
     .map((action) => {
       const emphasis = action.emphasis === "primary" ? `${className} primary` : `${className} secondary`;
-      const destination = toApplicationPath(action.href);
+      const external = /^https?:\/\//.test(action.href);
+      const destination = external ? action.href : toApplicationPath(action.href);
+      const interactionAttributes = external
+        ? 'target="_blank" rel="noreferrer"'
+        : 'data-link="internal"';
 
       return `
-        <a class="${emphasis}" href="${destination}" data-link="internal">
+        <a class="${emphasis}" href="${destination}" ${interactionAttributes}>
           <span>${escapeHtml(action.label)}</span>
           <small>${escapeHtml(action.hint)}</small>
         </a>
@@ -577,6 +785,42 @@ function renderSections(sections: RouteSection[]): string {
           <ul class="story-list">
             ${renderList(section.points, "story-item")}
           </ul>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderStatusCards(statusCards: StatusTaskCard[]): string {
+  return statusCards
+    .map(
+      (card) => `
+        <article class="status-card">
+          <div class="status-card-header">
+            <p class="status-card-kicker">Closed reference summary</p>
+            <h3>${escapeHtml(card.title)}</h3>
+          </div>
+          <dl class="status-metadata">
+            <div>
+              <dt>Current state</dt>
+              <dd>${escapeHtml(card.state)}</dd>
+            </div>
+            <div>
+              <dt>Entry point</dt>
+              <dd>${escapeHtml(card.entryPoint)}</dd>
+            </div>
+            <div>
+              <dt>Reference chain</dt>
+              <dd>${escapeHtml(card.referenceChain)}</dd>
+            </div>
+          </dl>
+          <div class="status-card-body">
+            <h4>Remaining tasks</h4>
+            <ul class="status-task-list">
+              ${renderList(card.remainingTasks, "status-task-item")}
+            </ul>
+          </div>
+          <p class="status-next-move">${escapeHtml(card.nextMove)}</p>
         </article>
       `
     )
@@ -642,6 +886,17 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
             ${renderSections(route.sections)}
           </div>
         </section>
+
+        ${route.statusCards?.length
+          ? `
+        <section class="panel panel-wide panel-status-cards">
+          <h2>Remaining task cards</h2>
+          <div class="status-grid">
+            ${renderStatusCards(route.statusCards)}
+          </div>
+        </section>
+        `
+          : ""}
 
         <section class="panel panel-wide">
           <h2>Next routes</h2>
