@@ -51,6 +51,18 @@ Use `scripts/create-pr.sh` as a thin wrapper around `gh pr create`.
 - Run `scripts/create-pr.sh --title "<title>" --body-file /tmp/pr-body.md`.
 - This helper does not generate PR content, run tests, infer issue state, or replace the PR checklist. It only validates required inputs and forwards them to `gh pr create`.
 
+## AI-Assisted PR Execution
+
+Use AI assistance for PR preparation and execution when the work is primarily about scoping, summarizing, validating, or submitting already-reviewed changes.
+
+- The agent may inspect diffs, summarize scope, prepare PR titles and bodies, create a branch, stage only intended files, create commits, push the branch, and open the PR.
+- The agent may also prepare self-review notes, validation comments, merge-readiness checklists, and follow-up issue candidates.
+- Final scope approval, merge decisions, review-feedback acceptance, production-risk judgment, and sufficiency of validation evidence remain human-owned decisions.
+- If scope is clear and no destructive action is required, the agent should proceed through PR creation autonomously.
+- If scope is ambiguous, if unrelated changes are mixed in, or if merge safety depends on a judgment call, the agent should stop and ask for confirmation.
+- Expected PR output remains `Summary`, `What Changed`, and `Validation`.
+- Non-goals: auto-merging without human approval, inventing validation that was not run, broadening PR scope without explicit approval, and replacing human judgment on release or operational risk.
+
 ## Quick Verification
 
 ```bash
