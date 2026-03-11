@@ -6,6 +6,50 @@
 
 - [ ] この作業に前提 Issue は存在しない、または `gh issue view <N> --json state` で前提 Issue の closed を確認した
 - [ ] 前提 Issue の close 承認がまだ得られていない場合は、ここで停止して人間のレビューを要求した
+- [ ] ユーザーが明示的なスコープなしに「残タスク」や「次タスク」を求めた場合は、全体プロジェクト前提にせず、直近の active task contract、issue chain、または current app context に係留した
+- [ ] 曖昧な task-list 要求に対して、もっともらしいスコープ候補が複数ある場合は、inventory を広げる前にどのスコープかをユーザーへ確認した
+- [ ] リポジトリ全体の残タスク一覧を出す前に、「project-wide」「リポジトリ全体」などの明示的な全体化指示があった
+- [ ] 曖昧な task-list 要求への最初の応答で、エージェントがどのスコープで解釈しているかを明記した
+- [ ] この受領が child issue または follow-up issue の提案を含む場合は、先に親 Issue の terminal condition を記載した
+- [ ] この受領が child issue または follow-up issue の提案を含む場合は、新しい Issue が次のいずれかを少なくとも 1 つ追加することを確認した: 新しい証拠採取、新しい固定判断、新しい実行境界
+- [ ] 提案中の Issue が、親スコープの packaging-only な言い換えや再記述ではないことを確認した
+- [ ] 同じ chain で連続する 2 件の Issue が、新しい証拠、新しい固定判断、新しい実行境界のいずれも増やしていない場合は、分解を停止し、close を優先すべきか見直した
+- [ ] 提案中の Issue が同じ chain の 4 件目になる場合は、受領前に明示的な人間確認を記録した
+
+### 30秒 child issue チェック
+
+提案中の child issue または follow-up issue を受け付ける前に、次の定型文をそのまま使う。
+
+```text
+30秒 child issue チェック
+
+1. この Issue はどんな新しい証拠を追加するか？
+2. この Issue はどんな新しい固定判断を追加するか？
+3. この Issue はどんな新しい実行境界を追加するか？
+4. 親 Issue の terminal condition は何か？
+5. この Issue を作らなくても、現行 Issue 内解決または close で済ませられないか？
+
+1-3 がすべて「なし」なら、その Issue は作成しない。
+4 が未記載なら、そこで停止して terminal condition を先に書く。
+5 が「はい」なら、新しい child issue より close または現行 Issue 内解決を優先する。
+```
+
+### 30秒 曖昧タスクリスト チェック
+
+「残タスク」や「次タスク」のような曖昧な要求へ答える前に、次の定型文をそのまま使う。
+
+```text
+30秒 曖昧タスクリスト チェック
+
+1. このチャットで最も狭い active scope は何か？
+2. ユーザーが聞いているのは、その scope か、current app か、current issue chain か、プロジェクト全体か？
+3. リポジトリ全体へ広げてよいと判断できる明示語は何か？
+4. 明示語がない場合、現在の active scope の中だけで回答できないか？
+
+2 が曖昧なら、列挙前に確認する。
+3 が「なし」なら、全体プロジェクトへ拡張しない。
+4 が「はい」なら、現在の active scope に限定して答え、その scope を明記する。
+```
 
 ## 開始前
 
@@ -39,6 +83,19 @@
 ## 引き継ぎ前
 
 詰まった場合: テストゲート -> `32_TEST_EXECUTION_GATE.md`、DoD ゲート -> `04_DEFINITION_OF_DONE.md`、PR パッケージング -> `05_PR_TASK_CONTRACT_TEMPLATE.md`。
+
+## PR作成前
+
+- [ ] PR を作る前に、対象スコープの実装、必要テスト、関連ドキュメント更新、Issue 状態同期が完了していることを確認した
+- [ ] PR の対象が close 済み chain の packaging-only な継続ではなく、完了済み active scope か fresh record 起点の follow-up であることを確認した
+- [ ] PR タイトルは何を完了または追加したかが一読で分かり、コード変更と docs 同期が混在する場合も曖昧な総称だけで済ませていない
+- [ ] PR 本文は Summary、What Changed、Validation を最低限の固定セクションとして記載した
+- [ ] What Changed では、実装変更、検証追加、Issue またはドキュメント同期を混同せず区別して記載した
+- [ ] Validation では、実際に実行した確認だけを記載し、関連する確認を未実施ならその事実を明記した
+- [ ] child issue を close した場合は、対応する parent baseline または summary 記録にも完了状態を反映した
+- [ ] スコープに高レベル summary 文書がある場合は、実装チェーン完了後にその summary 側も更新した
+- [ ] reviewer が重点的に見るべき差分を 2 から 3 点の具体的な review point に絞って記載した
+- [ ] PR 本文の記述がローカル差分、Issue 状態、summary 文書の記述と矛盾していないことを確認した
 
 - [ ] テスト結果を記録した
 - [ ] DoD の必須ゲートを満たした

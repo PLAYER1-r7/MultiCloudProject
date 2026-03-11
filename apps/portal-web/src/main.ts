@@ -1,3 +1,13 @@
+import { buildRouteValidationReport, validateRouteMetadata } from "./routeValidation.ts";
+import {
+  buildSnsRequestResponseContractReport,
+  validateSnsRequestResponseContract
+} from "./snsRequestResponseContract.ts";
+import {
+  buildSnsAuthErrorContractReport,
+  validateSnsAuthErrorContract
+} from "./snsAuthErrorContract.ts";
+
 type ActionLink = {
   label: string;
   href: string;
@@ -20,6 +30,38 @@ type StatusTaskCard = {
   nextMove: string;
 };
 
+type SnsSurfaceDefinition = {
+  surfaceId: string;
+  title: string;
+  summary: string;
+  checks: string[];
+  entryLink: ActionLink;
+  postingCta: ActionLink;
+};
+
+type SnsAuthState = "guest" | "member" | "operator";
+
+type SnsFlowState = "idle" | "blocked" | "success" | "failure";
+
+type SnsReadbackEntry = {
+  id: number;
+  body: string;
+  author: Exclude<SnsAuthState, "guest">;
+  sequenceLabel: string;
+};
+
+type SnsDemoState = {
+  authState: SnsAuthState;
+  draft: string;
+  shouldFailSubmission: boolean;
+  flowState: SnsFlowState;
+  feedbackTone: "neutral" | "success" | "error";
+  feedbackMessage: string;
+  lastSubmittedBody: string;
+  readbackEntries: SnsReadbackEntry[];
+  nextEntryId: number;
+};
+
 type RouteDefinition = {
   title: string;
   eyebrow: string;
@@ -30,6 +72,7 @@ type RouteDefinition = {
   checklist: string[];
   sections: RouteSection[];
   statusCards?: StatusTaskCard[];
+  snsSurface?: SnsSurfaceDefinition;
   actions: ActionLink[];
   note: string;
 };
@@ -37,11 +80,6 @@ type RouteDefinition = {
 type NavGroup = {
   title: string;
   paths: string[];
-};
-
-type RouteValidationIssue = {
-  scope: string;
-  message: string;
 };
 
 type PortalVariant = "aws" | "gcp" | "local";
@@ -89,6 +127,22 @@ const portalVariantMetadata: Record<PortalVariant, PortalVariantMetadata> = {
 };
 const importMetaEnv = (import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env;
 const browserRuntimeAvailable = typeof window !== "undefined" && typeof document !== "undefined";
+
+function createInitialSnsDemoState(): SnsDemoState {
+  return {
+    authState: "guest",
+    draft: "",
+    shouldFailSubmission: false,
+    flowState: "idle",
+    feedbackTone: "neutral",
+    feedbackMessage: "No submission executed yet. Use the SNS demo controls to exercise the major flow states.",
+    lastSubmittedBody: "",
+    readbackEntries: [],
+    nextEntryId: 1
+  };
+}
+
+let snsDemoState = createInitialSnsDemoState();
 
 export const routeDefinitions: Record<string, RouteDefinition> = {
   "/": {
@@ -138,6 +192,11 @@ export const routeDefinitions: Record<string, RouteDefinition> = {
         href: "/status",
         hint: "AWS/GCP の現状と次の batch を確認する。",
         emphasis: "primary"
+      },
+      {
+        label: "SNS surface へ",
+        href: "/status#sns-request-response-surface",
+        hint: "専用 SNS surface mount と posting CTA の入口を開く。"
       },
       {
         label: "Platform Outline を見る",
@@ -566,6 +625,28 @@ export const routeDefinitions: Record<string, RouteDefinition> = {
           "新しい GCP follow-up は Issue 80 から 91 を再利用せず、新しい task contract と新しい follow-up issue chain で開始する。"
       }
     ],
+    snsSurface: {
+      surfaceId: "sns-request-response-surface",
+      title: "SNS request-response surface",
+      summary:
+        "Issue 119 と Issue 120 で固定した contract baseline を browser-facing route に接続し、surface mount、entry link integrity、posting CTA reachability を narrow scope で検証する専用 panel とする。",
+      checks: [
+        "surface panel が /status route 上で mount している",
+        "top/root から専用 surface anchor へ内部遷移できる",
+        "posting CTA から次の browser-side flow target へ reachability を残せる"
+      ],
+      entryLink: {
+        label: "Root からこの surface を開く",
+        href: "/status#sns-request-response-surface",
+        hint: "entry link integrity を root route から確認する。"
+      },
+      postingCta: {
+        label: "Posting CTA target を開く",
+        href: "/status#sns-posting-cta-guidance",
+        hint: "auth-post-readback 実装前に CTA reachability の固定 target を確認する。",
+        emphasis: "primary"
+      }
+    },
     actions: [
       {
         label: "Cloud Summary Doc を開く",
@@ -856,117 +937,15 @@ function normalizePath(pathname: string): string {
   return routePath || "/";
 }
 
-function getReferencedRoutePaths(definitions: RouteDefinitions): string[] {
-  return Object.values(definitions).flatMap((route) =>
-    route.actions
-      .map((action) => action.href)
-      .filter((href) => !/^https?:\/\//.test(href))
-  );
-}
-
-function validateRouteMetadataForVariant(variant: PortalVariant): RouteValidationIssue[] {
-  const issues: RouteValidationIssue[] = [];
-  const definitions = getRouteDefinitionsForVariant(variant);
-
-  for (const path of requiredMajorFlowRoutes) {
-    const route = definitions[path];
-
-    if (!route) {
-      issues.push({
-        scope: `${variant}:${path}`,
-        message: "required major-flow route definition is missing"
-      });
-      continue;
-    }
-
-    if (!route.title.trim()) {
-      issues.push({ scope: `${variant}:${path}`, message: "title must not be empty" });
-    }
-
-    if (!route.summary.trim()) {
-      issues.push({ scope: `${variant}:${path}`, message: "summary must not be empty" });
-    }
-
-    if (route.checklist.length === 0) {
-      issues.push({ scope: `${variant}:${path}`, message: "checklist must include at least one baseline item" });
-    }
-
-    if (route.sections.length === 0) {
-      issues.push({ scope: `${variant}:${path}`, message: "sections must include at least one major-flow explanation" });
-    }
-
-    if (route.actions.length === 0) {
-      issues.push({ scope: `${variant}:${path}`, message: "actions must include at least one next-route link" });
-    }
-  }
-
-  for (const group of navGroups) {
-    if (group.paths.length === 0) {
-      issues.push({ scope: `${variant}:${group.title}`, message: "navigation group must not be empty" });
-    }
-
-    for (const path of group.paths) {
-      if (!definitions[path]) {
-        issues.push({
-          scope: `${variant}:${group.title}`,
-          message: `navigation path ${path} does not have a route definition`
-        });
-      }
-    }
-  }
-
-  for (const referencedPath of getReferencedRoutePaths(definitions)) {
-    if (!definitions[referencedPath]) {
-      issues.push({
-        scope: `${variant}:${referencedPath}`,
-        message: "action link points to a route that is not defined"
-      });
-    }
-  }
-
-  for (const path of requiredMajorFlowRoutes) {
-    const roundTripPath = normalizePath(toApplicationPath(path));
-
-    if (roundTripPath !== path) {
-      issues.push({
-        scope: `${variant}:${path}`,
-        message: `base-path round trip failed: received ${roundTripPath}`
-      });
-    }
-  }
-
-  return issues;
-}
-
-export function validateRouteMetadata(): RouteValidationIssue[] {
-  return portalVariants.flatMap((variant) => validateRouteMetadataForVariant(variant));
-}
-
-export function buildRouteValidationReport(): string {
-  const issues = validateRouteMetadata();
-  const evidenceLines = [
-    "Route validation baseline",
-    `- Base path: ${applicationBasePath || "/"}`,
-    `- Route definitions: ${Object.keys(routeDefinitions).length}`,
-    `- Variants: ${portalVariants.join(", ")}`,
-    `- Required major-flow routes: ${requiredMajorFlowRoutes.join(", ")}`,
-    `- Navigation groups: ${navGroups.map((group) => group.title).join(", ")}`,
-    `- Result: ${issues.length === 0 ? "passed" : "failed"}`
-  ];
-
-  if (issues.length === 0) {
-    evidenceLines.push("- Issues: none");
-    return evidenceLines.join("\n");
-  }
-
-  evidenceLines.push("- Issues:");
-
-  for (const issue of issues) {
-    evidenceLines.push(`  - [${issue.scope}] ${issue.message}`);
-  }
-
-  return evidenceLines.join("\n");
-}
+const routeValidationContext = {
+  applicationBasePath: applicationBasePath || "/",
+  routeDefinitions,
+  portalVariants,
+  requiredMajorFlowRoutes,
+  navGroups,
+  getRouteDefinitionsForVariant: (variant: string) => getRouteDefinitionsForVariant(variant as PortalVariant),
+  roundTripPath: (routePath: string) => normalizePath(toApplicationPath(routePath))
+};
 
 function escapeHtml(value: string): string {
   return value
@@ -985,16 +964,22 @@ function renderList(items: string[], className: string): string {
 
 function renderActionLinks(actions: ActionLink[], className: string): string {
   return actions
-    .map((action) => {
+    .map((action, index) => {
       const emphasis = action.emphasis === "primary" ? `${className} primary` : `${className} secondary`;
       const external = /^https?:\/\//.test(action.href);
       const destination = external ? action.href : toApplicationPath(action.href);
       const interactionAttributes = external
         ? 'target="_blank" rel="noreferrer"'
         : 'data-link="internal"';
+      const actionAttributes = [
+        `data-route-action-index="${index}"`,
+        `data-route-action-kind="${className}"`,
+        `data-route-action-emphasis="${action.emphasis ?? "secondary"}"`,
+        `data-route-action-href="${escapeHtml(action.href)}"`
+      ].join(" ");
 
       return `
-        <a class="${emphasis}" href="${destination}" ${interactionAttributes}>
+        <a class="${emphasis}" href="${destination}" ${interactionAttributes} ${actionAttributes}>
           <span>${escapeHtml(action.label)}</span>
           <small>${escapeHtml(action.hint)}</small>
         </a>
@@ -1082,6 +1067,173 @@ function renderStatusCards(statusCards: StatusTaskCard[]): string {
     .join("");
 }
 
+function renderSnsAuthStateOptions(activeState: SnsAuthState): string {
+  const states: SnsAuthState[] = ["guest", "member", "operator"];
+
+  return states
+    .map(
+      (state) =>
+        `<option value="${state}" ${state === activeState ? "selected" : ""}>${escapeHtml(state)}</option>`
+    )
+    .join("");
+}
+
+function getSnsFlowSummaryText(flowState: SnsFlowState): string {
+  switch (flowState) {
+    case "blocked":
+      return "Signed-out blocked flow is active. The surface keeps the submit blocked and exposes the reason.";
+    case "success":
+      return "Signed-in submit succeeded. The latest local readback is visible on the same surface.";
+    case "failure":
+      return "Signed-in submit failed. The error state stays visible without pretending the write succeeded.";
+    default:
+      return "The SNS surface is mounted and waiting for the next auth-post-readback interaction.";
+  }
+}
+
+function renderSnsAuthPostReadbackDemo(): string {
+  const timelineEntries = snsDemoState.readbackEntries.length
+    ? snsDemoState.readbackEntries
+        .map(
+          (entry) => `
+            <li class="sns-readback-item" data-sns-readback-item="true" data-sns-entry-id="${entry.id}">
+              <div class="sns-readback-meta">
+                <span data-sns-readback-author="true">${escapeHtml(entry.author)}</span>
+                <span>${escapeHtml(entry.sequenceLabel)}</span>
+              </div>
+              <p data-sns-readback-body="true">${escapeHtml(entry.body)}</p>
+            </li>
+          `
+        )
+        .join("")
+    : `
+        <li class="sns-readback-empty" data-sns-readback-empty="true">
+          No local readback entry yet. Successful signed-in posts will appear here.
+        </li>
+      `;
+
+  return `
+    <div class="sns-flow-grid" data-sns-auth-flow="true">
+      <article class="story-card sns-flow-card">
+        <h3>Auth and submit controls</h3>
+        <div class="sns-field-stack">
+          <label class="sns-field">
+            <span class="meta-label">Auth state</span>
+            <select class="sns-select" data-sns-auth-select="true">
+              ${renderSnsAuthStateOptions(snsDemoState.authState)}
+            </select>
+          </label>
+          <label class="sns-checkbox-row">
+            <input type="checkbox" data-sns-failure-toggle="true" ${snsDemoState.shouldFailSubmission ? "checked" : ""}>
+            <span>Simulate write failure</span>
+          </label>
+          <label class="sns-field">
+            <span class="meta-label">Draft message</span>
+            <textarea
+              class="sns-textarea"
+              rows="4"
+              placeholder="Post a local SNS flow note"
+              data-sns-composer-input="true"
+            >${escapeHtml(snsDemoState.draft)}</textarea>
+          </label>
+          <div class="sns-button-row">
+            <button class="sns-button primary" type="button" data-sns-submit-button="true">Submit SNS post</button>
+            <button class="sns-button secondary" type="button" data-sns-reset-button="true">Reset demo state</button>
+          </div>
+        </div>
+      </article>
+      <article class="story-card sns-flow-card">
+        <h3>Flow result</h3>
+        <p class="panel-note" data-sns-flow-result="true" data-sns-flow-state="${escapeHtml(snsDemoState.flowState)}">${escapeHtml(
+          getSnsFlowSummaryText(snsDemoState.flowState)
+        )}</p>
+        <p class="sns-feedback ${snsDemoState.feedbackTone}" data-sns-feedback="true">${escapeHtml(
+          snsDemoState.feedbackMessage
+        )}</p>
+        <dl class="status-metadata">
+          <div>
+            <dt>Current auth</dt>
+            <dd data-sns-current-auth="true">${escapeHtml(snsDemoState.authState)}</dd>
+          </div>
+          <div>
+            <dt>Submission mode</dt>
+            <dd data-sns-submission-mode="true">${snsDemoState.shouldFailSubmission ? "failure" : "normal"}</dd>
+          </div>
+          <div>
+            <dt>Last submitted body</dt>
+            <dd data-sns-last-submitted-body="true">${escapeHtml(snsDemoState.lastSubmittedBody || "none")}</dd>
+          </div>
+        </dl>
+      </article>
+      <article class="story-card sns-flow-card">
+        <h3>Readback timeline</h3>
+        <ul class="sns-readback-list" data-sns-readback-list="true">
+          ${timelineEntries}
+        </ul>
+      </article>
+    </div>
+  `;
+}
+
+function renderSnsSurface(surface: SnsSurfaceDefinition): string {
+  return `
+    <section
+      class="panel panel-wide panel-sns-surface"
+      id="${escapeHtml(surface.surfaceId)}"
+      data-sns-surface="request-response"
+    >
+      <div class="sns-surface-header">
+        <p class="status-card-kicker">SNS reachability baseline</p>
+        <h2>${escapeHtml(surface.title)}</h2>
+        <p class="panel-note">${escapeHtml(surface.summary)}</p>
+      </div>
+      <div class="story-grid">
+        <article class="story-card" data-sns-surface-mount="true">
+          <h3>Surface checks</h3>
+          <ul class="story-list">
+            ${renderList(surface.checks, "story-item")}
+          </ul>
+        </article>
+        <article class="story-card" id="sns-posting-cta-guidance" data-sns-posting-target="true">
+          <h3>Posting CTA target</h3>
+          <p>Issue 121 の full auth-post-readback flow 前に、posting CTA が到達すべき narrow target をこの panel で固定する。</p>
+          <ul class="story-list">
+            ${renderList(
+              [
+                "first keep the target on /status so mount failure and CTA failure can be split",
+                "promote this target to a richer SNS interaction surface only after auth-post-readback flow lands",
+                "reuse the stable data-sns-* hooks in browser suites before broadening selectors"
+              ],
+              "story-item"
+            )}
+          </ul>
+        </article>
+      </div>
+      <div class="action-grid">
+        <a
+          class="route-link secondary"
+          href="${escapeHtml(toApplicationPath(surface.entryLink.href))}"
+          data-link="internal"
+          data-sns-entry-link="true"
+        >
+          <span>${escapeHtml(surface.entryLink.label)}</span>
+          <small>${escapeHtml(surface.entryLink.hint)}</small>
+        </a>
+        <a
+          class="route-link primary"
+          href="${escapeHtml(toApplicationPath(surface.postingCta.href))}"
+          data-link="internal"
+          data-sns-posting-cta="true"
+        >
+          <span>${escapeHtml(surface.postingCta.label)}</span>
+          <small>${escapeHtml(surface.postingCta.hint)}</small>
+        </a>
+      </div>
+      ${renderSnsAuthPostReadbackDemo()}
+    </section>
+  `;
+}
+
 function renderRoute(applicationRoot: HTMLDivElement): void {
   const currentPath = normalizePath(window.location.pathname);
   const portalVariant = resolvePortalVariant(window.location.hostname);
@@ -1160,6 +1312,8 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
         `
           : ""}
 
+        ${route.snsSurface ? renderSnsSurface(route.snsSurface) : ""}
+
         <section class="panel panel-wide">
           <h2>Next routes</h2>
           <div class="action-grid">
@@ -1177,6 +1331,51 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
   `;
 }
 
+function submitSnsDemoState(): void {
+  const submittedBody = snsDemoState.draft.trim();
+  snsDemoState.lastSubmittedBody = submittedBody;
+
+  if (!submittedBody) {
+    snsDemoState.flowState = "failure";
+    snsDemoState.feedbackTone = "error";
+    snsDemoState.feedbackMessage = "A draft body is required before the SNS demo can submit.";
+    return;
+  }
+
+  if (snsDemoState.authState === "guest") {
+    snsDemoState.flowState = "blocked";
+    snsDemoState.feedbackTone = "error";
+    snsDemoState.feedbackMessage = "Signed-out users remain blocked from posting to the SNS demo surface.";
+    return;
+  }
+
+  if (snsDemoState.shouldFailSubmission) {
+    snsDemoState.flowState = "failure";
+    snsDemoState.feedbackTone = "error";
+    snsDemoState.feedbackMessage = "Simulated write failure remained visible. No new readback entry was added.";
+    return;
+  }
+
+  snsDemoState.readbackEntries = [
+    {
+      id: snsDemoState.nextEntryId,
+      body: submittedBody,
+      author: snsDemoState.authState,
+      sequenceLabel: `local preview entry #${snsDemoState.nextEntryId}`
+    },
+    ...snsDemoState.readbackEntries
+  ];
+  snsDemoState.nextEntryId += 1;
+  snsDemoState.flowState = "success";
+  snsDemoState.feedbackTone = "success";
+  snsDemoState.feedbackMessage = "Signed-in submit path completed. Local readback is now visible on the SNS surface.";
+  snsDemoState.draft = "";
+}
+
+function resetSnsDemoState(): void {
+  snsDemoState = createInitialSnsDemoState();
+}
+
 async function bootstrapBrowserApplication(): Promise<void> {
   await import("./styles.css");
 
@@ -1186,10 +1385,55 @@ async function bootstrapBrowserApplication(): Promise<void> {
     throw new Error("Application root was not found.");
   }
 
+  document.addEventListener("input", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof HTMLTextAreaElement)) {
+      return;
+    }
+
+    if (target.matches('[data-sns-composer-input="true"]')) {
+      snsDemoState.draft = target.value;
+    }
+  });
+
+  document.addEventListener("change", (event) => {
+    const target = event.target;
+
+    if (target instanceof HTMLSelectElement && target.matches('[data-sns-auth-select="true"]')) {
+      snsDemoState.authState = target.value as SnsAuthState;
+      renderRoute(applicationRoot);
+      return;
+    }
+
+    if (target instanceof HTMLInputElement && target.matches('[data-sns-failure-toggle="true"]')) {
+      snsDemoState.shouldFailSubmission = target.checked;
+      renderRoute(applicationRoot);
+    }
+  });
+
   document.addEventListener("click", (event) => {
     const target = event.target;
 
     if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const submitButton = target.closest<HTMLButtonElement>('button[data-sns-submit-button="true"]');
+
+    if (submitButton) {
+      event.preventDefault();
+      submitSnsDemoState();
+      renderRoute(applicationRoot);
+      return;
+    }
+
+    const resetButton = target.closest<HTMLButtonElement>('button[data-sns-reset-button="true"]');
+
+    if (resetButton) {
+      event.preventDefault();
+      resetSnsDemoState();
+      renderRoute(applicationRoot);
       return;
     }
 
@@ -1218,9 +1462,9 @@ async function bootstrapBrowserApplication(): Promise<void> {
 }
 
 function runRouteValidationCli(): void {
-  const report = buildRouteValidationReport();
+  const report = buildRouteValidationReport(routeValidationContext);
 
-  if (validateRouteMetadata().length > 0) {
+  if (validateRouteMetadata(routeValidationContext).length > 0) {
     console.error(report);
     process.exitCode = 1;
     return;
@@ -1229,8 +1473,84 @@ function runRouteValidationCli(): void {
   console.log(report);
 }
 
-if (browserRuntimeAvailable) {
-  void bootstrapBrowserApplication();
-} else if (process.argv.includes("--validate-routes")) {
-  runRouteValidationCli();
+function runSnsRequestResponseContractCli(): void {
+  const report = buildSnsRequestResponseContractReport();
+
+  if (validateSnsRequestResponseContract().length > 0) {
+    console.error(report);
+    process.exitCode = 1;
+    return;
+  }
+
+  console.log(report);
 }
+
+function runSnsAuthErrorContractCli(): void {
+  const report = buildSnsAuthErrorContractReport();
+
+  if (validateSnsAuthErrorContract().length > 0) {
+    console.error(report);
+    process.exitCode = 1;
+    return;
+  }
+
+  console.log(report);
+}
+
+function getCliCommand():
+  | "validate-routes"
+  | "validate-sns-request-response-contract"
+  | "validate-sns-auth-error-contract"
+  | null {
+  if (typeof process === "undefined" || !Array.isArray(process.argv)) {
+    return null;
+  }
+
+  if (process.argv.includes("--validate-routes")) {
+    return "validate-routes";
+  }
+
+  if (process.argv.includes("--validate-sns-request-response-contract")) {
+    return "validate-sns-request-response-contract";
+  }
+
+  if (process.argv.includes("--validate-sns-auth-error-contract")) {
+    return "validate-sns-auth-error-contract";
+  }
+
+  return null;
+}
+
+function runCliCommand(
+  command:
+    | "validate-routes"
+    | "validate-sns-request-response-contract"
+    | "validate-sns-auth-error-contract"
+): void {
+  switch (command) {
+    case "validate-routes":
+      runRouteValidationCli();
+      break;
+    case "validate-sns-request-response-contract":
+      runSnsRequestResponseContractCli();
+      break;
+    case "validate-sns-auth-error-contract":
+      runSnsAuthErrorContractCli();
+      break;
+  }
+}
+
+function bootstrapApplication(): void {
+  const cliCommand = getCliCommand();
+
+  if (cliCommand) {
+    runCliCommand(cliCommand);
+    return;
+  }
+
+  if (browserRuntimeAvailable) {
+    void bootstrapBrowserApplication();
+  }
+}
+
+bootstrapApplication();

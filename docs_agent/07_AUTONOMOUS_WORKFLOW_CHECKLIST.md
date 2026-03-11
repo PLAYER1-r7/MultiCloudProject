@@ -6,6 +6,50 @@ If a preceding issue exists, `gh issue view <N> --json state` must return `"stat
 
 - [ ] No preceding issue exists for this task, OR the preceding issue is confirmed closed via `gh issue view <N> --json state`.
 - [ ] If close approval for the preceding issue has not been received, stopped here and requested human review before proceeding.
+- [ ] If the user asked for remaining tasks or next tasks without an explicit scope, anchored the request to the most recent active task contract, issue chain, or current app context instead of assuming project-wide scope.
+- [ ] If more than one plausible scope exists for an ambiguous task-list request, stopped and asked the user which scope to use before expanding the inventory.
+- [ ] Before producing a repository-wide remaining-task list, explicit wording such as project-wide or whole-repo was present.
+- [ ] The first response to an ambiguous task-list request stated the scope the agent was using.
+- [ ] If this Intake proposes a child or follow-up issue, wrote the parent issue terminal condition first.
+- [ ] If this Intake proposes a child or follow-up issue, confirmed that the new issue adds at least one of: new evidence collection, a new fixed judgment, or a new execution boundary.
+- [ ] Confirmed the proposed issue is not packaging-only rewording or restatement of the parent scope.
+- [ ] If 2 consecutive issues in the same chain failed to add new evidence, a new fixed judgment, or a new execution boundary, stopped decomposition and reviewed whether the chain should be closed instead.
+- [ ] If the proposed issue would become the 4th issue in the same chain, explicit human confirmation was recorded before accepting the Intake.
+
+### 30-Second Child-Issue Check
+
+Use this exact prompt before accepting a proposed child or follow-up issue.
+
+```text
+30-second child-issue check
+
+1. What new evidence would this issue add?
+2. What new fixed judgment would this issue add?
+3. What new execution boundary would this issue add?
+4. What is the parent issue terminal condition?
+5. If this issue is not created, can the work be closed or resolved in place instead?
+
+If answers 1-3 are all "none", do not create the issue.
+If answer 4 is missing, stop and write the terminal condition first.
+If answer 5 is "yes", prefer close or in-place resolution over a new child issue.
+```
+
+### 30-Second Ambiguous Task-List Check
+
+Use this exact prompt before answering a vague request such as remaining tasks or next tasks.
+
+```text
+30-second ambiguous task-list check
+
+1. What is the narrowest active scope in the current chat?
+2. Is the user asking about that scope, the current app, the current issue chain, or the whole project?
+3. What exact words justify expanding to repository-wide scope?
+4. If no exact words justify expansion, can I answer within the current active scope instead?
+
+If 2 is unclear, ask before listing tasks.
+If 3 is "none", do not expand to whole-project scope.
+If 4 is "yes", answer inside the current active scope and state that scope explicitly.
+```
 
 ## Before Coding
 
@@ -39,6 +83,19 @@ If blocked: question disposition -> `02_AUTONOMOUS_DEV_PROTOCOL.md` Step 2 (Cont
 ## Before Handoff
 
 If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION_OF_DONE.md`; PR packaging -> `05_PR_TASK_CONTRACT_TEMPLATE.md`.
+
+## Before Creating A PR
+
+- [ ] Before creating the PR, confirmed the implementation, required tests, related document updates, and issue-state synchronization for the target scope are complete.
+- [ ] Confirmed the PR is not reopening a closed chain for packaging-only continuation, and instead represents either a completed active scope or a fresh-record follow-up.
+- [ ] The PR title states what was completed or added, and does not collapse mixed code-and-doc synchronization work into a vague label.
+- [ ] The PR body includes Summary, What Changed, and Validation as the minimum fixed sections.
+- [ ] The What Changed section distinguishes implementation changes, validation additions, and issue or document synchronization instead of blending them together.
+- [ ] The Validation section lists only checks that were actually run, or explicitly states when a relevant check was not run.
+- [ ] If child issues were closed as part of the work, the corresponding parent baseline or summary record was also updated to reflect completion.
+- [ ] If a higher-level summary document exists for the scope, it was updated after the implementation chain completed.
+- [ ] Reviewer focus notes were reduced to 2 or 3 concrete review points.
+- [ ] The PR body wording was checked against the local diff, issue states, and summary documents for consistency.
 
 - [ ] Tests recorded.
 - [ ] DoD mandatory gates passed.

@@ -6,7 +6,10 @@ Use this template when packaging implementation into a PR or handoff review unit
 
 - Copy the fenced template below when preparing a PR description, handoff review note, or merge summary.
 - Keep `Planned scope` and `Actual scope` short and comparable.
+- Keep `Summary`, `What Changed`, and `Validation` as the minimum fixed PR-facing sections even when the package is short.
 - Record missing validation explicitly instead of hiding it in prose.
+- In `What Changed`, separate implementation changes, validation additions, and issue or document synchronization instead of collapsing them into one vague bullet.
+- If the task closed an issue chain or refused a proposed child issue, carry the stop-condition basis into `Closure rationale` so the PR package matches the shared execution record.
 - If the example includes reviewer or approval-owner actions, keep their boundary aligned with `ROLE_HANDOFF_OWNERSHIP.md` instead of redefining it in the PR note.
 
 ## Copy-Ready Template
@@ -18,6 +21,11 @@ Summary
 - Task ID:
 - Target App:
 - Related Issue:
+
+What Changed
+- Implementation:
+- Validation additions:
+- Issue or document sync:
 
 Contract Alignment
 - Planned scope:
@@ -33,6 +41,7 @@ Risk
 - Impact area:
 - Mitigation:
 - Rollback:
+- Closure rationale:
 
 Reviewer Notes
 - Review first:
@@ -52,6 +61,11 @@ Summary
 - Target App: sns
 - Related Issue: #487
 
+What Changed
+- Implementation: updated the /sns/ base path guidance used by the staging path
+- Validation additions: added staging smoke review points for /sns/ asset loading
+- Issue or document sync: updated the handoff notes to match the staging review path
+
 Contract Alignment
 - Planned scope: fix the frontend_react /sns/ base path and handoff notes for staging
 - Actual scope: updated the /sns/ base path guidance, handoff notes, and deploy review points
@@ -66,6 +80,7 @@ Risk
 - Impact area: sns staging /sns/ route and static asset cache behavior
 - Mitigation: sns-reviewer verifies /sns/ asset loading before merge
 - Rollback: sns-approval-owner can stop deploy-sns-aws.yml and restore the previous asset bundle
+- Closure rationale: no issue-chain closure decision was made in this PR package; closure remains outside the current staging scope
 
 Reviewer Notes
 - Review first: sns-reviewer checks /sns/ cache invalidation and handoff notes
@@ -78,8 +93,10 @@ Reviewer Notes
 This PR contract is the review-ready projection of the shared execution record.
 
 - `Summary` and `Contract Alignment` should define the final `Scope` and `Outcome`.
+- `What Changed` should make the implementation, validation additions, and issue or document synchronization legible without rereading the full diff.
 - `Validation` should map directly to `Evidence`.
 - `Risk` should map directly to `Risks or blockers`.
+- `Closure rationale` should map directly to `Closure rationale` when the task closed an issue chain or refused to create a child issue.
 - `Reviewer Notes` should become the reviewer-facing part of `Next action`.
 
 ## Packaging Rule

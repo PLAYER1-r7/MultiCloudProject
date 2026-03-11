@@ -197,6 +197,22 @@ DNS verification retrospective:
 - 今後の同系統作業では、親 Issue に terminal condition を先書きし、2 件連続で前進がなければ child issue を増やさず close を再評価する
 - provider credentials、provider API integration、Route 53 migration は DNS verification の残件ではなく、別系統の governance / implementation track として扱う
 
+## Next Major Expansion Planning Note
+
+- next major feature candidate is a simple SNS surface with message posting and listing, but this is not an extension of the current static-first baseline; it reopens auth、API、persistence、security、monitoring、rollback as a fresh planning track
+- planning entry point: [docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md](docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md)
+- do not reopen Issue 3 or Issue 7 for this work; keep them as historical static-first baselines and start a fresh issue chain for SNS expansion
+- Azure support remains planning-only until 2026-04 because current monthly cost is already high; do not start actual Azure implementation or live resource operation before that gate is reopened
+- during March, Azure work should be limited to cost guardrail judgment、IaC/workflow planning、identity portability、observability/rollback portability preparation
+
+## SNS Regression Chain Status
+
+- SNS regression planning parent issues Issue 113、Issue 115、Issue 116 are closed and now retained as baseline references after the child implementation chain completed
+- SNS implementation child issues Issue 119、Issue 120、Issue 121、Issue 122 are closed as completed local implementation references for contract-side CLI coverage and browser-side local preview suites
+- portal-web now includes the SNS request-response contract validator、auth-error contract validator、dedicated SNS surface reachability checks、and auth-post-readback major-flow coverage in the same app workspace
+- validated local evidence for the completed chain is: `cd apps/portal-web && npm run typecheck && npm run test:routes && npm run test:sns-request-response-contract && npm run test:sns-auth-error-contract && npm run test:sns-surface-reachability && npm run test:sns-auth-post-readback`
+- next SNS work, if any, should start from a fresh planning or execution record rather than reopening Issue 113 through Issue 122, because the current regression chain is complete
+
 ## Execution Record
 
 ```text
