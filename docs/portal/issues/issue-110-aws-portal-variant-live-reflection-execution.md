@@ -57,7 +57,7 @@ Risk and Rollback
 - CLOSED
 - GitHub Issue: #110
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/110
-- Sync Status: synced to GitHub
+- Sync Status: synced to GitHub and closed
 
 ## Current Execution Snapshot
 
@@ -65,7 +65,7 @@ Risk and Rollback
 - reviewed build evidence is build run `22952659968` for the same commit
 - reviewed staging verification is staging run `22952673408` for the same commit
 - production deploy evidence is production run `22952714344` for the same commit
-- `https://www.aws.ashnova.jp/` and `https://www.aws.ashnova.jp/status` now serve the promoted portal shell referencing `/assets/index-B6aEQIvb.js`
+- `https://www.aws.ashnova.jp` now serves the promoted portal shell referencing `/assets/index-B6aEQIvb.js`, and the required major-route public checks for `/`, `/overview`, `/guidance`, and `/status` are recorded in the verification snapshot below
 - deployed bundle `https://www.aws.ashnova.jp/assets/index-B6aEQIvb.js` contains the hostname-aware variant markers and host mapping for `www.aws.ashnova.jp`, `www.gcp.ashnova.jp`, and `preview.gcp.ashnova.jp`
 
 ## Public Verification Snapshot

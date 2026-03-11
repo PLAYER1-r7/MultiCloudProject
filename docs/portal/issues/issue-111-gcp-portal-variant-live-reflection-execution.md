@@ -57,7 +57,7 @@ Risk and Rollback
 - CLOSED
 - GitHub Issue: #111
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/111
-- Sync Status: synced to GitHub
+- Sync Status: synced to GitHub and closed
 
 ## Current Execution Snapshot
 
