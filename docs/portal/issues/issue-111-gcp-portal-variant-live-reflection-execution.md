@@ -87,7 +87,7 @@ Risk and Rollback
 - reviewed staging verification for the follow-up is staging run `22953295798`
 - GCP deploy evidence for the follow-up is deploy run `22953350674` using resource execution reference `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md`
 - public browser verification for the follow-up was executed with `cd apps/portal-web && npm run test:public-variants`
-- Playwright verification confirmed `https://www.gcp.ashnova.jp/`, `https://preview.gcp.ashnova.jp/`, and their `/status` routes rendered `GCP portal variant`, the expected host markers, route markers, runtime title segment `GCP host view`, and runtime description text on the public sites
+- Playwright verification confirmed `https://www.gcp.ashnova.jp/`, `https://www.gcp.ashnova.jp/overview`, `https://www.gcp.ashnova.jp/guidance`, `https://www.gcp.ashnova.jp/status`, `https://preview.gcp.ashnova.jp/`, `https://preview.gcp.ashnova.jp/overview`, `https://preview.gcp.ashnova.jp/guidance`, and `https://preview.gcp.ashnova.jp/status` rendered `GCP portal variant`, the expected host markers, route markers, runtime title segment `GCP host view`, and runtime description text on the public sites
 - the follow-up keeps the shared HTML shell generic and records GCP-specific rendering as runtime metadata plus browser-observed markers rather than server-rendered split HTML
 
 ## Execution Record

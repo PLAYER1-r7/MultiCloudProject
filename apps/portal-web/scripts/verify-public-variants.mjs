@@ -9,6 +9,20 @@ const defaultTargets = [
     expectedTitleSegment: "AWS host view"
   },
   {
+    name: "aws-overview",
+    url: "https://www.aws.ashnova.jp/overview",
+    expectedVariant: "AWS portal variant",
+    expectedHost: "www.aws.ashnova.jp",
+    expectedTitleSegment: "AWS host view"
+  },
+  {
+    name: "aws-guidance",
+    url: "https://www.aws.ashnova.jp/guidance",
+    expectedVariant: "AWS portal variant",
+    expectedHost: "www.aws.ashnova.jp",
+    expectedTitleSegment: "AWS host view"
+  },
+  {
     name: "gcp-root",
     url: "https://www.gcp.ashnova.jp/",
     expectedVariant: "GCP portal variant",
@@ -16,8 +30,36 @@ const defaultTargets = [
     expectedTitleSegment: "GCP host view"
   },
   {
+    name: "gcp-overview",
+    url: "https://www.gcp.ashnova.jp/overview",
+    expectedVariant: "GCP portal variant",
+    expectedHost: "www.gcp.ashnova.jp",
+    expectedTitleSegment: "GCP host view"
+  },
+  {
+    name: "gcp-guidance",
+    url: "https://www.gcp.ashnova.jp/guidance",
+    expectedVariant: "GCP portal variant",
+    expectedHost: "www.gcp.ashnova.jp",
+    expectedTitleSegment: "GCP host view"
+  },
+  {
     name: "gcp-preview-root",
     url: "https://preview.gcp.ashnova.jp/",
+    expectedVariant: "GCP portal variant",
+    expectedHost: "preview.gcp.ashnova.jp",
+    expectedTitleSegment: "GCP host view"
+  },
+  {
+    name: "gcp-preview-overview",
+    url: "https://preview.gcp.ashnova.jp/overview",
+    expectedVariant: "GCP portal variant",
+    expectedHost: "preview.gcp.ashnova.jp",
+    expectedTitleSegment: "GCP host view"
+  },
+  {
+    name: "gcp-preview-guidance",
+    url: "https://preview.gcp.ashnova.jp/guidance",
     expectedVariant: "GCP portal variant",
     expectedHost: "preview.gcp.ashnova.jp",
     expectedTitleSegment: "GCP host view"

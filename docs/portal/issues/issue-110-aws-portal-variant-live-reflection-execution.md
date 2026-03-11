@@ -88,7 +88,7 @@ Risk and Rollback
 - reviewed staging verification for the follow-up is staging run `22953295798`
 - production deploy evidence for the follow-up is production run `22953349238`
 - public browser verification for the follow-up was executed with `cd apps/portal-web && npm run test:public-variants`
-- Playwright verification confirmed `https://www.aws.ashnova.jp/` and `/status` rendered `AWS portal variant`, host `www.aws.ashnova.jp`, route markers, runtime title segment `AWS host view`, and runtime description text on the public site
+- Playwright verification confirmed `https://www.aws.ashnova.jp/`, `/overview`, `/guidance`, and `/status` rendered `AWS portal variant`, host `www.aws.ashnova.jp`, route markers, runtime title segment `AWS host view`, and runtime description text on the public site
 - the follow-up keeps the shared HTML shell generic and records AWS-specific rendering as runtime metadata plus browser-observed markers rather than server-rendered split HTML
 
 ## Execution Record
