@@ -81,6 +81,16 @@ Risk and Rollback
 - reviewed promotion path: build `22952659968` -> staging `22952673408` -> production `22952714344`
 - public verification path: curl probes returned `HTTP 200` on the required AWS routes and the public shell now references the promoted bundle hash
 
+## Host-Aware Metadata Follow-Up Snapshot
+
+- follow-up commit for host-aware head metadata and browser automation is `38085e8368fd0e266bca5a183530d065cab37a0a`
+- reviewed build evidence for the follow-up is build run `22953281656`
+- reviewed staging verification for the follow-up is staging run `22953295798`
+- production deploy evidence for the follow-up is production run `22953349238`
+- public browser verification for the follow-up was executed with `cd apps/portal-web && npm run test:public-variants`
+- Playwright verification confirmed `https://www.aws.ashnova.jp/` and `/status` rendered `AWS portal variant`, host `www.aws.ashnova.jp`, route markers, runtime title segment `AWS host view`, and runtime description text on the public site
+- the follow-up keeps the shared HTML shell generic and records AWS-specific rendering as runtime metadata plus browser-observed markers rather than server-rendered split HTML
+
 ## Execution Record
 
 - promotion candidate commit: `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
@@ -88,3 +98,7 @@ Risk and Rollback
 - staging workflow: `portal-staging-deploy` run `22952673408`
 - production workflow: `portal-production-deploy` run `22952714344`
 - public bundle evidence: `https://www.aws.ashnova.jp/assets/index-B6aEQIvb.js`
+- host-aware metadata follow-up commit: `38085e8368fd0e266bca5a183530d065cab37a0a`
+- host-aware metadata follow-up build workflow: `portal-build` run `22953281656`
+- host-aware metadata follow-up staging workflow: `portal-staging-deploy` run `22953295798`
+- host-aware metadata follow-up production workflow: `portal-production-deploy` run `22953349238`

@@ -80,6 +80,16 @@ Risk and Rollback
 - reviewed promotion path: build `22952659968` -> GCP deploy `22952760131`
 - public verification path: curl probes returned `HTTP 200` on the required GCP production-equivalent and retained preview routes and the public shell now references the promoted bundle hash
 
+## Host-Aware Metadata Follow-Up Snapshot
+
+- follow-up commit for host-aware head metadata and browser automation is `38085e8368fd0e266bca5a183530d065cab37a0a`
+- reviewed build evidence for the follow-up is build run `22953281656`
+- reviewed staging verification for the follow-up is staging run `22953295798`
+- GCP deploy evidence for the follow-up is deploy run `22953350674` using resource execution reference `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md`
+- public browser verification for the follow-up was executed with `cd apps/portal-web && npm run test:public-variants`
+- Playwright verification confirmed `https://www.gcp.ashnova.jp/`, `https://preview.gcp.ashnova.jp/`, and their `/status` routes rendered `GCP portal variant`, the expected host markers, route markers, runtime title segment `GCP host view`, and runtime description text on the public sites
+- the follow-up keeps the shared HTML shell generic and records GCP-specific rendering as runtime metadata plus browser-observed markers rather than server-rendered split HTML
+
 ## Execution Record
 
 - promotion candidate commit: `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
@@ -87,3 +97,7 @@ Risk and Rollback
 - GCP deploy workflow: `portal-gcp-preview-deploy` run `22952760131`
 - resource execution reference: `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md`
 - public bundle evidence: `https://www.gcp.ashnova.jp/assets/index-B6aEQIvb.js`, `https://preview.gcp.ashnova.jp/assets/index-B6aEQIvb.js`
+- host-aware metadata follow-up commit: `38085e8368fd0e266bca5a183530d065cab37a0a`
+- host-aware metadata follow-up build workflow: `portal-build` run `22953281656`
+- host-aware metadata follow-up staging workflow: `portal-staging-deploy` run `22953295798`
+- host-aware metadata follow-up GCP deploy workflow: `portal-gcp-preview-deploy` run `22953350674`
