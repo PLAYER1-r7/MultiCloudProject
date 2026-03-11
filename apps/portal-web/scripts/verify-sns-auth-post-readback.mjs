@@ -52,6 +52,10 @@ const rows = [];
 try {
   const [target] = targets;
 
+  if (!target) {
+    throw new Error("SNS auth flow targets must include at least one entry");
+  }
+
   await page.goto(target.url, { waitUntil: "networkidle" });
   await page.locator(`a[data-link="internal"][href="${target.expectedEntryHref}"]`).first().click();
   await page.locator(target.expectedSurfaceSelector).first().waitFor({ state: "visible" });

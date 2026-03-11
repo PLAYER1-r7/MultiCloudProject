@@ -25,6 +25,8 @@ type AuthErrorContractSpec = {
   writeFailureVisibility: WriteFailureVisibilitySpec;
 };
 
+// This baseline validates the intended SNS failure contract shape only.
+// It does not assert that the local demo surface performs a real HTTP request.
 const snsAuthErrorContractSpec: AuthErrorContractSpec = {
   permissionMatrix: [
     {

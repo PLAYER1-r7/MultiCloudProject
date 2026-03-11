@@ -60,9 +60,11 @@ function renderMarkdownTable(rows) {
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 const rows = [];
+let currentTargetName = "setup";
 
 try {
   for (const target of targets) {
+    currentTargetName = target.name;
     await page.goto(target.url, { waitUntil: "networkidle" });
     await page.locator(".page-shell").waitFor({ state: "visible" });
 
@@ -97,6 +99,17 @@ try {
       result: "passed"
     });
   }
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+
+  rows.push({
+    target: currentTargetName,
+    surfaceMount: "failed",
+    entryLink: "failed",
+    ctaReachability: "failed",
+    result: message.replace(/\|/g, "/")
+  });
+  process.exitCode = 1;
 } finally {
   await browser.close();
 }
