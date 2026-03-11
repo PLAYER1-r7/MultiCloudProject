@@ -6,6 +6,7 @@ Initial static-first frontend scaffold for the MultiCloudProject portal.
 
 - Vite plus TypeScript application seed
 - Public route shells rewritten around the current AWS and GCP delivery state
+- Runtime hostname-aware AWS/GCP/local preview variant selection inside a shared route inventory
 - Build output intended for static deployment to S3 and CloudFront
 - No framework runtime dependency yet
 - Cloud-status summary routing that points readers back to canonical repository docs
@@ -30,6 +31,7 @@ Initial static-first frontend scaffold for the MultiCloudProject portal.
 
 ## Route Intent
 
+- Shared route structure is preserved across AWS, GCP, and local preview variants; runtime hostname detection changes copy emphasis rather than route inventory
 - `/` is the cross-cloud entry view for the current AWS production and GCP production-equivalent snapshot
 - `/overview` explains the current reader and scope boundary for the portal
 - `/guidance` routes readers to status, delivery, or operations depending on intent
@@ -43,6 +45,9 @@ Initial static-first frontend scaffold for the MultiCloudProject portal.
 - `VITE_BASE_PATH` can be set at build time if the app is hosted below `/`
 - Secrets must not be embedded into the frontend
 - This directory is the implementation target introduced by Issue 16
+- `www.aws.ashnova.jp` resolves to the AWS portal variant
+- `www.gcp.ashnova.jp` and `preview.gcp.ashnova.jp` resolve to the GCP portal variant
+- localhost and unknown hosts resolve to a generic local preview variant instead of impersonating AWS or GCP
 - `/status` opens the canonical cloud summary and closed parent-map docs from the current route surface
 - `/status` also renders AWS and GCP remaining-task cards so the next batch split can be compared at a glance
 - `/status` treats the AWS DNS verification chain through Issue 95 as a closed reference, not an active follow-up queue

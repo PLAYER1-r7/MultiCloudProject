@@ -44,7 +44,41 @@ type RouteValidationIssue = {
   message: string;
 };
 
+type PortalVariant = "aws" | "gcp" | "local";
+
+type RouteDefinitions = Record<string, RouteDefinition>;
+
+type RouteDefinitionOverride = Partial<RouteDefinition>;
+
+type PortalVariantMetadata = {
+  label: string;
+  heroBadge: string;
+  hostnames: string[];
+  fallbackLabel: string;
+};
+
 const requiredMajorFlowRoutes = ["/", "/overview", "/guidance", "/status"] as const;
+const portalVariants: PortalVariant[] = ["aws", "gcp", "local"];
+const portalVariantMetadata: Record<PortalVariant, PortalVariantMetadata> = {
+  aws: {
+    label: "AWS portal variant",
+    heroBadge: "AWS variant",
+    hostnames: ["www.aws.ashnova.jp"],
+    fallbackLabel: "AWS production host"
+  },
+  gcp: {
+    label: "GCP portal variant",
+    heroBadge: "GCP variant",
+    hostnames: ["www.gcp.ashnova.jp", "preview.gcp.ashnova.jp"],
+    fallbackLabel: "GCP public hosts"
+  },
+  local: {
+    label: "Local preview variant",
+    heroBadge: "Local preview",
+    hostnames: [],
+    fallbackLabel: "localhost or unknown host"
+  }
+};
 const importMetaEnv = (import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env;
 const browserRuntimeAvailable = typeof window !== "undefined" && typeof document !== "undefined";
 
@@ -552,6 +586,120 @@ export const routeDefinitions: Record<string, RouteDefinition> = {
   }
 };
 
+const portalVariantRouteOverrides: Record<PortalVariant, Partial<Record<string, RouteDefinitionOverride>>> = {
+  aws: {
+    "/": {
+      eyebrow: "AWS portal variant | production custom domain",
+      summary:
+        "AWS production custom domain の current state と follow-up hardening を primary context として表示し、GCP の live surface は secondary cross-cloud reference として残す。"
+    },
+    "/overview": {
+      eyebrow: "AWS-facing scope and readers",
+      summary:
+        "この hostname では AWS production state、AWS operator path、AWS hardening queue を primary lens に置いたうえで、GCP は cross-cloud comparison reference として読む。"
+    },
+    "/guidance": {
+      eyebrow: "AWS-oriented route guidance",
+      summary:
+        "AWS current state、DNS and alert follow-up、rollback depth を先に追いたい reader 向けに、shared route の中で AWS 側の読み順を優先表示する。"
+    },
+    "/platform": {
+      eyebrow: "AWS production primary | GCP secondary reference",
+      summary:
+        "AWS production custom domain を primary surface として表示し、GCP retained preview と production-equivalent hostname は secondary reference として並べる。"
+    },
+    "/delivery": {
+      eyebrow: "AWS candidate build | live split follows",
+      summary:
+        "local implementation candidate を AWS-facing portal copy として整えつつ、public reflection evidence 自体は separate AWS and GCP execution issue に残す。"
+    },
+    "/operations": {
+      eyebrow: "AWS operator path primary",
+      summary:
+        "AWS production monitoring baseline、external DNS reversal path、rollback depth を primary operator context として表示し、GCP operations は comparative reference として残す。"
+    },
+    "/status": {
+      eyebrow: "AWS primary live | GCP secondary reference",
+      summary:
+        "AWS production current state と next hardening queue を primary に表示しつつ、GCP retained preview と production-equivalent surface は cross-cloud reference として追えるようにする。"
+    }
+  },
+  gcp: {
+    "/": {
+      eyebrow: "GCP portal variant | production-equivalent and retained preview",
+      summary:
+        "GCP production-equivalent hostname と retained preview の current state を primary context として表示し、AWS production surface は secondary cross-cloud reference として残す。"
+    },
+    "/overview": {
+      eyebrow: "GCP-facing scope and readers",
+      summary:
+        "この hostname では GCP production-equivalent state、retained preview lifecycle、GCP hardening follow-up を primary lens に置いたうえで、AWS は comparison reference として読む。"
+    },
+    "/guidance": {
+      eyebrow: "GCP-oriented route guidance",
+      summary:
+        "GCP current state、retained preview shutdown decisioning、Cloud Armor and notification follow-up を先に追いたい reader 向けに、shared route の中で GCP 側の読み順を優先表示する。"
+    },
+    "/platform": {
+      eyebrow: "GCP public surfaces primary | AWS secondary reference",
+      summary:
+        "GCP retained preview と production-equivalent hostname を primary surface として表示し、AWS production custom domain は secondary reference として並べる。"
+    },
+    "/delivery": {
+      eyebrow: "GCP candidate build | live split follows",
+      summary:
+        "local implementation candidate を GCP-facing portal copy として整えつつ、public reflection evidence 自体は separate AWS and GCP execution issue に残す。"
+    },
+    "/operations": {
+      eyebrow: "GCP operator path primary",
+      summary:
+        "retained preview lifecycle judgment、production-equivalent verification reference、Cloud Armor and credential rotation follow-up を primary operator context として表示し、AWS operations は comparative reference として残す。"
+    },
+    "/status": {
+      eyebrow: "GCP primary live | AWS secondary reference",
+      summary:
+        "GCP production-equivalent current state と retained preview follow-up を primary に表示しつつ、AWS production surface は cross-cloud reference として追えるようにする。"
+    }
+  },
+  local: {
+    "/": {
+      eyebrow: "Local preview variant | generic cross-cloud view",
+      summary:
+        "local dev または unknown host では AWS/GCP のどちらにも寄せず、generic preview として cross-cloud summary を表示し、runtime hostname 判定が明示的に確認できるようにする。"
+    },
+    "/overview": {
+      eyebrow: "Local preview scope and readers",
+      summary:
+        "local preview では AWS/GCP のどちらにも擬態せず、shared route structure と variant split 自体を確認するための generic portal view として扱う。"
+    },
+    "/guidance": {
+      eyebrow: "Local preview route guidance",
+      summary:
+        "local validation では cloud-specific public claim を避けつつ、AWS/GCP のどちらへ進む route かを generic preview から比較できるようにする。"
+    },
+    "/platform": {
+      eyebrow: "Generic preview | compare AWS and GCP surfaces",
+      summary:
+        "local preview では AWS production と GCP public surfaces を並列比較し、unknown host がどちらか一方に暗黙で寄らないことを明示する。"
+    },
+    "/delivery": {
+      eyebrow: "Local candidate build | no live claim",
+      summary:
+        "local preview は runtime hostname-aware split の検証面であり、この時点では browser-facing live reflection claim を伴わない build candidate として扱う。"
+    },
+    "/operations": {
+      eyebrow: "Generic preview | compare operator paths",
+      summary:
+        "local preview では AWS/GCP の current operator path を比較表示し、variant split 後も shared route structure が壊れていないことを確認する。"
+    },
+    "/status": {
+      eyebrow: "Generic preview | compare AWS and GCP status",
+      summary:
+        "local preview では AWS/GCP の remaining tasks を並列比較し、unknown host fallback が cloud-specific public wording を誤って名乗らないことを確認する。"
+    }
+  }
+};
+
 export const navGroups: NavGroup[] = [
   {
     title: "Public Pages",
@@ -564,6 +712,66 @@ export const navGroups: NavGroup[] = [
 ];
 
 const applicationBasePath = normalizeBasePath(importMetaEnv?.BASE_URL || "/");
+
+function resolvePortalVariant(hostname: string): PortalVariant {
+  const normalizedHostname = hostname.trim().toLowerCase();
+
+  if (portalVariantMetadata.aws.hostnames.includes(normalizedHostname)) {
+    return "aws";
+  }
+
+  if (portalVariantMetadata.gcp.hostnames.includes(normalizedHostname)) {
+    return "gcp";
+  }
+
+  return "local";
+}
+
+function getVariantDisplayHost(hostname: string, variant: PortalVariant): string {
+  const normalizedHostname = hostname.trim().toLowerCase();
+
+  if (normalizedHostname) {
+    return normalizedHostname;
+  }
+
+  return portalVariantMetadata[variant].fallbackLabel;
+}
+
+function getHeroBadges(variant: PortalVariant, hostname: string): string[] {
+  return [
+    portalVariantMetadata[variant].heroBadge,
+    getVariantDisplayHost(hostname, variant),
+    "Static delivery",
+    "TypeScript scaffold"
+  ];
+}
+
+function getVariantStatusCards(variant: PortalVariant): StatusTaskCard[] {
+  const sharedStatusCards = routeDefinitions["/status"].statusCards ?? [];
+
+  if (variant === "gcp" && sharedStatusCards.length >= 2) {
+    return [sharedStatusCards[1], sharedStatusCards[0]];
+  }
+
+  return sharedStatusCards;
+}
+
+function getRouteDefinitionsForVariant(variant: PortalVariant): RouteDefinitions {
+  const overrides = portalVariantRouteOverrides[variant];
+
+  return Object.fromEntries(
+    Object.entries(routeDefinitions).map(([path, route]) => {
+      const override = overrides[path];
+      const resolvedRoute = override ? { ...route, ...override } : { ...route };
+
+      if (path === "/status") {
+        resolvedRoute.statusCards = getVariantStatusCards(variant);
+      }
+
+      return [path, resolvedRoute];
+    })
+  );
+}
 
 function normalizeBasePath(basePath: string): string {
   if (!basePath || basePath === "/") {
@@ -611,68 +819,69 @@ function normalizePath(pathname: string): string {
   return routePath || "/";
 }
 
-function getReferencedRoutePaths(): string[] {
-  return Object.values(routeDefinitions).flatMap((route) =>
+function getReferencedRoutePaths(definitions: RouteDefinitions): string[] {
+  return Object.values(definitions).flatMap((route) =>
     route.actions
       .map((action) => action.href)
       .filter((href) => !/^https?:\/\//.test(href))
   );
 }
 
-export function validateRouteMetadata(): RouteValidationIssue[] {
+function validateRouteMetadataForVariant(variant: PortalVariant): RouteValidationIssue[] {
   const issues: RouteValidationIssue[] = [];
+  const definitions = getRouteDefinitionsForVariant(variant);
 
   for (const path of requiredMajorFlowRoutes) {
-    const route = routeDefinitions[path];
+    const route = definitions[path];
 
     if (!route) {
       issues.push({
-        scope: path,
+        scope: `${variant}:${path}`,
         message: "required major-flow route definition is missing"
       });
       continue;
     }
 
     if (!route.title.trim()) {
-      issues.push({ scope: path, message: "title must not be empty" });
+      issues.push({ scope: `${variant}:${path}`, message: "title must not be empty" });
     }
 
     if (!route.summary.trim()) {
-      issues.push({ scope: path, message: "summary must not be empty" });
+      issues.push({ scope: `${variant}:${path}`, message: "summary must not be empty" });
     }
 
     if (route.checklist.length === 0) {
-      issues.push({ scope: path, message: "checklist must include at least one baseline item" });
+      issues.push({ scope: `${variant}:${path}`, message: "checklist must include at least one baseline item" });
     }
 
     if (route.sections.length === 0) {
-      issues.push({ scope: path, message: "sections must include at least one major-flow explanation" });
+      issues.push({ scope: `${variant}:${path}`, message: "sections must include at least one major-flow explanation" });
     }
 
     if (route.actions.length === 0) {
-      issues.push({ scope: path, message: "actions must include at least one next-route link" });
+      issues.push({ scope: `${variant}:${path}`, message: "actions must include at least one next-route link" });
     }
   }
 
   for (const group of navGroups) {
     if (group.paths.length === 0) {
-      issues.push({ scope: group.title, message: "navigation group must not be empty" });
+      issues.push({ scope: `${variant}:${group.title}`, message: "navigation group must not be empty" });
     }
 
     for (const path of group.paths) {
-      if (!routeDefinitions[path]) {
+      if (!definitions[path]) {
         issues.push({
-          scope: group.title,
+          scope: `${variant}:${group.title}`,
           message: `navigation path ${path} does not have a route definition`
         });
       }
     }
   }
 
-  for (const referencedPath of getReferencedRoutePaths()) {
-    if (!routeDefinitions[referencedPath]) {
+  for (const referencedPath of getReferencedRoutePaths(definitions)) {
+    if (!definitions[referencedPath]) {
       issues.push({
-        scope: referencedPath,
+        scope: `${variant}:${referencedPath}`,
         message: "action link points to a route that is not defined"
       });
     }
@@ -683,7 +892,7 @@ export function validateRouteMetadata(): RouteValidationIssue[] {
 
     if (roundTripPath !== path) {
       issues.push({
-        scope: path,
+        scope: `${variant}:${path}`,
         message: `base-path round trip failed: received ${roundTripPath}`
       });
     }
@@ -692,12 +901,17 @@ export function validateRouteMetadata(): RouteValidationIssue[] {
   return issues;
 }
 
+export function validateRouteMetadata(): RouteValidationIssue[] {
+  return portalVariants.flatMap((variant) => validateRouteMetadataForVariant(variant));
+}
+
 export function buildRouteValidationReport(): string {
   const issues = validateRouteMetadata();
   const evidenceLines = [
     "Route validation baseline",
     `- Base path: ${applicationBasePath || "/"}`,
     `- Route definitions: ${Object.keys(routeDefinitions).length}`,
+    `- Variants: ${portalVariants.join(", ")}`,
     `- Required major-flow routes: ${requiredMajorFlowRoutes.join(", ")}`,
     `- Navigation groups: ${navGroups.map((group) => group.title).join(", ")}`,
     `- Result: ${issues.length === 0 ? "passed" : "failed"}`
@@ -752,12 +966,16 @@ function renderActionLinks(actions: ActionLink[], className: string): string {
     .join("");
 }
 
-function renderNavigation(currentPath: string): string {
+function renderBadges(badges: string[]): string {
+  return badges.map((badge) => `<span class="badge">${escapeHtml(badge)}</span>`).join("");
+}
+
+function renderNavigation(currentPath: string, definitions: RouteDefinitions): string {
   return navGroups
     .map((group) => {
       const links = group.paths
         .map((path) => {
-          const route = routeDefinitions[path];
+          const route = definitions[path];
           const currentClass = currentPath === path ? "nav-link current" : "nav-link";
           const destination = toApplicationPath(path);
 
@@ -829,9 +1047,13 @@ function renderStatusCards(statusCards: StatusTaskCard[]): string {
 
 function renderRoute(applicationRoot: HTMLDivElement): void {
   const currentPath = normalizePath(window.location.pathname);
-  const route = routeDefinitions[currentPath] ?? routeDefinitions["/"];
+  const portalVariant = resolvePortalVariant(window.location.hostname);
+  const resolvedRouteDefinitions = getRouteDefinitionsForVariant(portalVariant);
+  const route = resolvedRouteDefinitions[currentPath] ?? resolvedRouteDefinitions["/"];
+  const variantHost = getVariantDisplayHost(window.location.hostname, portalVariant);
+  const heroBadges = getHeroBadges(portalVariant, window.location.hostname);
 
-  document.title = `${route.title} | MultiCloudProject Portal`;
+  document.title = `${route.title} | ${portalVariantMetadata[portalVariant].label} | MultiCloudProject Portal`;
 
   applicationRoot.innerHTML = `
     <div class="page-shell">
@@ -840,13 +1062,16 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
       <header class="hero">
         <p class="eyebrow">${escapeHtml(route.eyebrow)}</p>
         <div class="hero-topline">
-          <span class="badge">AWS first</span>
-          <span class="badge">Static delivery</span>
-          <span class="badge">TypeScript scaffold</span>
+          ${renderBadges(heroBadges)}
         </div>
         <h1>${escapeHtml(route.title)}</h1>
         <p class="hero-summary">${escapeHtml(route.summary)}</p>
         <div class="hero-meta">
+          <div class="meta-block">
+            <span class="meta-label">Active variant</span>
+            <p>${escapeHtml(portalVariantMetadata[portalVariant].label)}</p>
+            <p>${escapeHtml(variantHost)}</p>
+          </div>
           <div class="meta-block">
             <span class="meta-label">Audience</span>
             <p>${escapeHtml(route.audience)}</p>
@@ -862,7 +1087,7 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
       </header>
 
       <nav class="main-nav" aria-label="Portal routes">
-        ${renderNavigation(currentPath)}
+        ${renderNavigation(currentPath, resolvedRouteDefinitions)}
       </nav>
 
       <main class="content-grid">
