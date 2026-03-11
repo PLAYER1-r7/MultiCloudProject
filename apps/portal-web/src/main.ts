@@ -1234,6 +1234,29 @@ function renderSnsSurface(surface: SnsSurfaceDefinition): string {
   `;
 }
 
+function scrollToHashTarget(): void {
+  const hash = window.location.hash;
+
+  if (!hash) {
+    return;
+  }
+
+  const targetId = decodeURIComponent(hash.slice(1));
+
+  if (!targetId) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    document.getElementById(targetId)?.scrollIntoView({ block: "start" });
+  });
+}
+
+function renderCurrentRoute(applicationRoot: HTMLDivElement): void {
+  renderRoute(applicationRoot);
+  scrollToHashTarget();
+}
+
 function renderRoute(applicationRoot: HTMLDivElement): void {
   const currentPath = normalizePath(window.location.pathname);
   const portalVariant = resolvePortalVariant(window.location.hostname);
@@ -1402,13 +1425,13 @@ async function bootstrapBrowserApplication(): Promise<void> {
 
     if (target instanceof HTMLSelectElement && target.matches('[data-sns-auth-select="true"]')) {
       snsDemoState.authState = target.value as SnsAuthState;
-      renderRoute(applicationRoot);
+      renderCurrentRoute(applicationRoot);
       return;
     }
 
     if (target instanceof HTMLInputElement && target.matches('[data-sns-failure-toggle="true"]')) {
       snsDemoState.shouldFailSubmission = target.checked;
-      renderRoute(applicationRoot);
+      renderCurrentRoute(applicationRoot);
     }
   });
 
@@ -1424,7 +1447,7 @@ async function bootstrapBrowserApplication(): Promise<void> {
     if (submitButton) {
       event.preventDefault();
       submitSnsDemoState();
-      renderRoute(applicationRoot);
+      renderCurrentRoute(applicationRoot);
       return;
     }
 
@@ -1433,7 +1456,7 @@ async function bootstrapBrowserApplication(): Promise<void> {
     if (resetButton) {
       event.preventDefault();
       resetSnsDemoState();
-      renderRoute(applicationRoot);
+      renderCurrentRoute(applicationRoot);
       return;
     }
 
@@ -1451,14 +1474,14 @@ async function bootstrapBrowserApplication(): Promise<void> {
 
     event.preventDefault();
     window.history.pushState({}, "", href);
-    renderRoute(applicationRoot);
+    renderCurrentRoute(applicationRoot);
   });
 
   window.addEventListener("popstate", () => {
-    renderRoute(applicationRoot);
+    renderCurrentRoute(applicationRoot);
   });
 
-  renderRoute(applicationRoot);
+  renderCurrentRoute(applicationRoot);
 }
 
 function runRouteValidationCli(): void {

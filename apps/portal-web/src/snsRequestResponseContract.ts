@@ -1,12 +1,4 @@
-type ContractIssue = {
-  scope: string;
-  message: string;
-};
-
-type ContractCheckResult = {
-  label: string;
-  issues: ContractIssue[];
-};
+import { findDuplicates, type ContractCheckResult, type ContractIssue } from "./snsContractShared.ts";
 
 type RequestContractSpec = {
   endpoint: string;
@@ -36,6 +28,8 @@ type RequestResponseContractSpec = {
   timelineReadResponse: TimelineReadResponseSpec;
 };
 
+// This baseline validates the intended SNS request/response contract shape only.
+// It does not assert that the local demo surface performs a real HTTP request.
 const snsRequestResponseContractSpec: RequestResponseContractSpec = {
   requestShape: {
     endpoint: "/api/sns/posts",
@@ -57,10 +51,6 @@ const snsRequestResponseContractSpec: RequestResponseContractSpec = {
     ordering: "createdAt-desc"
   }
 };
-
-function findDuplicates(values: string[]): string[] {
-  return values.filter((value, index) => values.indexOf(value) !== index);
-}
 
 function validateRequestShape(): ContractCheckResult {
   const issues: ContractIssue[] = [];

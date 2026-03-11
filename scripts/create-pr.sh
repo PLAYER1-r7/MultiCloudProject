@@ -30,25 +30,41 @@ body_file=""
 base_branch=""
 head_branch=""
 
+require_option_value() {
+  local option_name="$1"
+  local option_value="${2-}"
+
+  if [[ -z "$option_value" || "$option_value" == --* ]]; then
+    echo "Missing value for $option_name." >&2
+    usage >&2
+    exit 1
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --title)
+      require_option_value "$1" "${2-}"
       title="$2"
       shift 2
       ;;
     --body-file)
+      require_option_value "$1" "${2-}"
       body_file="$2"
       shift 2
       ;;
     --repo)
+      require_option_value "$1" "${2-}"
       repo="$2"
       shift 2
       ;;
     --base)
+      require_option_value "$1" "${2-}"
       base_branch="$2"
       shift 2
       ;;
     --head)
+      require_option_value "$1" "${2-}"
       head_branch="$2"
       shift 2
       ;;

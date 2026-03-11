@@ -1,12 +1,4 @@
-type ContractIssue = {
-  scope: string;
-  message: string;
-};
-
-type ContractCheckResult = {
-  label: string;
-  issues: ContractIssue[];
-};
+import { findDuplicates, type ContractCheckResult, type ContractIssue } from "./snsContractShared.ts";
 
 type PermissionExpectation = {
   role: "guest" | "member" | "operator";
@@ -51,10 +43,6 @@ const snsAuthErrorContractSpec: AuthErrorContractSpec = {
     surfaceFields: ["errorCode", "message", "retryable"]
   }
 };
-
-function findDuplicates(values: string[]): string[] {
-  return values.filter((value, index) => values.indexOf(value) !== index);
-}
 
 function validatePermissionMapping(): ContractCheckResult {
   const issues: ContractIssue[] = [];
