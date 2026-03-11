@@ -9,5 +9,17 @@ export type ContractCheckResult = {
 };
 
 export function findDuplicates(values: string[]): string[] {
-  return values.filter((value, index) => values.indexOf(value) !== index);
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+
+  for (const value of values) {
+    if (seen.has(value)) {
+      duplicates.add(value);
+      continue;
+    }
+
+    seen.add(value);
+  }
+
+  return Array.from(duplicates);
 }

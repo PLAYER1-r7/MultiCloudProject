@@ -108,7 +108,10 @@ if [[ "$current_branch" == "main" && -z "$head_branch" ]]; then
   echo "Consider creating the PR from a feature branch or pass --head explicitly." >&2
 fi
 
-gh auth status >/dev/null
+if ! gh auth status; then
+  echo "GitHub authentication check failed." >&2
+  exit 1
+fi
 
 create_cmd=(
   gh pr create
