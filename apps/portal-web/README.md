@@ -18,6 +18,7 @@ Initial static-first frontend scaffold for the MultiCloudProject portal.
 - `npm run dev`
 - `npm run build`
 - `npm run preview`
+- `npm run test:public-variants`
 
 ## Route Seed
 
@@ -48,11 +49,13 @@ Initial static-first frontend scaffold for the MultiCloudProject portal.
 - `www.aws.ashnova.jp` resolves to the AWS portal variant
 - `www.gcp.ashnova.jp` and `preview.gcp.ashnova.jp` resolve to the GCP portal variant
 - localhost and unknown hosts resolve to a generic local preview variant instead of impersonating AWS or GCP
+- initial HTML shell metadata stays generic, then runtime document title and description switch to the active host variant after the bundle loads
 - `/status` opens the canonical cloud summary and closed parent-map docs from the current route surface
 - `/status` also renders AWS and GCP remaining-task cards so the next batch split can be compared at a glance
 - `/status` treats the AWS DNS verification chain through Issue 95 as a closed reference, not an active follow-up queue
 - Portal copy is a summary layer only; canonical state remains in repository docs and closed issue records
 - `/delivery` now points to the portal update workflow so future content changes follow the same task-contract and validation loop
+- `npm run test:public-variants` uses Playwright to verify host-specific runtime title, description, and rendered variant markers on the public portal surfaces
 
 ## Update Workflow
 

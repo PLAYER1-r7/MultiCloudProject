@@ -55,6 +55,8 @@ type PortalVariantMetadata = {
   heroBadge: string;
   hostnames: string[];
   fallbackLabel: string;
+  titleSegment: string;
+  descriptionPrefix: string;
 };
 
 const requiredMajorFlowRoutes = ["/", "/overview", "/guidance", "/status"] as const;
@@ -64,19 +66,25 @@ const portalVariantMetadata: Record<PortalVariant, PortalVariantMetadata> = {
     label: "AWS portal variant",
     heroBadge: "AWS variant",
     hostnames: ["www.aws.ashnova.jp"],
-    fallbackLabel: "AWS production host"
+    fallbackLabel: "AWS production host",
+    titleSegment: "AWS host view",
+    descriptionPrefix: "AWS-oriented portal view"
   },
   gcp: {
     label: "GCP portal variant",
     heroBadge: "GCP variant",
     hostnames: ["www.gcp.ashnova.jp", "preview.gcp.ashnova.jp"],
-    fallbackLabel: "GCP public hosts"
+    fallbackLabel: "GCP public hosts",
+    titleSegment: "GCP host view",
+    descriptionPrefix: "GCP-oriented portal view"
   },
   local: {
     label: "Local preview variant",
     heroBadge: "Local preview",
     hostnames: [],
-    fallbackLabel: "localhost or unknown host"
+    fallbackLabel: "localhost or unknown host",
+    titleSegment: "Local preview host view",
+    descriptionPrefix: "Generic local preview portal view"
   }
 };
 const importMetaEnv = (import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env;
@@ -746,6 +754,35 @@ function getHeroBadges(variant: PortalVariant, hostname: string): string[] {
   ];
 }
 
+function upsertMetaTag(attributeName: "name" | "property", attributeValue: string, content: string): void {
+  let tag = document.head.querySelector<HTMLMetaElement>(`meta[${attributeName}="${attributeValue}"]`);
+
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute(attributeName, attributeValue);
+    document.head.appendChild(tag);
+  }
+
+  tag.setAttribute("content", content);
+}
+
+function buildDocumentDescription(route: RouteDefinition, variant: PortalVariant, hostname: string): string {
+  const variantMetadata = portalVariantMetadata[variant];
+  const displayHost = getVariantDisplayHost(hostname, variant);
+
+  return `${variantMetadata.descriptionPrefix} on ${displayHost}. ${route.summary}`;
+}
+
+function syncDocumentMetadata(route: RouteDefinition, variant: PortalVariant, hostname: string): void {
+  const variantMetadata = portalVariantMetadata[variant];
+  const description = buildDocumentDescription(route, variant, hostname);
+
+  document.title = `${route.title} | ${variantMetadata.titleSegment} | MultiCloudProject Portal`;
+  upsertMetaTag("name", "description", description);
+  upsertMetaTag("property", "og:title", document.title);
+  upsertMetaTag("property", "og:description", description);
+}
+
 function getVariantStatusCards(variant: PortalVariant): StatusTaskCard[] {
   const sharedStatusCards = routeDefinitions["/status"].statusCards ?? [];
 
@@ -1053,10 +1090,10 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
   const variantHost = getVariantDisplayHost(window.location.hostname, portalVariant);
   const heroBadges = getHeroBadges(portalVariant, window.location.hostname);
 
-  document.title = `${route.title} | ${portalVariantMetadata[portalVariant].label} | MultiCloudProject Portal`;
+  syncDocumentMetadata(route, portalVariant, window.location.hostname);
 
   applicationRoot.innerHTML = `
-    <div class="page-shell">
+    <div class="page-shell" data-portal-variant="${escapeHtml(portalVariant)}" data-route-path="${escapeHtml(currentPath)}">
       <div class="ambient ambient-left"></div>
       <div class="ambient ambient-right"></div>
       <header class="hero">
@@ -1064,13 +1101,13 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
         <div class="hero-topline">
           ${renderBadges(heroBadges)}
         </div>
-        <h1>${escapeHtml(route.title)}</h1>
-        <p class="hero-summary">${escapeHtml(route.summary)}</p>
+        <h1 data-portal-field="route-title">${escapeHtml(route.title)}</h1>
+        <p class="hero-summary" data-portal-field="route-summary">${escapeHtml(route.summary)}</p>
         <div class="hero-meta">
           <div class="meta-block">
             <span class="meta-label">Active variant</span>
-            <p>${escapeHtml(portalVariantMetadata[portalVariant].label)}</p>
-            <p>${escapeHtml(variantHost)}</p>
+            <p data-portal-field="active-variant">${escapeHtml(portalVariantMetadata[portalVariant].label)}</p>
+            <p data-portal-field="active-host">${escapeHtml(variantHost)}</p>
           </div>
           <div class="meta-block">
             <span class="meta-label">Audience</span>
