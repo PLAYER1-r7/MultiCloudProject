@@ -31,9 +31,9 @@ Scope
 - Restricted paths: apps/portal-web/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: production deploy evidence path が issue 上に記録されている
-- [ ] AC-2: `https://www.aws.ashnova.jp` の `/`, `/overview`, `/guidance`, `/status` で AWS variant が確認できる
-- [ ] AC-3: Issue 106 を reopen せず current batch の AWS live reflection record として完結している
+- [x] AC-1: production deploy evidence path が issue 上に記録されている
+- [x] AC-2: `https://www.aws.ashnova.jp` の `/`, `/overview`, `/guidance`, `/status` で AWS variant が確認できる
+- [x] AC-3: Issue 106 を reopen せず current batch の AWS live reflection record として完結している
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-110-aws-portal-variant-live-reflection-execution.md, docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md
@@ -54,30 +54,37 @@ Risk and Rollback
 
 ## Current Status
 
-- OPEN
+- CLOSED
 - GitHub Issue: #110
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/110
 - Sync Status: synced to GitHub
 
 ## Current Execution Snapshot
 
-- latest reviewed build on `main` is build run `22910183364` for commit `0991807895733669afb88dd592c42b07dd4817b3`
-- latest reviewed staging verification on `main` is staging run `22910230433` for the same commit
-- latest production deploy evidence is production run `22910302949` for the same commit
-- current public AWS route probe on `https://www.aws.ashnova.jp/status` still returns the shared marker `AWS first`
-- this means the current public AWS portal is still serving the pre-variant shared portal copy, not the Issue 109 runtime-variant implementation
+- Issue 109 implementation was committed and pushed to `main` as commit `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
+- reviewed build evidence is build run `22952659968` for the same commit
+- reviewed staging verification is staging run `22952673408` for the same commit
+- production deploy evidence is production run `22952714344` for the same commit
+- `https://www.aws.ashnova.jp/` and `https://www.aws.ashnova.jp/status` now serve the promoted portal shell referencing `/assets/index-B6aEQIvb.js`
+- deployed bundle `https://www.aws.ashnova.jp/assets/index-B6aEQIvb.js` contains the hostname-aware variant markers and host mapping for `www.aws.ashnova.jp`, `www.gcp.ashnova.jp`, and `preview.gcp.ashnova.jp`
 
-## Blocker Assessment
+## Public Verification Snapshot
 
-- Issue 109 implementation exists only in the current local working tree and is not yet a committed promotion candidate on `main`
-- production promotion requires a reviewed `portal-build` run and a matching successful `portal-staging-deploy` run for the commit being promoted
-- because the current public production run `22910302949` is tied to commit `0991807895733669afb88dd592c42b07dd4817b3`, AWS live reflection cannot be truthfully recorded for the new variant batch yet
-- fail-closed result: keep Issue 110 open until a new committed build candidate containing the Issue 109 code is built, staging-verified, and promoted
+- route reachability verification returned `HTTP 200` for `https://www.aws.ashnova.jp/`, `/overview`, `/guidance`, and `/status`
+- root and status route shell responses now point to the promoted runtime-variant bundle hash `index-B6aEQIvb.js`
+- browser-facing hostname selection remains runtime-driven inside the shared bundle, so public proof is recorded as `host serves promoted hostname-aware bundle plus route reachability` rather than a separate server-rendered copy split
+- Issue 106 remains closed and was not reopened for this cloud-specific variant batch
 
-## Next Action Gate
+## Validation Result
 
-- commit and publish the Issue 109 implementation to `main`
-- obtain a new successful `portal-build` run for that commit
-- obtain a matching successful `portal-staging-deploy` run for that commit
-- dispatch `portal-production-deploy` with the new reviewed build and staging evidence
-- verify `https://www.aws.ashnova.jp/`, `/overview`, `/guidance`, and `/status` for AWS-specific variant wording before closing this issue
+- local validation before promotion: `cd apps/portal-web && npm run test:baseline && npm run build` passed
+- reviewed promotion path: build `22952659968` -> staging `22952673408` -> production `22952714344`
+- public verification path: curl probes returned `HTTP 200` on the required AWS routes and the public shell now references the promoted bundle hash
+
+## Execution Record
+
+- promotion candidate commit: `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
+- build workflow: `portal-build` run `22952659968`
+- staging workflow: `portal-staging-deploy` run `22952673408`
+- production workflow: `portal-production-deploy` run `22952714344`
+- public bundle evidence: `https://www.aws.ashnova.jp/assets/index-B6aEQIvb.js`

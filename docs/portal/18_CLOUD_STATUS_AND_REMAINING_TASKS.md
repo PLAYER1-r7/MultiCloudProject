@@ -164,8 +164,10 @@ Portal cloud-specific variant batch:
 - GCP live reflection issue: docs/portal/issues/issue-111-gcp-portal-variant-live-reflection-execution.md
 - batch rule: shared route structure is kept, runtime hostname-aware variant selection is the first strategy, and browser-facing reflection remains split by cloud
 - current local evidence: `cd apps/portal-web && npm run test:baseline && npm run build` passed after runtime variant selection was added
-- current live blocker: the public AWS and GCP status routes still return the older shared marker `AWS first`, and the Issue 109 variant code is not yet a committed promotion candidate on `main`
-- next action: create a reviewed promotion candidate that contains the Issue 109 code, then use Issue 110 and Issue 111 as the cloud-specific public verification records
+- reviewed promotion candidate: commit `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
+- reviewed build and deploy evidence: build `22952659968`, staging `22952673408`, AWS production deploy `22952714344`, GCP deploy `22952760131`
+- public verification result: `https://www.aws.ashnova.jp`, `https://www.gcp.ashnova.jp`, and `https://preview.gcp.ashnova.jp` all serve the promoted bundle hash `index-B6aEQIvb.js`, and `/`, `/overview`, `/guidance`, `/status` returned `HTTP 200` on the required public hosts
+- execution record split: Issue 110 is the closed AWS public verification record for this batch, and Issue 111 is the closed GCP public verification record for this batch
 
 Portal live reflection follow-up:
 

@@ -31,9 +31,9 @@ Scope
 - Restricted paths: apps/portal-web/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: GCP deploy evidence path が issue 上に記録されている
-- [ ] AC-2: `https://www.gcp.ashnova.jp` と `https://preview.gcp.ashnova.jp` の `/`, `/overview`, `/guidance`, `/status` で GCP variant が確認できる
-- [ ] AC-3: Issue 107 を reopen せず current batch の GCP live reflection record として完結している
+- [x] AC-1: GCP deploy evidence path が issue 上に記録されている
+- [x] AC-2: `https://www.gcp.ashnova.jp` と `https://preview.gcp.ashnova.jp` の `/`, `/overview`, `/guidance`, `/status` で GCP variant が確認できる
+- [x] AC-3: Issue 107 を reopen せず current batch の GCP live reflection record として完結している
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-111-gcp-portal-variant-live-reflection-execution.md, docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md
@@ -54,27 +54,36 @@ Risk and Rollback
 
 ## Current Status
 
-- OPEN
+- CLOSED
 - GitHub Issue: #111
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/111
 - Sync Status: synced to GitHub
 
 ## Current Execution Snapshot
 
-- latest reviewed build on `main` is build run `22910183364` for commit `0991807895733669afb88dd592c42b07dd4817b3`
-- latest reviewed GCP-side public baseline is still downstream of the same pre-variant build lineage
-- current public GCP route probe on `https://www.gcp.ashnova.jp/status` still returns the shared marker `AWS first`
-- this means the current public GCP portal is still serving the pre-variant shared portal copy, not the Issue 109 runtime-variant implementation
+- Issue 109 implementation was committed and pushed to `main` as commit `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
+- reviewed build evidence is build run `22952659968` for the same commit
+- GCP deploy evidence is deploy run `22952760131` for the same commit using resource execution reference `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md`
+- `https://www.gcp.ashnova.jp/` and `https://preview.gcp.ashnova.jp/` now serve the promoted portal shell referencing `/assets/index-B6aEQIvb.js`
+- deployed bundles on both GCP public surfaces contain the hostname-aware variant markers and host mapping for `www.aws.ashnova.jp`, `www.gcp.ashnova.jp`, and `preview.gcp.ashnova.jp`
 
-## Blocker Assessment
+## Public Verification Snapshot
 
-- Issue 109 implementation exists only in the current local working tree and is not yet a committed promotion candidate on `main`
-- GCP public reflection for the cloud-specific variant batch cannot be recorded against the current live shell because it still reflects the older shared portal deployment
-- fail-closed result: keep Issue 111 open until a new committed build candidate containing the Issue 109 code is built and then deployed through the GCP portal delivery path
+- route reachability verification returned `HTTP 200` for `https://www.gcp.ashnova.jp/`, `/overview`, `/guidance`, `/status` and `https://preview.gcp.ashnova.jp/`, `/overview`, `/guidance`, `/status`
+- root shell responses on both GCP public surfaces now point to the promoted runtime-variant bundle hash `index-B6aEQIvb.js`
+- browser-facing hostname selection remains runtime-driven inside the shared bundle, so public proof is recorded as `hosts serve promoted hostname-aware bundle plus route reachability` rather than a separate server-rendered copy split
+- Issue 107 remains closed and was not reopened for this cloud-specific variant batch
 
-## Next Action Gate
+## Validation Result
 
-- commit and publish the Issue 109 implementation to `main`
-- obtain a new successful `portal-build` run for that commit
-- dispatch the reviewed GCP portal deploy path for that commit with the required resource execution reference
-- verify `https://www.gcp.ashnova.jp/`, `/overview`, `/guidance`, and `/status` plus `https://preview.gcp.ashnova.jp/`, `/overview`, `/guidance`, and `/status` for GCP-specific variant wording before closing this issue
+- local validation before promotion: `cd apps/portal-web && npm run test:baseline && npm run build` passed
+- reviewed promotion path: build `22952659968` -> GCP deploy `22952760131`
+- public verification path: curl probes returned `HTTP 200` on the required GCP production-equivalent and retained preview routes and the public shell now references the promoted bundle hash
+
+## Execution Record
+
+- promotion candidate commit: `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
+- build workflow: `portal-build` run `22952659968`
+- GCP deploy workflow: `portal-gcp-preview-deploy` run `22952760131`
+- resource execution reference: `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md`
+- public bundle evidence: `https://www.gcp.ashnova.jp/assets/index-B6aEQIvb.js`, `https://preview.gcp.ashnova.jp/assets/index-B6aEQIvb.js`
