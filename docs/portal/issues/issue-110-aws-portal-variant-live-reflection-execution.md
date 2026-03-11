@@ -80,6 +80,7 @@ Risk and Rollback
 - local validation before promotion: `cd apps/portal-web && npm run test:baseline && npm run build` passed
 - reviewed promotion path: build `22952659968` -> staging `22952673408` -> production `22952714344`
 - public verification path: curl probes returned `HTTP 200` on the required AWS routes and the public shell now references the promoted bundle hash
+- public verification scope for this execution issue is limited to the 4 major flow routes `/`, `/overview`, `/guidance`, and `/status`; the shared route inventory remainder `/platform`, `/delivery`, and `/operations` stays covered by the local baseline validation recorded in Issue 109 rather than this public-browser proof
 
 ## Host-Aware Metadata Follow-Up Snapshot
 

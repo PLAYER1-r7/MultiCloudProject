@@ -63,6 +63,7 @@ Risk and Rollback
 
 - Issue 109 implementation was committed and pushed to `main` as commit `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
 - reviewed build evidence is build run `22952659968` for the same commit
+- reviewed staging verification is staging run `22952673408` for the same commit before the GCP deploy handoff
 - GCP deploy evidence is deploy run `22952760131` for the same commit using resource execution reference `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md`
 - `https://www.gcp.ashnova.jp/` and `https://preview.gcp.ashnova.jp/` now serve the promoted portal shell referencing `/assets/index-B6aEQIvb.js`
 - deployed bundles on both GCP public surfaces contain the hostname-aware variant markers and host mapping for `www.aws.ashnova.jp`, `www.gcp.ashnova.jp`, and `preview.gcp.ashnova.jp`
@@ -77,8 +78,9 @@ Risk and Rollback
 ## Validation Result
 
 - local validation before promotion: `cd apps/portal-web && npm run test:baseline && npm run build` passed
-- reviewed promotion path: build `22952659968` -> GCP deploy `22952760131`
+- reviewed promotion path: build `22952659968` -> staging `22952673408` -> GCP deploy `22952760131`
 - public verification path: curl probes returned `HTTP 200` on the required GCP production-equivalent and retained preview routes and the public shell now references the promoted bundle hash
+- public verification scope for this execution issue is limited to the 4 major flow routes `/`, `/overview`, `/guidance`, and `/status`; the shared route inventory remainder `/platform`, `/delivery`, and `/operations` stays covered by the local baseline validation recorded in Issue 109 rather than this public-browser proof
 
 ## Host-Aware Metadata Follow-Up Snapshot
 
@@ -94,6 +96,7 @@ Risk and Rollback
 
 - promotion candidate commit: `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
 - build workflow: `portal-build` run `22952659968`
+- staging workflow: `portal-staging-deploy` run `22952673408`
 - GCP deploy workflow: `portal-gcp-preview-deploy` run `22952760131`
 - resource execution reference: `docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md`
 - public bundle evidence: `https://www.gcp.ashnova.jp/assets/index-B6aEQIvb.js`, `https://preview.gcp.ashnova.jp/assets/index-B6aEQIvb.js`

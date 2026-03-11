@@ -167,6 +167,7 @@ Portal cloud-specific variant batch:
 - reviewed promotion candidate: commit `ebe45a91379688ef277f28a63ac9cdea5d44adf5`
 - reviewed build and deploy evidence: build `22952659968`, staging `22952673408`, AWS production deploy `22952714344`, GCP deploy `22952760131`
 - public verification result: `https://www.aws.ashnova.jp`, `https://www.gcp.ashnova.jp`, and `https://preview.gcp.ashnova.jp` all serve the promoted bundle hash `index-B6aEQIvb.js`, and `/`, `/overview`, `/guidance`, `/status` returned `HTTP 200` on the required public hosts
+- route coverage boundary: public execution issues verify the 4 major flow routes `/`, `/overview`, `/guidance`, and `/status`; the remaining shared routes `/platform`, `/delivery`, and `/operations` stay covered by the local baseline validation recorded in Issue 109
 - metadata/browser-automation follow-up candidate: commit `38085e8368fd0e266bca5a183530d065cab37a0a`
 - metadata/browser-automation follow-up evidence: build `22953281656`, staging `22953295798`, AWS production deploy `22953349238`, GCP deploy `22953350674`
 - runtime browser verification result: `cd apps/portal-web && npm run test:public-variants` passed against the public AWS, GCP, and preview hosts, confirming host-specific runtime title, description, variant marker, host marker, and route marker after deployment
