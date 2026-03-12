@@ -10,7 +10,6 @@
 - AWS CLI
 - Azure CLI
 - gcloud CLI
-- OpenTofu CLI (`tofu`)
 - Pulumi CLI
 - GitHub CLI (`gh`)
 - Project validation scripts: `./scripts/test-endpoints.sh` and `./scripts/test-e2e.sh`
@@ -24,7 +23,7 @@
 
 ## Reference Priority
 
-1. IaC tool outputs and deployed resource state
+1. Pulumi outputs and deployed resource state
 2. Workflow execution results and runtime logs
 3. Existing scripts and validated runbooks
 4. Narrative documentation
@@ -46,8 +45,8 @@
 
 Use `scripts/create-pr.sh` as a thin wrapper around `gh pr create`.
 
-- Prepare the PR body first using `05_PR_TASK_CONTRACT_TEMPLATE.md` or `docs_agent_ja/05_PR_TASK_CONTRACT_TEMPLATE.md`.
-- Confirm the pre-PR checks in `07_AUTONOMOUS_WORKFLOW_CHECKLIST.md` or `docs_agent_ja/07_AUTONOMOUS_WORKFLOW_CHECKLIST.md`.
+- Prepare the PR body first using `05_PR_TASK_CONTRACT_TEMPLATE.md` or the Japanese counterpart in `docs_agent_ja/`.
+- Confirm the pre-PR checks in `07_AUTONOMOUS_WORKFLOW_CHECKLIST.md` or the Japanese counterpart in `docs_agent_ja/`.
 - Store the final PR body in a temporary file such as `/tmp/pr-body.md`.
 - Run `scripts/create-pr.sh --title "<title>" --body-file /tmp/pr-body.md`.
 - This helper does not generate PR content, run tests, infer issue state, or replace the PR checklist. It only validates required inputs and forwards them to `gh pr create`.
@@ -80,7 +79,7 @@ When a docs-only or follow-up PR depends on unmerged changes from another branch
 
 - Keep the stacked PR base on the parent branch until the parent PR merges.
 - Record the retarget condition in the PR notes, including when the base should be switched back to `main`.
-- Do not present the stacked PR as independent from `main` if the effective diff still depends on unmerged parent-branch file history.
+- Do not restate the stacked PR as independent from `main` if the effective diff still depends on unmerged parent-branch file history.
 
 ## Quick Verification
 
