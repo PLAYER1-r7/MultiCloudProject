@@ -105,10 +105,12 @@
 
 - [ ] レビュー是正パスを始める前に、以前の review snapshot に頼らず、最新の PR review と inline comment を再取得した
 - [ ] 現在の branch に無関係な作業がある場合は、別 worktree または同等の clean な branch context で是正作業を分離した
-- [ ] 是正 patch 後、commit または push の前に関連検証を再実行した
+- [ ] 是正 patch 後、fix を push または publish する前、または再レビュー依頼前に、最終状態に対して関連検証を再実行した
 - [ ] fix commit の publish 後、対応したコメント内容と再実行した検証を PR コメントで要約した
 - [ ] Copilot の再レビュー依頼は、新しい fix commit と PR コメントの両方が publish された後に行った
 - [ ] follow-up docs PR が未 merge の実装 PR に依存する場合は stacked PR を使い、後で `main` に戻す条件を文書化した
+
+## 最終確認
 
 - [ ] テスト結果を記録した
 - [ ] DoD の必須ゲートを満たした

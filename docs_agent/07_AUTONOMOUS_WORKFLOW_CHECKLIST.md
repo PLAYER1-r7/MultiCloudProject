@@ -105,10 +105,12 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 
 - [ ] Before starting a review-remediation pass, the latest PR reviews and inline comments were fetched again instead of relying on an earlier review snapshot.
 - [ ] If the current branch contained unrelated work, the remediation was isolated in a separate worktree or equivalent clean branch context.
-- [ ] After the remediation patch, the relevant validation was rerun before commit or push.
-- [ ] After publishing the fix commit, a PR comment was added summarizing the addressed comments and the validation that was rerun.
+- [ ] After the remediation patch, the relevant validation was rerun on the final fix state before pushing or publishing the fix commit, or before requesting re-review.
+- [ ] After publishing the validated fix commit, a PR comment was added summarizing the addressed comments and the validation that was rerun.
 - [ ] A fresh Copilot review was requested only after the new fix commit and PR comment were both published.
 - [ ] If a follow-up docs PR depends on an unmerged implementation PR, a stacked PR was used and the future retarget condition was documented.
+
+## Finalization
 
 - [ ] Tests recorded.
 - [ ] DoD mandatory gates passed.

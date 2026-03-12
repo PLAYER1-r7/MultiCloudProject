@@ -68,10 +68,10 @@ Use AI assistance for PR preparation and execution when the work is primarily ab
 Use a fixed review-remediation loop when the agent is responding to PR comments.
 
 - Re-fetch the latest PR reviews and inline review comments before each remediation pass; do not assume an earlier no-new-comments review is still current if a later review exists.
-- If the current workspace branch is serving other work, prefer an isolated worktree under `/tmp/` for PR review remediation so fixes can be committed and pushed without mixing in unrelated changes.
+- If the current workspace branch is serving other work, prefer an isolated worktree in a temporary directory, for example under `/tmp/` on Linux, for PR review remediation so fixes can be committed and pushed without mixing in unrelated changes.
 - After each remediation pass, rerun the relevant validation, push the fixes first, and then add a PR comment that lists what was addressed and which checks were rerun.
 - Request a fresh Copilot review only after the fix commit is published and the validation summary comment is posted.
-- If the PR also changes issue records or status-tracking docs, re-check predecessor wording, closed/open labels, and status summaries against the current GitHub state before requesting re-review.
+- If the PR also changes issue records or status-tracking docs, re-check predecessor wording, meaning the text that identifies prior or dependent issues, PRs, or status entries, plus closed/open labels and status summaries against the current GitHub state before requesting re-review.
 
 ## Stacked PR Rule
 
