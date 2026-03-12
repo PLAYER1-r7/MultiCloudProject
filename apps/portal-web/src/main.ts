@@ -1,18 +1,16 @@
 import {
-  SNS_POSTS_ENDPOINT,
-  type SnsErrorResponse,
-  createInMemorySnsRouteHandlerDependencies,
-  handleSnsRouteRequest,
   type SnsRouteHandlerPolicy,
   type SnsRouteRequestContext,
+  type SnsPostPayload,
   type SnsTimelineItem
 } from "./snsServiceRouteHandler.ts";
-import {
-  canUseBrowserSnsPersistence,
-  clearStoredSnsTimeline,
-  createBrowserSnsRouteHandlerDependencies
-} from "./snsMessageStore.ts";
 import { getSnsPublicConfig } from "./snsPublicConfig.ts";
+import {
+  createSnsServiceClientBundle,
+  readSnsErrorResponse,
+  type SnsServiceClient,
+  type SnsServiceClientRuntimeStatus
+} from "./snsServiceClient.ts";
 
 type ActionLink = {
   label: string;
@@ -51,14 +49,7 @@ type SnsFlowState = "idle" | "blocked" | "success" | "failure";
 
 type SnsReadbackState = "idle" | "synced" | "stale" | "error";
 
-type SnsSurfaceRuntimeMode = "browser-local-storage" | "memory";
-
-type SnsSurfaceRuntimeStatus = {
-  persistenceMode: SnsSurfaceRuntimeMode;
-  fallbackActive: boolean;
-  completionEligible: boolean;
-  statusMessage: string;
-};
+type SnsSurfaceRuntimeStatus = SnsServiceClientRuntimeStatus;
 
 type SnsReadbackEntry = {
   id: number;
@@ -163,51 +154,27 @@ function getSnsRouteHandlerPolicy(): SnsRouteHandlerPolicy {
 function createInitialSnsSurfaceRuntimeStatus(): SnsSurfaceRuntimeStatus {
   return {
     persistenceMode: snsPublicConfig.persistenceMode,
+    transportMode: snsPublicConfig.serviceMode,
     fallbackActive: false,
     completionEligible: snsPublicConfig.writeSurfaceEnabled,
+    nextSliceReady: snsPublicConfig.serviceMode === "http" && snsPublicConfig.serviceBaseUrl.trim().length > 0,
     statusMessage: snsPublicConfig.writeSurfaceEnabled
       ? "Service contract path is configured and awaiting runtime verification."
-      : "SNS write surface is disabled by public config."
+      : "SNS write surface is disabled by public config.",
+    serviceBaseUrl: snsPublicConfig.serviceBaseUrl.trim() || "not-configured"
   };
 }
 
 function createSnsRouteDependencies(): {
-  dependencies: ReturnType<typeof createInMemorySnsRouteHandlerDependencies>;
+  client: SnsServiceClient;
   runtimeStatus: SnsSurfaceRuntimeStatus;
+  resetRuntimeState(): void;
 } {
-  if (
-    browserRuntimeAvailable &&
-    snsPublicConfig.persistenceMode === "browser-local-storage" &&
-    canUseBrowserSnsPersistence(window.localStorage)
-  ) {
-    return {
-      dependencies: createBrowserSnsRouteHandlerDependencies({
-        storage: window.localStorage
-      }),
-      runtimeStatus: {
-        persistenceMode: "browser-local-storage",
-        fallbackActive: false,
-        completionEligible: snsPublicConfig.writeSurfaceEnabled,
-        statusMessage: snsPublicConfig.writeSurfaceEnabled
-          ? "Service contract path is using browser-backed persistence for the declared slice surface."
-          : "SNS write surface is disabled by public config."
-      }
-    };
-  }
-
-  const memoryStatusMessage = browserRuntimeAvailable && snsPublicConfig.persistenceMode === "browser-local-storage"
-    ? "Browser persistence was unavailable, so the surface fell back to memory. Do not treat this as the completed path."
-    : "Surface is using memory persistence for the current environment. Do not treat this as the completed browser path.";
-
-  return {
-    dependencies: createInMemorySnsRouteHandlerDependencies(),
-    runtimeStatus: {
-      persistenceMode: "memory",
-      fallbackActive: true,
-      completionEligible: false,
-      statusMessage: memoryStatusMessage
-    }
-  };
+  return createSnsServiceClientBundle({
+    publicConfig: snsPublicConfig,
+    browserRuntimeAvailable,
+    storage: browserRuntimeAvailable ? window.localStorage : undefined
+  });
 }
 
 function createInitialSnsDemoState(): SnsDemoState {
@@ -231,7 +198,7 @@ function createInitialSnsDemoState(): SnsDemoState {
 let snsDemoState = createInitialSnsDemoState();
 let snsSurfaceRuntimeStatus = createInitialSnsSurfaceRuntimeStatus();
 let snsRouteDependencyBundle = createSnsRouteDependencies();
-let snsDemoRouteDependencies = snsRouteDependencyBundle.dependencies;
+let snsDemoServiceClient = snsRouteDependencyBundle.client;
 snsSurfaceRuntimeStatus = snsRouteDependencyBundle.runtimeStatus;
 
 function getSnsRouteRequestContext(): SnsRouteRequestContext {
@@ -283,15 +250,13 @@ function setSnsReadbackStatus(state: SnsReadbackState, message: string): void {
 }
 
 async function syncSnsTimelineReadback(): Promise<SnsReadbackSyncResult> {
-  const response = await handleSnsRouteRequest(
-    new Request(snsPublicConfig.timelineEndpoint, { method: "GET" }),
+  const response = await snsDemoServiceClient.listTimeline(
     getSnsRouteRequestContext(),
-    snsDemoRouteDependencies,
     getSnsRouteHandlerPolicy()
   );
 
   if (!response.ok) {
-    const errorPayload = (await response.json()) as Partial<SnsErrorResponse>;
+    const errorPayload = await readSnsErrorResponse(response);
     setSnsReadbackStatus("error", errorPayload.message ?? "Timeline readback failed on the service path.");
     return {
       ok: false,
@@ -1276,11 +1241,17 @@ function getSnsReadbackStateSummary(state: SnsReadbackState): string {
 
 function getSnsPersistenceModeLabel(): string {
   switch (snsSurfaceRuntimeStatus.persistenceMode) {
+    case "service-managed":
+      return "service-managed";
     case "memory":
       return "memory";
     default:
       return "browser-local-storage";
   }
+}
+
+function getSnsServiceModeLabel(): string {
+  return snsSurfaceRuntimeStatus.transportMode === "http" ? "http-service" : "simulated-route";
 }
 
 function getSnsCompletionSignalLabel(): string {
@@ -1299,6 +1270,10 @@ function getSnsFallbackPolicyLabel(): string {
   return snsSurfaceRuntimeStatus.fallbackActive ? "fallback-active" : "no-local-only-fallback";
 }
 
+function getSnsNextSliceReadinessLabel(): string {
+  return snsSurfaceRuntimeStatus.nextSliceReady ? "service-persistence-ready" : "first-slice-baseline-only";
+}
+
 function renderSnsContractMetadata(): string {
   return `
     <dl class="status-metadata" data-sns-contract-metadata="true">
@@ -1311,8 +1286,16 @@ function renderSnsContractMetadata(): string {
         <dd data-sns-posts-endpoint="true">${escapeHtml(snsPublicConfig.postsEndpoint)}</dd>
       </div>
       <div>
+        <dt>Service mode</dt>
+        <dd data-sns-service-mode="true">${escapeHtml(getSnsServiceModeLabel())}</dd>
+      </div>
+      <div>
         <dt>Persistence mode</dt>
         <dd data-sns-persistence-mode="true">${escapeHtml(getSnsPersistenceModeLabel())}</dd>
+      </div>
+      <div>
+        <dt>Next-slice readiness</dt>
+        <dd data-sns-next-slice-readiness="true">${escapeHtml(getSnsNextSliceReadinessLabel())}</dd>
       </div>
       <div>
         <dt>Completion signal</dt>
@@ -1321,6 +1304,10 @@ function renderSnsContractMetadata(): string {
       <div>
         <dt>Fallback policy</dt>
         <dd data-sns-fallback-policy="true">${escapeHtml(getSnsFallbackPolicyLabel())}</dd>
+      </div>
+      <div>
+        <dt>Service base URL</dt>
+        <dd data-sns-service-base-url="true">${escapeHtml(snsSurfaceRuntimeStatus.serviceBaseUrl)}</dd>
       </div>
     </dl>
   `;
@@ -1610,29 +1597,22 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
 
 async function submitSnsDemoState(): Promise<void> {
   const submittedBody = snsDemoState.draft.trim();
+  const requestPayload: SnsPostPayload = {
+    authorId: mapSnsAuthStateToAuthorId(snsDemoState.authState),
+    message: submittedBody
+  };
   snsDemoState.lastSubmittedBody = submittedBody;
   setSnsFeedback("Submitting against the SNS service contract path.", "neutral");
   setSnsReadbackStatus("idle", "Waiting for contract-confirmed readback.");
 
-  const response = await handleSnsRouteRequest(
-    new Request(SNS_POSTS_ENDPOINT, {
-      // Public endpoint selection may vary by environment, but private service config stays outside the browser bundle.
-      method: "POST",
-      headers: {
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({
-        authorId: mapSnsAuthStateToAuthorId(snsDemoState.authState),
-        message: submittedBody
-      })
-    }),
+  const response = await snsDemoServiceClient.createPost(
+    requestPayload,
     getSnsRouteRequestContext(),
-    snsDemoRouteDependencies,
     getSnsRouteHandlerPolicy()
   );
 
   if (!response.ok) {
-    const errorPayload = (await response.json()) as Partial<SnsErrorResponse>;
+    const errorPayload = await readSnsErrorResponse(response);
     snsDemoState.flowState = response.status === 403 ? "blocked" : "failure";
     setSnsFeedback(
       errorPayload.message ?? "SNS submit failed on the service route.",
@@ -1682,13 +1662,10 @@ async function submitSnsDemoState(): Promise<void> {
 
 function resetSnsDemoState(): void {
   snsDemoState = createInitialSnsDemoState();
-
-  if (browserRuntimeAvailable && canUseBrowserSnsPersistence(window.localStorage)) {
-    clearStoredSnsTimeline(window.localStorage);
-  }
+  snsRouteDependencyBundle.resetRuntimeState();
 
   snsRouteDependencyBundle = createSnsRouteDependencies();
-  snsDemoRouteDependencies = snsRouteDependencyBundle.dependencies;
+  snsDemoServiceClient = snsRouteDependencyBundle.client;
   snsSurfaceRuntimeStatus = snsRouteDependencyBundle.runtimeStatus;
 }
 

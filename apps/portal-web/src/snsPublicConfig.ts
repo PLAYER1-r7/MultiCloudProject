@@ -1,10 +1,14 @@
 export type SnsPublicPersistenceMode = "browser-local-storage" | "memory";
 
+export type SnsPublicServiceMode = "simulated-route" | "http";
+
 export type SnsPublicConfig = {
   timelineEndpoint: string;
   postsEndpoint: string;
   writeSurfaceEnabled: boolean;
   persistenceMode: SnsPublicPersistenceMode;
+  serviceMode: SnsPublicServiceMode;
+  serviceBaseUrl: string;
 };
 
 function readPublicEnvValue(key: string): string | undefined {
@@ -34,11 +38,17 @@ function parsePersistenceMode(value: string | undefined): SnsPublicPersistenceMo
   return value === "memory" ? "memory" : "browser-local-storage";
 }
 
+function parseServiceMode(value: string | undefined): SnsPublicServiceMode {
+  return value === "http" ? "http" : "simulated-route";
+}
+
 export function getSnsPublicConfig(): SnsPublicConfig {
   return {
     timelineEndpoint: readPublicEnvValue("VITE_PUBLIC_SNS_TIMELINE_ENDPOINT") ?? "/api/sns/timeline",
     postsEndpoint: readPublicEnvValue("VITE_PUBLIC_SNS_POSTS_ENDPOINT") ?? "/api/sns/posts",
     writeSurfaceEnabled: parseBooleanFlag(readPublicEnvValue("VITE_PUBLIC_SNS_WRITE_SURFACE_ENABLED"), true),
-    persistenceMode: parsePersistenceMode(readPublicEnvValue("VITE_PUBLIC_SNS_PERSISTENCE_MODE"))
+    persistenceMode: parsePersistenceMode(readPublicEnvValue("VITE_PUBLIC_SNS_PERSISTENCE_MODE")),
+    serviceMode: parseServiceMode(readPublicEnvValue("VITE_PUBLIC_SNS_SERVICE_MODE")),
+    serviceBaseUrl: readPublicEnvValue("VITE_PUBLIC_SNS_SERVICE_BASE_URL") ?? ""
   };
 }
