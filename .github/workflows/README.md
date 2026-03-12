@@ -70,7 +70,7 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - GCP preview deploy requires a committed markdown file referenced by `resource_execution_reference` that includes these labels: `Resource execution status`, `Preview public URL`, `Reviewed target reference`, `Certificate-related reference`, and `Selected environment entrypoint reference`
 - The GCP preview workflow fails closed when the referenced resource execution file is missing, missing required labels, or reports `blocked pending state`
 - GCP preview credential governance remains environment-scoped: keep `GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER`, `GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL`, `GCP_PREVIEW_PROJECT_ID`, and `GCP_PREVIEW_SITE_BUCKET_NAME` inside the `gcp-preview` environment rather than repository-wide plaintext settings
-- Optional `monitoring_notification_email` style destinations must remain owner-bound and secondary; the deploy run URL plus `portal-gcp-preview-deployment-record` artifact stay the canonical first-response security and operations path
+- Optional monitoring notification destinations, such as the `monitoring_notification_email` OpenTofu variable in `infra/environments/gcp-preview`, must remain owner-bound and secondary; the deploy run URL plus `portal-gcp-preview-deployment-record` artifact stay the canonical first-response security and operations path
 - If `STAGING_BASE_URL` is set, the staging deploy workflow performs smoke checks after sync
 - Default smoke paths are `/`, `/overview`, and `/guidance`
 - CloudFront invalidation is optional and only runs when a distribution id is provided

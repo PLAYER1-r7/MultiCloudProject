@@ -49,7 +49,7 @@ This directory is reserved for the GCP preview entrypoint of the portal delivery
 - Current primary monitoring target: `https://preview.gcp.ashnova.jp`
 - Current monitored paths: `/`, `/overview`, `/guidance`, `/status`
 - Current monitoring resources: Cloud Monitoring uptime checks per reviewed path and matching alert policies per path
-- Current content matcher baseline: `MultiCloudProject Portal.*<div id="app"></div>` の regex matcher を SPA shell marker として扱う
+- Current content matcher baseline: `(?s)MultiCloudProject Portal.*<div id=\"app\"></div>` の regex matcher を SPA shell marker として扱う
 - Current notification destination baseline: default は external delivery channel を持たず、issue / deploy evidence path を first-response route とする。`monitoring_notification_email` が設定された場合のみ owner-bound email channel を追加できる
 
 ## Monitoring First-Response Sequence
