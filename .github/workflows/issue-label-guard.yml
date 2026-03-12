@@ -1,6 +1,6 @@
 name: Issue Label Guard
 
-"on":
+on:
   issues:
     types:
       - opened
