@@ -23,7 +23,7 @@ Optional:
 Behavior:
   - creates the GitHub Issue
   - verifies the created issue has labels
-  - if the created issue has zero labels, reapplies the requested labels and verifies again
+  - if any requested labels are missing after creation, reapplies the missing labels and verifies again
 EOF
 }
 
