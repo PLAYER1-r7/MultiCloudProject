@@ -110,10 +110,23 @@ try {
     const runtimeStatus = await page.locator('[data-sns-runtime-status="true"]').textContent();
     const completionSignal = await page.locator('[data-sns-completion-signal="true"]').textContent();
     const fallbackPolicy = await page.locator('[data-sns-fallback-policy="true"]').textContent();
+    const serviceBaseUrl = await page.locator('[data-sns-service-base-url="true"]').textContent();
 
     assertCondition(runtimeStatus?.trim().length > 0, `${target.name}: runtime status was not visible`);
     assertCondition(completionSignal?.trim() === "wired-awaiting-confirmation", `${target.name}: completion signal was not in the pre-submit wired state`);
     assertCondition(fallbackPolicy?.trim() === "no-local-only-fallback", `${target.name}: fallback policy indicated an unexpected local-only fallback`);
+    if (target.expectedRuntimeStatusIncludes) {
+      assertCondition(
+        runtimeStatus?.includes(target.expectedRuntimeStatusIncludes) ?? false,
+        `${target.name}: runtime status did not include the expected marker`
+      );
+    }
+    if (target.expectedServiceBaseUrl) {
+      assertCondition(
+        serviceBaseUrl?.trim() === target.expectedServiceBaseUrl,
+        `${target.name}: service base URL did not match the expected runtime config`
+      );
+    }
     currentStepStatus.runtimeStatus = "passed";
 
     rows.push({

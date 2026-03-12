@@ -39,10 +39,18 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
   - optional variable `STAGING_CLOUDFRONT_DISTRIBUTION_ID`
   - optional variable `STAGING_BASE_URL`
   - optional variable `STAGING_SMOKE_PATHS`
+  - optional variable `STAGING_SNS_SERVICE_MODE` (defaults to `simulated-route`; set to `http` for Issue 150/151 staging cutover)
+  - optional variable `STAGING_SNS_SERVICE_BASE_URL` (required when `STAGING_SNS_SERVICE_MODE=http`)
+  - optional variable `STAGING_SNS_TIMELINE_ENDPOINT` (defaults to `/api/sns/timeline`)
+  - optional variable `STAGING_SNS_POSTS_ENDPOINT` (defaults to `/api/sns/posts`)
+  - optional variable `STAGING_SNS_WRITE_SURFACE_ENABLED` (defaults to `true`)
+  - optional variable `STAGING_SNS_PERSISTENCE_MODE` (defaults to `browser-local-storage`; kept for surface labeling while runtime transport comes from service mode)
 - SNS staging review workflow:
   - manual dispatch input `staging_deploy_run_id`
   - optional manual dispatch input `verification_owner`
   - variable `STAGING_BASE_URL`
+  - variable `STAGING_SNS_SERVICE_MODE` must be `http`
+  - variable `STAGING_SNS_SERVICE_BASE_URL` must be set
 - Production deploy workflow:
   - secret `AWS_ROLE_TO_ASSUME_PRODUCTION`
   - variable `PRODUCTION_AWS_REGION`
@@ -82,7 +90,8 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - Release owner defaults to the repository owner and deploy operator defaults to the triggering actor for the run
 - The GitHub Actions run URL and the monitoring record artifact are the default first-response route for staging triage
 - `portal-sns-staging-review` can follow the staging deploy path and reuse the same `portal-staging-monitoring-record` artifact as the entry evidence for SNS-specific review
-- The SNS staging review workflow runs the existing SNS surface reachability and auth-post-readback browser checks against `STAGING_BASE_URL` and writes a `portal-sns-staging-review-record` artifact for the same operator review path
+- The staging deploy workflow now rewrites `runtime-config.js` inside the deploy artifact so SNS service mode, service base URL, and route endpoints can be switched per environment without rebuilding the JS bundle
+- The SNS staging review workflow runs the existing SNS surface reachability and auth-post-readback browser checks against `STAGING_BASE_URL`, verifies that the surface advertises the expected HTTP service runtime, and writes a `portal-sns-staging-review-record` artifact for the same operator review path
 - SNS first-slice staging completion should be judged from the staging deploy run URL, the `portal-staging-monitoring-record` artifact, and the matching `portal-sns-staging-review-record` artifact together rather than from local evidence alone
 
 ## Build Artifact Retention And Release Evidence

@@ -59,7 +59,9 @@ Acceptance Criteria
 
 # Current Status
 
-- local draft created
+- staging deploy now records an SNS runtime config snapshot and rewrites runtime-config.js inside the deploy artifact so the reviewed staging surface can advertise the intended HTTP service path
+- SNS staging review now fails closed unless staging is configured for HTTP service mode with a declared service base URL, and the surface reachability review verifies that the visible runtime markers match that reviewed service URL
+- live staging review run and rollback-target evidence remain pending until the updated workflows are executed against a real staging SNS service target
 - GitHub Issue: not created in this task
 - Sync Status: local-only draft
 

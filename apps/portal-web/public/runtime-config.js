@@ -1,0 +1,1 @@
+globalThis.__PORTAL_RUNTIME_CONFIG__ = globalThis.__PORTAL_RUNTIME_CONFIG__ ?? {};

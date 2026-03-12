@@ -60,7 +60,9 @@ Acceptance Criteria
 
 # Current Status
 
-- local draft created
+- frontend runtime cutover now reads SNS public config from runtime-config.js first, so staging can switch the SNS surface to HTTP service mode without rebuilding the bundle
+- local HTTP-mode validation rewrites dist/runtime-config.js before preview, which keeps the browser evidence on the service-backed path instead of depending on stale build-time env or browser-local state
+- live staging cutover confirmation remains pending until a staging deploy publishes reviewed SNS service settings and the matching staging review passes against that runtime config
 - GitHub Issue: not created in this task
 - Sync Status: local-only draft
 

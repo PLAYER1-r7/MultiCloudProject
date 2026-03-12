@@ -65,18 +65,56 @@ jobs:
           name: ${{ env.STAGING_DEPLOY_ARTIFACT_NAME }}
           path: staging-evidence
 
+      - name: Resolve SNS staging review config
+        env:
+          STAGING_VARIABLES_JSON: ${{ toJson(vars) }}
+        shell: bash
+        run: |
+          node <<'EOF'
+          const fs = require('node:fs');
+
+          const vars = JSON.parse(process.env.STAGING_VARIABLES_JSON || '{}');
+          const buildKey = (...parts) => parts.join('_');
+          const resolved = {
+            SNS_SERVICE_MODE: vars[buildKey('STAGING', 'SNS', 'SERVICE', 'MODE')] || 'simulated-route',
+            SNS_SERVICE_BASE_URL: vars[buildKey('STAGING', 'SNS', 'SERVICE', 'BASE', 'URL')] || ''
+          };
+
+          const envLines = Object.entries(resolved).map(([key, value]) => `${key}=${String(value)}`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `${envLines.join('\n')}\n`, 'utf8');
+          EOF
+
       - name: Validate staging review inputs
         shell: bash
         run: |
           set -euo pipefail
           test -n "$STAGING_BASE_URL"
+          test "$SNS_SERVICE_MODE" = 'http'
+          test -n "$SNS_SERVICE_BASE_URL"
           test -f "$GITHUB_WORKSPACE/staging-evidence/staging-monitoring-record.md"
 
       - name: Run SNS surface reachability review against staging
-        env:
-          SNS_SURFACE_TARGETS_JSON: >-
-            [{"name":"staging-sns-surface","url":"${{ vars.STAGING_BASE_URL }}","expectedRoutePath":"/","expectedEntryHref":"/status#sns-request-response-surface","expectedSurfaceSelector":"[data-sns-surface=\"request-response\"]","expectedPostingCtaHref":"/status#sns-posting-cta-guidance","expectedPostingTargetSelector":"[data-sns-posting-target=\"true\"]"}]
-        run: node ./scripts/verify-sns-surface-reachability.mjs > "$GITHUB_WORKSPACE/sns-staging-surface-review.md"
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SNS_SURFACE_TARGETS_JSON="$(node <<'EOF'
+          const targets = [
+            {
+              name: 'staging-sns-surface',
+              url: process.env.STAGING_BASE_URL,
+              expectedRoutePath: '/',
+              expectedEntryHref: '/status#sns-request-response-surface',
+              expectedSurfaceSelector: '[data-sns-surface="request-response"]',
+              expectedPostingCtaHref: '/status#sns-posting-cta-guidance',
+              expectedPostingTargetSelector: '[data-sns-posting-target="true"]',
+              expectedRuntimeStatusIncludes: 'HTTP service mode is configured against',
+              expectedServiceBaseUrl: process.env.SNS_SERVICE_BASE_URL
+            }
+          ];
+          process.stdout.write(JSON.stringify(targets));
+          EOF
+          )"
+          node ./scripts/verify-sns-surface-reachability.mjs > "$GITHUB_WORKSPACE/sns-staging-surface-review.md"
 
       - name: Run SNS auth-post-readback review against staging
         env:
@@ -100,6 +138,8 @@ jobs:
           - Run attempt: ${{ github.run_attempt }}
           - Event: ${{ github.event_name }}
           - Staging base URL: ${STAGING_BASE_URL}
+          - Staging SNS service mode: ${SNS_SERVICE_MODE}
+          - Staging SNS service base URL: ${SNS_SERVICE_BASE_URL}
           - Reviewed staging deploy run ID: ${deploy_run_id}
           - Reviewed staging deploy run URL: ${deploy_run_url}
           - Verification owner: ${verification_owner}
@@ -139,6 +179,8 @@ jobs:
           {
             echo "## SNS staging review summary"
             echo "- Staging base URL: ${STAGING_BASE_URL}"
+            echo "- Staging SNS service mode: ${SNS_SERVICE_MODE}"
+            echo "- Staging SNS service base URL: ${SNS_SERVICE_BASE_URL}"
             echo "- Reviewed staging deploy run ID: ${{ steps.resolve-run-id.outputs.staging_deploy_run_id }}"
             echo "- Source staging evidence artifact: ${STAGING_DEPLOY_ARTIFACT_NAME}"
             echo "- SNS review record artifact: ${SNS_STAGING_REVIEW_ARTIFACT_NAME}"

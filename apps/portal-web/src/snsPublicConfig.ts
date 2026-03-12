@@ -11,7 +11,35 @@ export type SnsPublicConfig = {
   serviceBaseUrl: string;
 };
 
+type RuntimeConfigValue = string | number | boolean | undefined;
+
+type PortalRuntimeConfig = Partial<Record<string, RuntimeConfigValue>>;
+
+function readRuntimeConfigValue(key: string): string | undefined {
+  const runtimeConfig = (globalThis as typeof globalThis & {
+    __PORTAL_RUNTIME_CONFIG__?: PortalRuntimeConfig;
+  }).__PORTAL_RUNTIME_CONFIG__;
+
+  const value = runtimeConfig?.[key];
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  return undefined;
+}
+
 function readPublicEnvValue(key: string): string | undefined {
+  const runtimeValue = readRuntimeConfigValue(key);
+
+  if (typeof runtimeValue === "string") {
+    return runtimeValue;
+  }
+
   const env = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env;
   return env?.[key];
 }

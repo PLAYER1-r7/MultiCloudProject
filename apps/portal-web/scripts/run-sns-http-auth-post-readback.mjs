@@ -1,4 +1,4 @@
-import { mkdtemp } from "node:fs/promises";
+import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawn } from "node:child_process";
@@ -59,12 +59,27 @@ async function waitForUrl(url, timeoutMs) {
   throw new Error(`Endpoint did not become reachable within ${timeoutMs}ms: ${url}`);
 }
 
+async function writeRuntimeConfigFile(filePath, runtimeConfig) {
+  const serializedConfig = JSON.stringify(runtimeConfig, null, 2);
+  await writeFile(
+    filePath,
+    `globalThis.__PORTAL_RUNTIME_CONFIG__ = Object.assign({}, globalThis.__PORTAL_RUNTIME_CONFIG__ ?? {}, ${serializedConfig});\n`,
+    "utf8"
+  );
+}
+
 const tempDirectory = await mkdtemp(join(tmpdir(), "portal-web-sns-http-auth-"));
 const storageFilePath = join(tempDirectory, "sns-service-timeline.json");
 const previewPort = Number(process.env.SNS_HTTP_AUTH_PREVIEW_PORT ?? (await getAvailablePort(previewHost)));
 const servicePort = Number(process.env.SNS_HTTP_AUTH_SERVICE_PORT ?? (await getAvailablePort(serviceHost)));
 const previewUrl = `http://${previewHost}:${previewPort}/`;
 const serviceBaseUrl = `http://${serviceHost}:${servicePort}`;
+
+await writeRuntimeConfigFile(join(process.cwd(), "dist", "runtime-config.js"), {
+  VITE_PUBLIC_SNS_SERVICE_MODE: "http",
+  VITE_PUBLIC_SNS_SERVICE_BASE_URL: serviceBaseUrl,
+  VITE_PUBLIC_SNS_PERSISTENCE_MODE: "memory"
+});
 
 const serviceProcess = spawn("npm", ["run", "sns:http-service"], {
   stdio: "inherit",
