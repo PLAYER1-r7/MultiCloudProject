@@ -23,6 +23,12 @@ variable "preview_hostname" {
   type        = string
 }
 
+variable "additional_hostnames" {
+  description = "Optional additional hostnames served by the same load balancer and certificate surface."
+  type        = list(string)
+  default     = []
+}
+
 variable "resource_name_prefix" {
   description = "Prefix used for load balancer, certificate, and CDN resource names."
   type        = string

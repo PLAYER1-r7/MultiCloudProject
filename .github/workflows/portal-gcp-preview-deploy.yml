@@ -42,7 +42,8 @@ jobs:
       GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL: ${{ vars.GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL }}
       GCP_PREVIEW_BASE_URL: ${{ vars.GCP_PREVIEW_BASE_URL }}
-      GCP_PREVIEW_SMOKE_PATHS: ${{ vars.GCP_PREVIEW_SMOKE_PATHS != '' && vars.GCP_PREVIEW_SMOKE_PATHS || '/,/overview,/guidance' }}
+      GCP_PREVIEW_SMOKE_PATHS: ${{ vars.GCP_PREVIEW_SMOKE_PATHS != '' && vars.GCP_PREVIEW_SMOKE_PATHS || '/,/overview,/guidance,/status' }}
+      GCP_PREVIEW_REQUIRED_200_PATHS: ${{ vars.GCP_PREVIEW_REQUIRED_200_PATHS != '' && vars.GCP_PREVIEW_REQUIRED_200_PATHS || '/,/overview,/guidance,/status' }}
       GCP_PREVIEW_URL_MAP_NAME: ${{ vars.GCP_PREVIEW_URL_MAP_NAME }}
     steps:
       - name: Verify build provenance
@@ -166,6 +167,7 @@ jobs:
           echo "base_url=${GCP_PREVIEW_BASE_URL:-<none>}"
           echo "url_map_name=${GCP_PREVIEW_URL_MAP_NAME:-<none>}"
           echo "smoke_paths=$GCP_PREVIEW_SMOKE_PATHS"
+          echo "required_200_paths=$GCP_PREVIEW_REQUIRED_200_PATHS"
           echo "release_owner=$release_owner"
           echo "deploy_operator=$deploy_operator"
           echo "verification_owner=$verification_owner"
@@ -266,6 +268,7 @@ jobs:
           fi
 
           IFS=',' read -r -a paths <<< "$GCP_PREVIEW_SMOKE_PATHS"
+          IFS=',' read -r -a required_200_paths <<< "$GCP_PREVIEW_REQUIRED_200_PATHS"
           failure=0
           for raw_path in "${paths[@]}"; do
             path="${raw_path//[[:space:]]/}"
@@ -275,10 +278,19 @@ jobs:
             response_file="$(mktemp)"
             status_code='curl-failed'
             result='failed'
+            requires_200=0
+            for required_path in "${required_200_paths[@]}"; do
+              trimmed_required_path="${required_path//[[:space:]]/}"
+              [[ -z "$trimmed_required_path" ]] && continue
+              if [[ "$path" == "$trimmed_required_path" ]]; then
+                requires_200=1
+                break
+              fi
+            done
             if status_code="$(curl --show-error --silent --location --output "$response_file" --write-out '%{http_code}' "$url")"; then
               if [[ "$status_code" =~ ^2[0-9][0-9]$ ]] && grep -q 'MultiCloudProject Portal' "$response_file" && grep -q '<div id="app"></div>' "$response_file"; then
                 result='passed'
-              elif [[ "$path" != "/" && "$status_code" == "404" ]] && grep -q 'MultiCloudProject Portal' "$response_file" && grep -q '<div id="app"></div>' "$response_file"; then
+              elif [[ "$requires_200" -eq 0 && "$path" != "/" && "$status_code" == "404" ]] && grep -q 'MultiCloudProject Portal' "$response_file" && grep -q '<div id="app"></div>' "$response_file"; then
                 result='passed'
               else
                 failure=1

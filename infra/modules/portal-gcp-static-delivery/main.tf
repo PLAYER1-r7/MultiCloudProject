@@ -1,4 +1,6 @@
 locals {
+  all_hostnames = sort(distinct(concat([var.preview_hostname], var.additional_hostnames)))
+
   common_labels = merge(
     {
       environment = lower(replace(var.environment_name, "-", "_"))
@@ -12,13 +14,16 @@ locals {
   security_headers = [
     "X-Content-Type-Options: nosniff",
     "X-Frame-Options: DENY",
+    "Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()",
     "Referrer-Policy: strict-origin-when-cross-origin",
-    "Strict-Transport-Security: max-age=31536000; includeSubDomains"
+    "Strict-Transport-Security: max-age=31536000; includeSubDomains",
+    "X-Permitted-Cross-Domain-Policies: none"
   ]
 
   spa_fallback_routes = [
     "/overview",
     "/guidance",
+    "/status",
     "/platform",
     "/delivery",
     "/operations"
@@ -69,11 +74,23 @@ resource "google_compute_security_policy" "preview" {
   }
 }
 
+resource "random_id" "certificate" {
+  byte_length = 4
+
+  keepers = {
+    domains = join(",", local.all_hostnames)
+  }
+}
+
 resource "google_compute_managed_ssl_certificate" "preview" {
-  name = "${var.resource_name_prefix}-certificate"
+  name = "${var.resource_name_prefix}-cert-${random_id.certificate.hex}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   managed {
-    domains = [var.preview_hostname]
+    domains = local.all_hostnames
   }
 }
 
@@ -91,7 +108,7 @@ resource "google_compute_url_map" "https" {
   default_service = google_compute_backend_bucket.site.id
 
   host_rule {
-    hosts        = [var.preview_hostname]
+    hosts        = local.all_hostnames
     path_matcher = "all-routes"
   }
 
@@ -109,6 +126,16 @@ resource "google_compute_url_map" "https" {
 
         match_rules {
           full_path_match = route.value
+        }
+
+        custom_error_response_policy {
+          error_service = google_compute_backend_bucket.site.id
+
+          error_response_rule {
+            match_response_codes   = ["404"]
+            path                   = "/index.html"
+            override_response_code = 200
+          }
         }
 
         route_action {

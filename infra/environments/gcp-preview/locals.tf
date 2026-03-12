@@ -27,4 +27,18 @@ locals {
     },
     var.common_labels
   )
+
+  monitoring_uptime_checks = {
+    for path in var.monitoring_uptime_paths :
+    (path == "/" ? "root" : replace(trim(path, "/"), "/", "-")) => path
+  }
+
+  # Keep the required-2xx baseline explicit so optional smoke paths can diverge
+  # later without silently relaxing the first-response health contract.
+  required_2xx_monitoring_paths = toset([
+    "/",
+    "/overview",
+    "/guidance",
+    "/status"
+  ])
 }

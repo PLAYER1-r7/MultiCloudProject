@@ -13,7 +13,7 @@ output "certificate_related_reference" {
   value = format(
     "%s domains=%s status_ref=google_compute_managed_ssl_certificate",
     google_compute_managed_ssl_certificate.preview.name,
-    var.preview_hostname
+    join(",", local.all_hostnames)
   )
 }
 
