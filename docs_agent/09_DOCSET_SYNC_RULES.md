@@ -18,6 +18,7 @@ Keep `docs_agent/` and `docs_agent_ja/` structurally aligned so agents can switc
 - Keep template fields aligned one-to-one across both languages.
 - Update both `01_START_HERE.md` files whenever reading order changes.
 - If only one language is updated, record the mismatch and fix it in the same task when possible.
+- If issue-decomposition guardrails, create-gate checks, or `Terminal condition` fields are added or changed in one language, apply the same structural change in the other language in the same task.
 - If a leftover diff set mixes semantic changes with formatting-only cleanup, record and track them as separate scopes so final review evidence stays unambiguous.
 - If a local issue definition is used as the source for a GitHub issue or PR body, sync the remote body in the same task whenever possible.
 - Before requesting external review based on GitHub content, commit and push the review target or explicitly state that the review is against a local-only draft.
@@ -30,6 +31,7 @@ Keep `docs_agent/` and `docs_agent_ja/` structurally aligned so agents can switc
 - If human re-agreement is obtained after review remediation, record it separately from agent validation and do not treat it as issue close approval.
 - When recording human re-agreement in a comment, mark it as a concise record, point canonical wording to the issue or PR body's Resolution or equivalent section, and state explicitly that the comment is not close approval.
 - If the local source document changes after the last remote sync, sync the remote issue or PR body again before close or any equivalent final-state transition.
+- If a task changes the rule for when an issue chain should stop, close, or refuse a child issue, verify that the same stop-condition wording exists across `01`, `02`, `03`, `07`, `08`, `09`, and `14` in both languages before the task is marked done.
 
 ## Preferred Structured Formats
 
@@ -113,6 +115,7 @@ Use this table when editing one document at a time and you need the exact canoni
 - [ ] Reading order matches
 - [ ] Section structure matches
 - [ ] Meaning matches across languages
+- [ ] Issue decomposition stop-condition wording matches across the related English and Japanese documents
 
 ```bash
 # Confirm both folders contain the same file set

@@ -89,7 +89,7 @@
 - [ ] PR を作る前に、対象スコープの実装、必要テスト、関連ドキュメント更新、Issue 状態同期が完了していることを確認した
 - [ ] PR の対象が close 済み chain の packaging-only な継続ではなく、完了済み active scope か fresh record 起点の follow-up であることを確認した
 - [ ] AI 支援で PR を準備する場合は、stage 済みファイルが意図したスコープに限定され、無関係なローカル差分が除外されていることを確認した
-- [ ] PR タイトル、本文、self-review メモを AI 支援で準備した場合は、最終提出または merge 前に人間がスコープ、検証証跡、merge リスクを確認する前提が PR 上で明示されており、実際に確認が得られていないのに確認済みとは記載していない
+- [ ] PR タイトル、本文、self-review メモを AI 支援で準備した場合でも、最終提出または merge 前に人間がスコープ、検証証跡、merge リスクを確認した
 - [ ] スコープが曖昧、無関係な差分が混在、または merge 安全性が判断依存である場合は、自律的な PR 実行を止めて作成前に確認を求めた
 - [ ] PR タイトルは何を完了または追加したかが一読で分かり、コード変更と docs 同期が混在する場合も曖昧な総称だけで済ませていない
 - [ ] PR 本文は Summary、What Changed、Validation を最低限の固定セクションとして記載した
@@ -99,18 +99,16 @@
 - [ ] スコープに高レベル summary 文書がある場合は、実装チェーン完了後にその summary 側も更新した
 - [ ] reviewer が重点的に見るべき差分を 2 から 3 点の具体的な review point に絞って記載した
 - [ ] PR 本文の記述がローカル差分、Issue 状態、summary 文書の記述と矛盾していないことを確認した
-- [ ] PR に履歴用 Issue 文書や、過去の状態や判断を記録した参照用文書が含まれる場合は、predecessor 表現と current-status 表現を現在の GitHub Issue 状態に対して再確認した
+- [ ] PR に履歴用 Issue 文書や closed-reference docs が含まれる場合は、predecessor 表現と current-status 表現を現在の GitHub Issue 状態に対して再確認した
 
 ## レビューコメント対応後
 
 - [ ] レビュー是正パスを始める前に、以前の review snapshot に頼らず、最新の PR review と inline comment を再取得した
 - [ ] 現在の branch に無関係な作業がある場合は、別 worktree または同等の clean な branch context で是正作業を分離した
-- [ ] 是正 patch 後、fix を push または publish する前、または再レビュー依頼前に、最終状態に対して関連検証を再実行した
+- [ ] 是正 patch 後、commit または push の前に関連検証を再実行した
 - [ ] fix commit の publish 後、対応したコメント内容と再実行した検証を PR コメントで要約した
 - [ ] Copilot の再レビュー依頼は、新しい fix commit と PR コメントの両方が publish された後に行った
 - [ ] follow-up docs PR が未 merge の実装 PR に依存する場合は stacked PR を使い、後で `main` に戻す条件を文書化した
-
-## 最終確認
 
 - [ ] テスト結果を記録した
 - [ ] DoD の必須ゲートを満たした

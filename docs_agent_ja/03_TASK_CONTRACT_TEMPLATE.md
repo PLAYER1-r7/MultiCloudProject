@@ -7,6 +7,8 @@
 - 編集開始前に、下の fenced テンプレートをそのままコピーして使う
 - 各プレースホルダは同じ行で置き換え、本当に不要な行だけ削除する
 - 受け入れ条件と検証コマンドは、別のエージェントが再解釈なしで引き継げる粒度まで具体化する
+- browser-facing な portal copy や他の公開向け文面を変更する作業では、scope が `local-only` なのか live reflection を含むのかを明記する
+- 作業が follow-up issue chain を新規作成または継続する可能性がある場合は、次の Issue を作る前に `terminal condition` を埋める
 - reviewer と approval owner の境界が関わる場合は、`依頼者`、`期待する価値`、引き継ぎ系のスコープ記述を埋める前に `ROLE_HANDOFF_OWNERSHIP.md` に合わせる
 - 通常の実装だけでなく、レビュー指摘への是正、文書だけの修正、Final Review の取りまとめ作業にもこのテンプレートを使う
 
@@ -14,6 +16,8 @@
 
 - すべての詳細が固まる前に作業を始める必要があっても、最初の編集前に必ずタスク契約を作る
 - 最低でも `タイトル`、`依頼者`、`対象アプリ`、`対象環境`、`解決する問題`、`含むもの`、`含まないもの`、受け入れ条件 1 つ、検証コマンド 1 つを埋める
+- browser-facing な portal copy や他の公開向け文面を変更する作業では、live reflection を含むかどうかと、その証拠を何で示すかも書く
+- 作業が follow-up issue に分岐しうる場合は、最初の child を作る前に `terminal condition` も埋める
 - 未確定値は空欄のままにせず、明示的に `TBD` と書く
 - 作業が最初の狭い想定より広がった場合は、引き継ぎ前に契約を拡張する
 
@@ -37,6 +41,7 @@
 目的
 - 解決する問題:
 - 期待する価値: TBD
+- terminal condition: TBD
 
 スコープ
 - 含むもの:
@@ -82,6 +87,7 @@
 目的
 - 解決する問題:
 - 期待する価値:
+- terminal condition:
 
 スコープ
 - 含むもの:
@@ -130,6 +136,7 @@
 目的
 - 解決する問題: exam-solver のフロントエンドと API 作業で callback と timeout のガイダンスが揃っていない
 - 期待する価値: exam-solver-reviewer への引き継ぎと exam-solver-approval-owner への承認依頼を行う前に、deploy-exam-solver-aws.yml 対象の staging 挙動を安全に更新できる
+- terminal condition: callback と timeout の契約文言が 1 つの正本で固定され、この更新のための追加 child issue が不要になった時点で完了とする
 
 スコープ
 - 含むもの: Issue #451 に対する docs_agent の callback と timeout 判断文言、および exam-solver-reviewer 向け引き継ぎメモ

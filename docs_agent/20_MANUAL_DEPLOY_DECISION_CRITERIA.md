@@ -31,6 +31,7 @@ For emergency recovery, manual deploy is allowed only when the failure origin is
 - Production impact is unmanaged.
 - Rollback is unclear.
 - Boundary violations are present.
+- A release-sensitive GCP production-equivalent change has no reviewed execution package, no approval-owner handoff, or no separate live execution issue.
 
 ## App-Specific Runtime Decision Rule
 

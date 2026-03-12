@@ -4,6 +4,7 @@
 
 - branch protection、merge flow、強制ルールの前提を確認したいときに使う
 - branch policy と実際のデプロイ挙動が噛み合っていない疑いがあるときに使う
+- 追加で Issue タグの正規化も伴う場合は、タグ付与基準と `gh issue edit` の実行形を `27_GITHUB_OPERATIONS_COMMANDS.md` で確認する
 
 ## 実行パターン
 

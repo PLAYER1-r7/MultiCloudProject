@@ -20,6 +20,15 @@
 - Use Pulumi outputs as the config source of truth.
 - Use amd64-compatible build paths for deploy artifacts.
 
+## Issue Decomposition Guardrails
+
+- Do not create a new issue unless it adds at least one of the following: new evidence collection, a new fixed judgment, or a new execution boundary.
+- Do not create packaging-only issues. If the proposed child only rephrases, repackages, or restates an existing scope, keep the work in the current issue.
+- Write the terminal condition in the parent issue before creating the first child issue.
+- Keep a single planning or execution chain to 4 issues or fewer unless a human explicitly approves a longer chain.
+- If 2 consecutive issues do not add new evidence, a new fixed judgment, or a new execution boundary, stop decomposition and review whether the chain should be closed.
+- If a proposed child issue would be the 4th issue in the same chain, obtain explicit human confirmation that the work is still a distinct issue rather than closure or in-place resolution.
+
 ## Security Deployment Guardrails
 
 - Enforce MFA on GitHub and all cloud accounts used for deploy or admin work.

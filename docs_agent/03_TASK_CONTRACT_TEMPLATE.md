@@ -7,6 +7,8 @@ Use this template before implementation starts.
 - Copy the fenced template below into the task record before editing starts.
 - Replace every placeholder on the same line; delete lines that are truly not needed.
 - Keep acceptance criteria and validation commands concrete enough that another agent can continue without re-interpreting intent.
+- If the task changes browser-facing portal copy or another public-facing text surface, state whether the scope is `local-only` or includes live reflection.
+- If the task may create or continue a follow-up issue chain, fill `Terminal condition` before creating the next issue.
 - If reviewer and approval owner boundaries matter for the task, follow `ROLE_HANDOFF_OWNERSHIP.md` while filling `Requester`, `Expected value`, and handoff-related scope notes.
 - Use this template for review-remediation, document-only correction, and final-review packaging passes as well as normal implementation work.
 
@@ -14,6 +16,8 @@ Use this template before implementation starts.
 
 - If work must start before every detail is known, still create a task contract before the first edit.
 - At minimum, fill `Title`, `Requester`, `Target App`, `Environment`, `Problem to solve`, `In scope`, `Out of scope`, one acceptance criterion, and one validation command.
+- If the task changes browser-facing portal copy or another public-facing text surface, also state whether live reflection is in scope and what evidence will prove it.
+- If the work may branch into follow-up issues, also fill `Terminal condition` before the first child is created.
 - Leave unknown values as explicit `TBD` markers rather than skipping the contract.
 - Expand the contract before handoff if the work grows beyond the initial narrow scope.
 
@@ -36,6 +40,7 @@ Metadata
 Objective
 - Problem to solve:
 - Expected value: TBD
+- Terminal condition: TBD
 
 Scope
 - In scope:
@@ -80,6 +85,7 @@ Metadata
 Objective
 - Problem to solve:
 - Expected value:
+- Terminal condition:
 
 Scope
 - In scope:
@@ -127,6 +133,7 @@ Metadata
 Objective
 - Problem to solve: callback and timeout guidance are inconsistent across exam-solver frontend and API work
 - Expected value: agents can update exam-solver staging behavior safely before handing off to exam-solver-reviewer and requesting approval from exam-solver-approval-owner for deploy-exam-solver-aws.yml
+- Terminal condition: contract wording is fixed in one source document and no additional child issue is needed to complete the callback and timeout guidance update
 
 Scope
 - In scope: docs_agent callback and timeout guidance, validation wording, and handoff notes for Issue #451 to exam-solver-reviewer

@@ -4,6 +4,7 @@
 
 - Use this before changing branch protection expectations, merge flow, or enforcement assumptions.
 - Use it when a deployment behaves differently from what branch policy should allow.
+- If the task also includes normalizing Issue labels, use `27_GITHUB_OPERATIONS_COMMANDS.md` for the label baseline and `gh issue edit` command pattern.
 
 ## Execution Pattern
 

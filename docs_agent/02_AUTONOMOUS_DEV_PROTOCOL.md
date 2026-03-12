@@ -39,14 +39,23 @@ flowchart TD
 
 - Identify target app, environment, and objective.
 - Extract explicit constraints and implicit risks.
+- If the user asks for "remaining tasks", "next tasks", "what is left", or similar wording without an explicit scope, default the request to the most recent active task contract, issue chain, or current app context rather than expanding to the whole project.
+- If 2 or more plausible scopes exist, do not guess. State the candidate scopes and ask which one the user means before producing a project-wide task inventory.
+- Before expanding a task-list request from the current active scope to repository-wide scope, require explicit wording such as "project-wide", "across the whole repo", or an equivalent confirmation.
+- In the first response to an ambiguous task-list request, state the scope the agent is using so the user can correct it immediately.
+- If the request may create or continue a child or follow-up issue chain, check whether the next issue would add new evidence collection, a new fixed judgment, or a new execution boundary.
+- If the proposed next issue is packaging-only rewording or restatement, stop Intake and keep the work in the current issue instead.
+- If 2 consecutive issues in the same chain added no new evidence, no new fixed judgment, and no new execution boundary, stop decomposition and review whether the chain should be closed.
+- If the proposed next issue would become the 4th issue in the same chain, require explicit human confirmation before accepting the Intake.
 
 ### 2. Contract
 
 - Write the task contract before implementation.
 - If all details are not known yet, write a minimum starter contract first and mark unknown fields as `TBD` rather than starting without a contract.
 - Lock scope, acceptance criteria, tests, and rollback.
+- If the task may create or continue a follow-up issue chain, write `Terminal condition` in the task contract before creating the next issue.
 - Review-remediation, document-only correction, and final-review packaging passes still require their own task contract before edits start.
-- If the discussion draft includes an open-questions section, format it as a three-column table with columns `Question`, `Provisional direction (at draft time)`, and `Resolution confirmed wording`. The existing Japanese labels `論点`, `判断方向（Discussion 時点の仮）`, and `Resolution 確定文言` are canonical equivalents. After human agreement, do not leave the third column as draft-only candidate wording; promote it to final wording that matches the Resolution section. The `Resolution confirmed wording` column must be filled in before writing the Resolution section. A table with any empty cell in the third column, or any row still frozen as candidate wording, is a hard stop for Resolution creation.
+- If the discussion draft includes an open-questions section, format it as a three-column table with columns `Question`, `Provisional direction (at draft time)`, and `Resolution confirmed wording`. The Japanese labels `論点`, `判断方向（Discussion 時点の仮）`, and `Resolution 確定文言` are equivalent canonical labels for the same table shape. After human agreement, do not leave the third column as draft-only candidate wording; promote it to final wording that matches the Resolution section. The `Resolution confirmed wording` column must be filled in before writing the Resolution section. A table with any empty cell in the third column, or any row still frozen as candidate wording, is a hard stop for Resolution creation.
 
 ### 3. Implement
 

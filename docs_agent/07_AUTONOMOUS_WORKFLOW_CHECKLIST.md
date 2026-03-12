@@ -89,7 +89,7 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] Before creating the PR, confirmed the implementation, required tests, related document updates, and issue-state synchronization for the target scope are complete.
 - [ ] Confirmed the PR is not reopening a closed chain for packaging-only continuation, and instead represents either a completed active scope or a fresh-record follow-up.
 - [ ] If the PR is being prepared with AI assistance, confirmed the staged files are limited to the intended scope and unrelated local changes are excluded.
-- [ ] If the PR title, body, or self-review notes were prepared with AI assistance, ensured the PR explicitly requires human confirmation of scope, validation evidence, and merge risk before final submission or merge, and does not describe that confirmation as already completed unless it was actually obtained.
+- [ ] If the PR title, body, or self-review notes were prepared with AI assistance, a human still confirmed scope, validation evidence, and merge risk before final submission or merge.
 - [ ] If scope is ambiguous, unrelated changes are mixed in, or merge safety depends on judgment, stopped autonomous PR execution and requested confirmation before creating the PR.
 - [ ] The PR title states what was completed or added, and does not collapse mixed code-and-doc synchronization work into a vague label.
 - [ ] The PR body includes Summary, What Changed, and Validation as the minimum fixed sections.
@@ -99,18 +99,16 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] If a higher-level summary document exists for the scope, it was updated after the implementation chain completed.
 - [ ] Reviewer focus notes were reduced to 2 or 3 concrete review points.
 - [ ] The PR body wording was checked against the local diff, issue states, and summary documents for consistency.
-- [ ] If the PR includes historical issue records or other documents that describe closed or historical states, such as decision records or postmortems, predecessor wording and current-status wording were rechecked against the current GitHub issue state.
+- [ ] If the PR includes historical issue records or closed-reference docs, predecessor wording and current-status wording were rechecked against the current GitHub issue state.
 
 ## After Review Comments
 
 - [ ] Before starting a review-remediation pass, the latest PR reviews and inline comments were fetched again instead of relying on an earlier review snapshot.
 - [ ] If the current branch contained unrelated work, the remediation was isolated in a separate worktree or equivalent clean branch context.
-- [ ] After the remediation patch, the relevant validation was rerun on the final fix state before pushing or publishing the fix commit, or before requesting re-review.
-- [ ] After publishing the validated fix commit, a PR comment was added summarizing the addressed comments and the validation that was rerun.
+- [ ] After the remediation patch, the relevant validation was rerun before commit or push.
+- [ ] After publishing the fix commit, a PR comment was added summarizing the addressed comments and the validation that was rerun.
 - [ ] A fresh Copilot review was requested only after the new fix commit and PR comment were both published.
 - [ ] If a follow-up docs PR depends on an unmerged implementation PR, a stacked PR was used and the future retarget condition was documented.
-
-## Finalization
 
 - [ ] Tests recorded.
 - [ ] DoD mandatory gates passed.

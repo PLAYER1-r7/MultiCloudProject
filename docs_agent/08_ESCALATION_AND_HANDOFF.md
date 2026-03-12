@@ -17,6 +17,7 @@ Outcome:
 Actions taken:
 Evidence:
 Risks or blockers:
+Closure rationale:
 Next action:
 ```
 
@@ -28,8 +29,8 @@ Use the canonical execution record format above.
 
 ## Escalate Immediately When
 
-- Production risk is likely.
 - Required credentials are unavailable.
+- Production risk is likely.
 - Security posture would be weakened.
 - Architecture conflict blocks safe implementation.
 
@@ -52,6 +53,7 @@ Use the canonical execution record format and set `Outcome: Handoff ready`.
 - Put the updated task contract and change summary in `Actions taken`.
 - Put validation and rollback evidence in `Evidence`.
 - Put residual risks in `Risks or blockers`.
+- If the work closes or refuses to extend an issue chain, record the stop-condition basis in `Closure rationale`.
 - Put reviewer focus or the next owner action in `Next action`.
 
 ## Copy-Ready Handoff Template
@@ -63,6 +65,7 @@ Outcome: Handoff ready
 Actions taken:
 Evidence:
 Risks or blockers:
+Closure rationale:
 Next action:
 ```
 
@@ -75,6 +78,7 @@ Outcome: Handoff ready
 Actions taken: aligned the frontend_react change summary, handoff notes, and deploy-sns-aws.yml review points
 Evidence: markdown review completed; /sns/ staging smoke checklist recorded for Issue #487
 Risks or blockers: staging /sns/ smoke validation still needs confirmation from the handoff owner
+Closure rationale: no issue-chain closure decision was made in this handoff; delivery moves to reviewer validation only
 Next action: sns-reviewer checks the /sns/ route behavior and handoff package before sns-approval-owner decides on deploy-sns-aws.yml
 ```
 
@@ -82,10 +86,22 @@ Next action: sns-reviewer checks the /sns/ route behavior and handoff package be
 
 ```text
 Document: 08_ESCALATION_AND_HANDOFF
-Scope: MultiCloudProject portal governance checkpoint after closing Issues 45 and 46
+Scope: MultiCloudProject GCP hardening checkpoint after closing Issues 80 through 91
 Outcome: Handoff ready
-Actions taken: closed Issue 45 for the production alert delivery baseline and Issue 46 for the external DNS automation / Route 53 migration judgment; synchronized the local issue records, shared governance docs, and GitHub Issue bodies; fixed the current production governance wording around external DNS source of truth, Route 53 non-adoption in the current phase, and operator-assist-only DNS automation
-Evidence: local issue records for Issues 45 and 46 are marked CLOSED; GitHub Issues 45 and 46 are closed; architecture, IaC, workflow README, and production README contain the synchronized governance wording added by Issue 46
-Risks or blockers: GCP baseline design, deeper incident runbook follow-up, and alert product implementation remain intentionally out of scope and should not be mixed into the completed DNS governance decision
-Next action: start the next chat from a fresh task contract, read the latest records under docs/portal/issues/, and treat GCP baseline design as a separate follow-up scope rather than reopening the closed DNS governance work
+Actions taken: completed the horizontal review for Issues 80 through 91; fixed local canonical issue-record inconsistencies before closure; converted the GCP parent map and cloud summary from active execution-entry wording to a closed reference chain; resynchronized GitHub Issue bodies for Issues 80 through 91 and closed them after CloudSonnet review confirmation
+Evidence: local issue records for Issues 80 through 91 are marked CLOSED; GitHub Issues 80 through 91 are closed; docs/portal/issues/issue-91-gcp-hardening-batch-follow-up-map.md and docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md now describe the GCP chain as a closed reference chain
+Risks or blockers: future GCP work must not reopen or silently extend the closed 80 through 91 chain; any new retained-preview, notification, Cloud Armor, credential-rotation, or destructive-rollback work requires a fresh task contract and a new follow-up issue chain
+Closure rationale: the chain was closed because the latest issues added the required execution evidence and no further child issue was needed to add a new fixed judgment or execution boundary
+Next action: start the next chat from a fresh task contract, read docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md and docs/portal/issues/issue-91-gcp-hardening-batch-follow-up-map.md first, and treat any further GCP work as new follow-up scope rather than reopening the closed reference chain
+```
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject AWS DNS verification checkpoint after closing Issues 92 through 95
+Outcome: Handoff ready
+Actions taken: reviewed the DNS verification chain from Issue 92 through Issue 95; aligned local issue records and GitHub issue bodies; converted the AWS DNS verification flow to a closed reference chain in the cloud status summary; closed GitHub Issues 92 through 95 after confirming no additional DNS verification follow-up remained in the current phase
+Evidence: local issue records for Issues 92 through 95 are marked CLOSED; GitHub Issues 92 through 95 are closed; docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md records the DNS verification chain as a closed reference chain with a short retrospective
+Risks or blockers: future AWS DNS work must not silently extend the closed 92 through 95 chain; provider credentials, provider API integration, and Route 53 migration remain separate governance or implementation tracks
+Closure rationale: the chain was closed because Issue 95 already provided the terminal dry-run draft and no further child issue would add new evidence, a new fixed judgment, or a new execution boundary
+Next action: start any future AWS DNS-related work from a fresh task contract, keep the closed 92 through 95 chain as reference only, and reject packaging-only child issues unless a human explicitly approves a new distinct scope
 ```

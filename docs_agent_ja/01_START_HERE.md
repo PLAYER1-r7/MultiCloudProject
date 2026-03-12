@@ -29,6 +29,7 @@
 - reviewer と approval owner の役割境界: ROLE_HANDOFF_OWNERSHIP.md
 - タイムアウト変更のようなアプリ固有の運用判断: 20_MANUAL_DEPLOY_DECISION_CRITERIA.md
 - GitHub 運用: 25_GITHUB_GOVERNANCE_QUICK_REF.md から 27_GITHUB_OPERATIONS_COMMANDS.md
+  Issue タグの正規化やタグ選定を伴う場合は 27_GITHUB_OPERATIONS_COMMANDS.md を使う
 - 監視/障害対応: 18_INCIDENT_TRIAGE_RUNBOOK.md から 29_ONCALL_MONITORING_ONEPAGE.md
 - 本番判定/テスト判定: 31_PRODUCTION_READINESS_GATE.md, 32_TEST_EXECUTION_GATE.md
 - レビュー雛形: 10_WEEKLY_REVIEW_TEMPLATE.md から 13_ANNUAL_REVIEW_TEMPLATE.md
@@ -40,6 +41,7 @@
 | 自律作業を安全に開始する           | `02_AUTONOMOUS_DEV_PROTOCOL.md`                                                                                        | `03_TASK_CONTRACT_TEMPLATE.md`, `04_DEFINITION_OF_DONE.md`                     |
 | エスカレーションまたは引き継ぎ     | `08_ESCALATION_AND_HANDOFF.md`                                                                                         | `05_PR_TASK_CONTRACT_TEMPLATE.md`                                              |
 | アプリ境界やワークフロー範囲       | `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`                                                                              | `26_GITHUB_ENVIRONMENT_GATES_EXTRACT.md`                                       |
+| GitHub Issue 運用やタグ付与        | `27_GITHUB_OPERATIONS_COMMANDS.md`                                                                                     | `25_GITHUB_GOVERNANCE_QUICK_REF.md`                                            |
 | 認証、シークレット、運用者アクセス | `17_AUTH_REQUEST_PLAYBOOK.md`                                                                                          | `14_CRITICAL_GUARDRAILS_EXTRACT.md`                                            |
 | 障害対応                           | `29_ONCALL_MONITORING_ONEPAGE.md`、`18_INCIDENT_TRIAGE_RUNBOOK.md`、または `28_MONITORING_ALERT_RESPONSE_QUICK_REF.md` | `21_AWS_INCIDENT_PATTERN_PLAYBOOK.md` から `24_CROSS_CLOUD_INCIDENT_MATRIX.md` |
 | 本番投入の可否判断                 | `31_PRODUCTION_READINESS_GATE.md`                                                                                      | `32_TEST_EXECUTION_GATE.md`, `08_ESCALATION_AND_HANDOFF.md`                    |

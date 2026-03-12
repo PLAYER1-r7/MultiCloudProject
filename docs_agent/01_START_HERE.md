@@ -30,6 +30,7 @@ Use these documents as needed after the core reading set:
 - Reviewer and approval owner role boundaries: `ROLE_HANDOFF_OWNERSHIP.md`
 - App-specific operational decisions such as runtime timeout changes: `20_MANUAL_DEPLOY_DECISION_CRITERIA.md`
 - GitHub operations: `25_GITHUB_GOVERNANCE_QUICK_REF.md` to `27_GITHUB_OPERATIONS_COMMANDS.md`
+  Use `27_GITHUB_OPERATIONS_COMMANDS.md` when the task includes Issue label normalization or label selection.
 - Incident and monitoring response: `18_INCIDENT_TRIAGE_RUNBOOK.md` to `29_ONCALL_MONITORING_ONEPAGE.md`
 - Release and test decisions: `31_PRODUCTION_READINESS_GATE.md`, `32_TEST_EXECUTION_GATE.md`
 - Review templates: `10_WEEKLY_REVIEW_TEMPLATE.md` to `13_ANNUAL_REVIEW_TEMPLATE.md`
@@ -41,6 +42,7 @@ Use these documents as needed after the core reading set:
 | Starting autonomous work safely   | `02_AUTONOMOUS_DEV_PROTOCOL.md`                                                                                    | `03_TASK_CONTRACT_TEMPLATE.md`, `04_DEFINITION_OF_DONE.md`                   |
 | Escalation or handoff             | `08_ESCALATION_AND_HANDOFF.md`                                                                                     | `05_PR_TASK_CONTRACT_TEMPLATE.md`                                            |
 | App boundaries or workflow scope  | `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`                                                                          | `26_GITHUB_ENVIRONMENT_GATES_EXTRACT.md`                                     |
+| GitHub Issue operations or labels | `27_GITHUB_OPERATIONS_COMMANDS.md`                                                                                 | `25_GITHUB_GOVERNANCE_QUICK_REF.md`                                          |
 | Auth, secrets, or operator access | `17_AUTH_REQUEST_PLAYBOOK.md`                                                                                      | `14_CRITICAL_GUARDRAILS_EXTRACT.md`                                          |
 | Incident response                 | `29_ONCALL_MONITORING_ONEPAGE.md`, `18_INCIDENT_TRIAGE_RUNBOOK.md`, or `28_MONITORING_ALERT_RESPONSE_QUICK_REF.md` | `21_AWS_INCIDENT_PATTERN_PLAYBOOK.md` to `24_CROSS_CLOUD_INCIDENT_MATRIX.md` |
 | Production release judgment       | `31_PRODUCTION_READINESS_GATE.md`                                                                                  | `32_TEST_EXECUTION_GATE.md`, `08_ESCALATION_AND_HANDOFF.md`                  |
