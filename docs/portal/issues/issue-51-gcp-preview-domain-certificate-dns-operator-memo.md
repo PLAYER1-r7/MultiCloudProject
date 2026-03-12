@@ -32,9 +32,9 @@ GCP preview domain / certificate / DNS operator memo の議論たたき台を作
 - 制限パス: infra/**, .github/workflows/*.yml, apps/portal-web/**, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP preview domain の operator sequence と minimum evidence path が文書から一意に読める
-- [ ] 条件 2: certificate validation handoff と manual DNS operator step の境界が整理されている
-- [ ] 条件 3: DNS automation、Cloud DNS adoption、provider account detail など本 issue 非対象が operator memo から切り分けられている
+- [x] 条件 1: GCP preview domain の operator sequence と minimum evidence path が文書から一意に読める
+- [x] 条件 2: certificate validation handoff と manual DNS operator step の境界が整理されている
+- [x] 条件 3: DNS automation、Cloud DNS adoption、provider account detail など本 issue 非対象が operator memo から切り分けられている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-51-gcp-preview-domain-certificate-dns-operator-memo.md
@@ -158,13 +158,13 @@ GCP preview domain / certificate / DNS operator memo の議論たたき台を作
 
 Resolution を書く段階では、この表の `Resolution 確定文言` 列を埋めてから使うこと。
 
-| 論点                                                         | 判断方向（Discussion 時点の仮）                                                          | Resolution 確定文言 |
-| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ------------------- |
-| first-step の preview domain を何に置くか                    | `preview.gcp.ashnova.jp` を維持する                                                      |                     |
-| authoritative DNS write を workflow / IaC に含めるか         | no。operator manual step に留める                                                        |                     |
-| workflow / IaC は何を operator へ handoff するか             | reviewed target reference と certificate-related reference を渡す                        |                     |
-| operator は何を minimum evidence として残すか                | target value、TTL、reachability、certificate reference、artifact/commit reference を残す |                     |
-| Cloud DNS adoption や Route 53 再判断をこの issue に含めるか | no。current governance judgment を維持する                                               |                     |
+| 論点                                                         | 判断方向（Discussion 時点の仮）                                                          | Resolution 確定文言                                                                                                                                                                                              |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| first-step の preview domain を何に置くか                    | `preview.gcp.ashnova.jp` を維持する                                                      | `first-step の preview domain は preview.gcp.ashnova.jp を維持する`                                                                                                                                              |
+| authoritative DNS write を workflow / IaC に含めるか         | no。operator manual step に留める                                                        | `authoritative DNS write は workflow / IaC に含めず、external DNS source-of-truth のもとで operator manual step として扱う`                                                                                      |
+| workflow / IaC は何を operator へ handoff するか             | reviewed target reference と certificate-related reference を渡す                        | `workflow / IaC は operator handoff に必要な reviewed target reference と certificate-related reference を出力する側に留める`                                                                                    |
+| operator は何を minimum evidence として残すか                | target value、TTL、reachability、certificate reference、artifact/commit reference を残す | `operator は minimum evidence として before/after の target value、TTL baseline、reviewed hostname reachability result、certificate-related confirmation reference、selected commit / artifact reference を残す` |
+| Cloud DNS adoption や Route 53 再判断をこの issue に含めるか | no。current governance judgment を維持する                                               | `Cloud DNS adoption や Route 53 再判断は本 issue に含めず、current governance judgment を維持する`                                                                                                               |
 
 ## Resolution
 
@@ -199,15 +199,16 @@ Issue 51 の判断結果は次の通りとする。
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
 - GitHub Issue: #51
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/51
-- Sync Status: local resolution updated and GitHub issue body resynced
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record は未作成だったため、このファイルを GCP preview domain / certificate / DNS operator memo の initial draft として追加する
 - operator memo の論点は architecture、workflow、automation judgment から分離して扱う
 - open questions は Resolution へ統合し、preview domain、operator boundary、handoff evidence、minimum evidence、non-goals の方針は固定した
-- 実装作業は未実施であり、次段は workflow execution issue か monitoring / rollback issue への分割である
+- follow-up issue として monitoring / rollback baseline まで整備済みであり、workflow / resource execution 側の evidence output も Issue 52 / 53 で実証済みである
 
 ## Dependencies
 

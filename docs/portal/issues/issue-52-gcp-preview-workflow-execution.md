@@ -32,9 +32,9 @@ GCP preview deploy workflow execution issue の議論たたき台を作り、wor
 - 制限パス: .github/workflows/*.yml, infra/**, apps/portal-web/**, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP preview workflow implementation の責務と編集対象が文書から一意に読める
-- [ ] 条件 2: manual dispatch input、artifact provenance check、deploy evidence、operator handoff の contract が整理されている
-- [ ] 条件 3: credentials 実発行、resource execution、DNS operator 実作業など本 issue 非対象が implementation issue から切り分けられている
+- [x] 条件 1: GCP preview workflow implementation の責務と編集対象が文書から一意に読める
+- [x] 条件 2: manual dispatch input、artifact provenance check、deploy evidence、operator handoff の contract が整理されている
+- [x] 条件 3: credentials 実発行、resource execution、DNS operator 実作業など本 issue 非対象が implementation issue から切り分けられている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-52-gcp-preview-workflow-execution.md
@@ -207,10 +207,11 @@ Issue 52 の判断結果は次の通りとする。
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
 - GitHub Issue: #52
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/52
-- Sync Status: local implementation updated and GitHub issue body resynced
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record は未作成だったため、このファイルを GCP preview workflow execution の initial draft として追加する
 - workflow implementation の論点は resource execution、credential issuance、DNS operator work から分離して扱う
@@ -225,11 +226,11 @@ Issue 52 の判断結果は次の通りとする。
 - GitHub repository へ `gcp-preview` environment を作成し、repo から確定できる `GCP_PREVIEW_SITE_BUCKET_NAME`、`GCP_PREVIEW_BASE_URL`、`GCP_PREVIEW_SMOKE_PATHS` を先行登録した
 - 再検証により、`GCP_PREVIEW_PROJECT_ID=ashnova` と `GCP_PREVIEW_SERVICE_ACCOUNT_EMAIL=github-actions-deploy@ashnova.iam.gserviceaccount.com` は `gcp-preview` environment variable として登録済みであることを確認した
 - 再検証により、`GCP_PREVIEW_WORKLOAD_IDENTITY_PROVIDER=projects/899621454670/locations/global/workloadIdentityPools/github-actions/providers/github-actions` を登録し、`github-actions` pool/provider と `github-actions-deploy@ashnova.iam.gserviceaccount.com` への `roles/iam.workloadIdentityUser` binding も作成した
-- optional variable `GCP_PREVIEW_URL_MAP_NAME` は CDN invalidation を使う段階での後続登録対象に残る
+- 再検証により、`GCP_PREVIEW_URL_MAP_NAME=multicloudproject-portal-preview-https-map` を `gcp-preview` environment variable として登録済みであり、workflow の CDN invalidation step を有効化できる状態であることを確認した
 - workflow と `resource_execution_reference` 候補ファイルは commit `4fe69ea97c5e91fb0ca7dd28c7206123e9d5fa8e` で `origin/main` に publish した
 - fail-closed path の live 検証として `portal-build` run `22849311870` を入力に `portal-gcp-preview-deploy` run `22849331033` を dispatch し、`docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md` の `blocked pending state` を検知して `Resolve resource execution reference` step で停止することを確認した
 - commit `201b829519f37709642b955276d68c1324e322d4` では blocked pending state 検知後も deployment record artifact を残せるよう fail-closed path を修正し、run `22849331033` で二次失敗なしに record upload と summary 出力まで完了することを確認した
-- preview deploy の positive path は未実施であり、残存 blocker は live `tofu apply` と reviewed target / certificate reference の ready 化である
+- positive-path deploy validation は完了しており、残存 blocker はない
 
 ## Dependencies
 

@@ -53,6 +53,16 @@ Expected result:
 
 The safest pattern is to prepare the issue body in a markdown file and pass it to gh.
 
+Preferred repository wrapper:
+
+```bash
+scripts/create-github-issue.sh \
+  --title "新規ポータルのプロダクト定義を確定する" \
+  --body-file docs/portal/issues/issue-01-product-definition.md \
+  --label planning \
+  --label portal
+```
+
 Example:
 
 ```bash
@@ -100,12 +110,14 @@ Recommended order:
 14. rollback policy
 15. implementation backlog
 
-## 6. Add labels during creation if the repository uses them
+## 6. Labels are required during creation in this repository
+
+Use the repository wrapper when possible so creation and label verification stay in one command.
 
 Example:
 
 ```bash
-gh issue create \
+scripts/create-github-issue.sh \
   --title "MVP スコープを確定する" \
   --body-file docs/portal/issues/issue-02-mvp-scope.md \
   --label planning \
@@ -119,6 +131,24 @@ Check available labels if needed.
 ```bash
 gh label list
 ```
+
+Immediately verify the created issue has labels.
+
+```bash
+gh issue view <issue-number> --json number,title,labels
+```
+
+If labels are missing, fix them immediately instead of leaving a follow-up.
+
+```bash
+gh issue edit <issue-number> --add-label planning --add-label portal
+```
+
+Repository rule:
+
+- do not leave a newly created issue unlabeled, even temporarily
+- the issue body file and the label set should be treated as part of the same creation step
+- if label selection is unclear, stop and resolve it before moving to the next issue
 
 ## 7. Link issues after creation
 
@@ -191,11 +221,19 @@ Use this sequence as the default path.
 1. run GitHub authentication check
 2. confirm the target repository
 3. prepare issue body files under docs/portal/issues
-4. create issues in the agreed order
-5. list created issues and record their numbers
-6. keep the local issue file updated as the canonical checklist copy
-7. sync the GitHub Issue body before closing any checklist-driven issue
-8. add dependency comments where helpful
+4. create issues in the agreed order with required labels
+5. verify each created issue has labels before moving on
+6. list created issues and record their numbers
+7. keep the local issue file updated as the canonical checklist copy
+8. sync the GitHub Issue body before closing any checklist-driven issue
+9. add dependency comments where helpful
+
+Recommended no-label sweep command:
+
+```bash
+gh issue list --state all --json number,title,labels \
+  | jq -r '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
+```
 
 ## Example Session
 
@@ -203,9 +241,11 @@ Use this sequence as the default path.
 gh auth status
 gh repo view
 mkdir -p docs/portal/issues
-gh issue create \
+scripts/create-github-issue.sh \
   --title "新規ポータルのプロダクト定義を確定する" \
-  --body-file docs/portal/issues/issue-01-product-definition.md
+  --body-file docs/portal/issues/issue-01-product-definition.md \
+  --label planning \
+  --label portal
 gh issue list --limit 30
 ```
 

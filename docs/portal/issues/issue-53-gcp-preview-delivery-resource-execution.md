@@ -32,9 +32,9 @@ GCP preview delivery resource execution issue の議論たたき台を作り、O
 - 制限パス: apps/portal-web/**, .github/workflows/*.yml, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP preview delivery resource execution の責務と編集対象が文書から一意に読める
-- [ ] 条件 2: reviewed input、plan/apply evidence、usage-oriented outputs、operator/workflow handoff の contract が整理されている
-- [ ] 条件 3: workflow 実装、DNS operator 実作業、preview deploy 実行など本 issue 非対象が execution issue から切り分けられている
+- [x] 条件 1: GCP preview delivery resource execution の責務と編集対象が文書から一意に読める
+- [x] 条件 2: reviewed input、plan/apply evidence、usage-oriented outputs、operator/workflow handoff の contract が整理されている
+- [x] 条件 3: workflow 実装、DNS operator 実作業、preview deploy 実行など本 issue 非対象が execution issue から切り分けられている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md
@@ -194,10 +194,11 @@ Issue 53 の判断結果は次の通りとする。
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
 - GitHub Issue: #53
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/53
-- Sync Status: local implementation updated and GitHub issue body resynced
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record は未作成だったため、このファイルを GCP preview delivery resource execution の initial draft として追加する
 - resource execution の論点は workflow implementation、artifact upload、DNS operator work から分離して扱う

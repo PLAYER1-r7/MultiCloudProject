@@ -73,3 +73,10 @@ Define the first implementation backlog shape so the planning decisions can be t
 ## Decision Statement
 
 The first implementation backlog should be organized by frontend, infrastructure, CI/CD, monitoring, and test workstreams, with small executable tasks ordered to create a deployable staging path before broader hardening work.
+
+## Post-Static Expansion Boundary
+
+- If a future feature adds end-user authentication, custom API, or application persistence, do not extend the first-release static backlog in place; start a fresh expansion planning track
+- Treat stateful expansion work as a separate backlog family with its own product, auth, data, security, monitoring, test, and rollback decisions
+- Prefer a single-cloud first execution boundary for the first stateful slice, while keeping app-facing contracts cloud-neutral enough for later Azure and GCP adoption
+- For the current next major expansion candidate, use [docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md](docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md) as the planning entry point rather than reopening the static-first backlog baseline

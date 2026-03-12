@@ -32,9 +32,9 @@ GCP security baseline の議論たたき台を作り、preview/static delivery p
 - 制限パス: apps/portal-web/**, infra/**, .github/workflows/*.yml, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP preview security baseline の control set と scope boundary が文書から一意に読める
-- [ ] 条件 2: browser-facing control、operator-facing control、reviewable evidence の責務分離が整理されている
-- [ ] 条件 3: provider-specific hardening 実装や security operations depth を混ぜず、preview baseline に限定できている
+- [x] 条件 1: GCP preview security baseline の control set と scope boundary が文書から一意に読める
+- [x] 条件 2: browser-facing control、operator-facing control、reviewable evidence の責務分離が整理されている
+- [x] 条件 3: provider-specific hardening 実装や security operations depth を混ぜず、preview baseline に限定できている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-54-gcp-security-baseline.md
@@ -188,14 +188,15 @@ Issue 54 の判断結果は次の通りとする。
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
 - GitHub Issue: #54
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/54
-- Sync Status: local resolution updated and GitHub issue body resynced
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record として GCP security baseline の議論たたき台を追加した
 - preview/static delivery path の minimum security control、credential boundary、fail-closed 条件を Resolution として固定した
-- implementation work は未実施であり、次段は workflow / resource execution と monitoring / rollback follow-up への接続である
+- Issue 52 / 53 の implementation と validation により、この baseline が参照する workflow / resource execution evidence path は live state で確認済みである
 
 ## Dependencies
 
