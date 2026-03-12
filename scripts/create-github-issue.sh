@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if (( BASH_VERSINFO[0] < 4 )); then
+  echo "This script requires Bash 4 or newer. Upgrade Bash or run it from the devcontainer." >&2
+  exit 1
+fi
+
 usage() {
   cat <<'EOF'
 Usage:
