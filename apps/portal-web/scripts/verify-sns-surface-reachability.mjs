@@ -44,13 +44,13 @@ function renderMarkdownTable(rows) {
   const lines = [
     "SNS surface reachability verification",
     "",
-    "| Target | Surface Mount | Entry Link | CTA Reachability | Result |",
-    "| --- | --- | --- | --- | --- |"
+    "| Target | Surface Mount | Entry Link | CTA Reachability | Runtime Status | Result |",
+    "| --- | --- | --- | --- | --- | --- |"
   ];
 
   for (const row of rows) {
     lines.push(
-      `| ${row.target} | ${row.surfaceMount} | ${row.entryLink} | ${row.ctaReachability} | ${row.result} |`
+      `| ${row.target} | ${row.surfaceMount} | ${row.entryLink} | ${row.ctaReachability} | ${row.runtimeStatus} | ${row.result} |`
     );
   }
 
@@ -64,7 +64,8 @@ let currentTargetName = "setup";
 let currentStepStatus = {
   surfaceMount: "unknown",
   entryLink: "unknown",
-  ctaReachability: "unknown"
+  ctaReachability: "unknown",
+  runtimeStatus: "unknown"
 };
 
 try {
@@ -73,7 +74,8 @@ try {
     currentStepStatus = {
       surfaceMount: "unknown",
       entryLink: "unknown",
-      ctaReachability: "unknown"
+      ctaReachability: "unknown",
+      runtimeStatus: "unknown"
     };
 
     await page.goto(target.url, { waitUntil: "networkidle" });
@@ -105,11 +107,21 @@ try {
     assertCondition(ctaRoutePath?.trim() === "/status", `${target.name}: CTA did not stay on /status`);
     currentStepStatus.ctaReachability = "passed";
 
+    const runtimeStatus = await page.locator('[data-sns-runtime-status="true"]').textContent();
+    const completionSignal = await page.locator('[data-sns-completion-signal="true"]').textContent();
+    const fallbackPolicy = await page.locator('[data-sns-fallback-policy="true"]').textContent();
+
+    assertCondition(runtimeStatus?.trim().length > 0, `${target.name}: runtime status was not visible`);
+    assertCondition(completionSignal?.trim() === "wired-awaiting-confirmation", `${target.name}: completion signal was not in the pre-submit wired state`);
+    assertCondition(fallbackPolicy?.trim() === "no-local-only-fallback", `${target.name}: fallback policy indicated an unexpected local-only fallback`);
+    currentStepStatus.runtimeStatus = "passed";
+
     rows.push({
       target: target.name,
       surfaceMount: currentStepStatus.surfaceMount,
       entryLink: currentStepStatus.entryLink,
       ctaReachability: currentStepStatus.ctaReachability,
+      runtimeStatus: currentStepStatus.runtimeStatus,
       result: "passed"
     });
   }
@@ -121,6 +133,7 @@ try {
     surfaceMount: currentStepStatus.surfaceMount,
     entryLink: currentStepStatus.entryLink,
     ctaReachability: currentStepStatus.ctaReachability,
+    runtimeStatus: currentStepStatus.runtimeStatus,
     result: message.replace(/\|/g, "/")
   });
   process.exitCode = 1;

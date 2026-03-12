@@ -1,0 +1,147 @@
+name: portal-sns-staging-review
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_deploy_run_id:
+        description: "portal-staging-deploy run id to review"
+        required: true
+      verification_owner:
+        description: "Owner responsible for SNS staging verification"
+        required: false
+
+concurrency:
+  group: portal-sns-staging-review
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    environment: staging
+    env:
+      STAGING_BASE_URL: ${{ vars.STAGING_BASE_URL }}
+      STAGING_DEPLOY_ARTIFACT_NAME: portal-staging-monitoring-record
+      SNS_STAGING_REVIEW_ARTIFACT_NAME: portal-sns-staging-review-record
+    defaults:
+      run:
+        working-directory: apps/portal-web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/portal-web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Resolve staging deploy run id
+        id: resolve-run-id
+        shell: bash
+        run: |
+          set -euo pipefail
+          staging_deploy_run_id='${{ inputs.staging_deploy_run_id }}'
+          if [[ -z "$staging_deploy_run_id" ]]; then
+            echo "staging_deploy_run_id was not resolved" >&2
+            exit 1
+          fi
+          echo "staging_deploy_run_id=$staging_deploy_run_id" >> "$GITHUB_OUTPUT"
+
+      - name: Download staging monitoring record
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.resolve-run-id.outputs.staging_deploy_run_id }}
+          name: ${{ env.STAGING_DEPLOY_ARTIFACT_NAME }}
+          path: staging-evidence
+
+      - name: Validate staging review inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$STAGING_BASE_URL"
+          test -f "$GITHUB_WORKSPACE/staging-evidence/staging-monitoring-record.md"
+
+      - name: Run SNS surface reachability review against staging
+        env:
+          SNS_SURFACE_TARGETS_JSON: >-
+            [{"name":"staging-sns-surface","url":"${{ vars.STAGING_BASE_URL }}","expectedRoutePath":"/","expectedEntryHref":"/status#sns-request-response-surface","expectedSurfaceSelector":"[data-sns-surface=\"request-response\"]","expectedPostingCtaHref":"/status#sns-posting-cta-guidance","expectedPostingTargetSelector":"[data-sns-posting-target=\"true\"]"}]
+        run: node ./scripts/verify-sns-surface-reachability.mjs > "$GITHUB_WORKSPACE/sns-staging-surface-review.md"
+
+      - name: Run SNS auth-post-readback review against staging
+        env:
+          SNS_AUTH_FLOW_TARGETS_JSON: >-
+            [{"name":"staging-sns-auth-flow","url":"${{ vars.STAGING_BASE_URL }}","expectedEntryHref":"/status#sns-request-response-surface","expectedSurfaceSelector":"[data-sns-surface=\"request-response\"]"}]
+        run: node ./scripts/verify-sns-auth-post-readback.mjs > "$GITHUB_WORKSPACE/sns-staging-auth-review.md"
+
+      - name: Build SNS staging review record
+        shell: bash
+        run: |
+          set -euo pipefail
+          verification_owner='${{ inputs.verification_owner || github.repository_owner }}'
+          deploy_run_id='${{ steps.resolve-run-id.outputs.staging_deploy_run_id }}'
+          deploy_run_url='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ steps.resolve-run-id.outputs.staging_deploy_run_id }}'
+          review_run_url='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          cat > "$GITHUB_WORKSPACE/sns-staging-review-record.md" <<EOF
+          ## SNS staging review record
+
+          - Workflow: portal-sns-staging-review
+          - Run ID: ${{ github.run_id }}
+          - Run attempt: ${{ github.run_attempt }}
+          - Event: ${{ github.event_name }}
+          - Staging base URL: ${STAGING_BASE_URL}
+          - Reviewed staging deploy run ID: ${deploy_run_id}
+          - Reviewed staging deploy run URL: ${deploy_run_url}
+          - Verification owner: ${verification_owner}
+          - Review run URL: ${review_run_url}
+          - Source staging evidence artifact: ${STAGING_DEPLOY_ARTIFACT_NAME}
+
+          ### Staging monitoring record snapshot
+
+          EOF
+          cat "$GITHUB_WORKSPACE/staging-evidence/staging-monitoring-record.md" >> "$GITHUB_WORKSPACE/sns-staging-review-record.md"
+          cat <<EOF >> "$GITHUB_WORKSPACE/sns-staging-review-record.md"
+
+          ### SNS surface reachability review
+
+          EOF
+          cat "$GITHUB_WORKSPACE/sns-staging-surface-review.md" >> "$GITHUB_WORKSPACE/sns-staging-review-record.md"
+          cat <<EOF >> "$GITHUB_WORKSPACE/sns-staging-review-record.md"
+
+          ### SNS auth-post-readback review
+
+          EOF
+          cat "$GITHUB_WORKSPACE/sns-staging-auth-review.md" >> "$GITHUB_WORKSPACE/sns-staging-review-record.md"
+          cat <<EOF >> "$GITHUB_WORKSPACE/sns-staging-review-record.md"
+
+          Completion note: treat the SNS first slice as staging-reviewed only when the staging monitoring record, SNS surface reachability review, and SNS auth-post-readback review all pass in the same evidence path.
+          EOF
+
+      - name: Upload SNS staging review record
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.SNS_STAGING_REVIEW_ARTIFACT_NAME }}
+          path: sns-staging-review-record.md
+
+      - name: Record SNS staging review summary
+        shell: bash
+        run: |
+          {
+            echo "## SNS staging review summary"
+            echo "- Staging base URL: ${STAGING_BASE_URL}"
+            echo "- Reviewed staging deploy run ID: ${{ steps.resolve-run-id.outputs.staging_deploy_run_id }}"
+            echo "- Source staging evidence artifact: ${STAGING_DEPLOY_ARTIFACT_NAME}"
+            echo "- SNS review record artifact: ${SNS_STAGING_REVIEW_ARTIFACT_NAME}"
+            echo ""
+            cat "$GITHUB_WORKSPACE/sns-staging-review-record.md"
+          } >> "$GITHUB_STEP_SUMMARY"

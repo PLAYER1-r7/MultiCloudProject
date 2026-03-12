@@ -209,8 +209,11 @@ DNS verification retrospective:
 
 - SNS regression planning parent issues Issue 113、Issue 115、Issue 116 are closed and now retained as baseline references after the child implementation chain completed
 - SNS implementation child issues Issue 119、Issue 120、Issue 121、Issue 122 are closed as completed local implementation references for contract-side CLI coverage and browser-side local preview suites
-- portal-web now includes the SNS request-response contract validator、auth-error contract validator、dedicated SNS surface reachability checks、and auth-post-readback major-flow coverage in the same app workspace
-- validated local evidence for the completed chain is: `cd apps/portal-web && npm run typecheck && npm run test:routes && npm run test:sns-request-response-contract && npm run test:sns-auth-error-contract && npm run test:sns-surface-reachability && npm run test:sns-auth-post-readback`
+- portal-web now includes the SNS service-backed route handler baseline、browser-local persistence/readback baseline、public-config and fail-closed auth boundary、updated contract validators、and updated browser suites for surface reachability plus auth-post-readback coverage in the same app workspace
+- validated local evidence for the current first-slice chain is: `cd apps/portal-web && npm run typecheck && npm run test:routes && npm run test:sns-request-response-contract && npm run test:sns-auth-error-contract && npm run test:sns-surface-reachability && npm run test:sns-auth-post-readback`
+- current browser-side completion signal is reviewable on the SNS surface through runtime status、completion signal、fallback policy、error code、retryable marker、and readback state selectors rather than local-demo-only wording
+- staging-oriented completion review remains pending because no SNS service deployment or staging evidence path has been executed in this implementation slice yet; local evidence is sufficient for code review but not for staging-complete judgment
+- staging review path is now defined in-repo as `portal-staging-deploy` plus `portal-sns-staging-review`; the intended evidence package is the staging deploy run URL、`portal-staging-monitoring-record` artifact、and `portal-sns-staging-review-record` artifact from the matched staging review run
 - next SNS work, if any, should start from a fresh planning or execution record rather than reopening Issue 113 through Issue 122, because the current regression chain is complete
 
 ## Execution Record

@@ -1,4 +1,5 @@
 import { findDuplicates, type ContractCheckResult, type ContractIssue } from "./snsContractShared.ts";
+import { getSnsPublicConfig } from "./snsPublicConfig.ts";
 
 type RequestContractSpec = {
   endpoint: string;
@@ -28,11 +29,13 @@ type RequestResponseContractSpec = {
   timelineReadResponse: TimelineReadResponseSpec;
 };
 
+const snsPublicConfig = getSnsPublicConfig();
+
 // This baseline validates the intended SNS request/response contract shape only.
-// It does not assert that the local demo surface performs a real HTTP request.
+// It asserts that the public SNS surface stays aligned with the current service-backed contract path.
 const snsRequestResponseContractSpec: RequestResponseContractSpec = {
   requestShape: {
-    endpoint: "/api/sns/posts",
+    endpoint: snsPublicConfig.postsEndpoint,
     method: "POST",
     requiredFields: ["authorId", "message"],
     optionalFields: ["replyToPostId"],
@@ -44,7 +47,7 @@ const snsRequestResponseContractSpec: RequestResponseContractSpec = {
     expectedErrorCode: "INVALID_POST_PAYLOAD"
   },
   timelineReadResponse: {
-    endpoint: "/api/sns/timeline",
+    endpoint: snsPublicConfig.timelineEndpoint,
     method: "GET",
     collectionField: "items",
     requiredItemFields: ["id", "authorId", "message", "createdAt"],
@@ -58,6 +61,10 @@ function validateRequestShape(): ContractCheckResult {
 
   if (!endpoint.startsWith("/api/")) {
     issues.push({ scope: "request-shape", message: "endpoint must stay on an app-facing /api/ path" });
+  }
+
+  if (endpoint !== snsPublicConfig.postsEndpoint) {
+    issues.push({ scope: "request-shape", message: "request endpoint must stay aligned with the public SNS post endpoint" });
   }
 
   if (method !== "POST") {
@@ -125,6 +132,10 @@ function validateInvalidPayloadRule(): ContractCheckResult {
     issues.push({ scope: "invalid-payload", message: "expectedErrorCode must not be empty" });
   }
 
+  if (expectedErrorCode !== "INVALID_POST_PAYLOAD") {
+    issues.push({ scope: "invalid-payload", message: "invalid payload rule must keep INVALID_POST_PAYLOAD as the stable error code" });
+  }
+
   return {
     label: "Invalid payload rejection",
     issues
@@ -137,6 +148,13 @@ function validateTimelineReadResponse(): ContractCheckResult {
 
   if (!endpoint.startsWith("/api/")) {
     issues.push({ scope: "timeline-read-response", message: "endpoint must stay on an app-facing /api/ path" });
+  }
+
+  if (endpoint !== snsPublicConfig.timelineEndpoint) {
+    issues.push({
+      scope: "timeline-read-response",
+      message: "timeline endpoint must stay aligned with the public SNS timeline endpoint"
+    });
   }
 
   if (method !== "GET") {
@@ -170,6 +188,13 @@ function validateTimelineReadResponse(): ContractCheckResult {
 
   if (!ordering.trim()) {
     issues.push({ scope: "timeline-read-response", message: "ordering must not be empty" });
+  }
+
+  if (ordering !== "createdAt-desc") {
+    issues.push({
+      scope: "timeline-read-response",
+      message: "timeline read response must preserve newest-first createdAt-desc ordering"
+    });
   }
 
   return {

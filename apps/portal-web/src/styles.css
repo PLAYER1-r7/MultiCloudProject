@@ -543,6 +543,15 @@ a {
   border: 1px solid rgba(24, 33, 39, 0.08);
 }
 
+.sns-feedback-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .sns-feedback.neutral {
   background: rgba(255, 255, 255, 0.7);
   color: var(--muted);

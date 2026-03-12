@@ -1,3 +1,19 @@
+import {
+  SNS_POSTS_ENDPOINT,
+  type SnsErrorResponse,
+  createInMemorySnsRouteHandlerDependencies,
+  handleSnsRouteRequest,
+  type SnsRouteHandlerPolicy,
+  type SnsRouteRequestContext,
+  type SnsTimelineItem
+} from "./snsServiceRouteHandler.ts";
+import {
+  canUseBrowserSnsPersistence,
+  clearStoredSnsTimeline,
+  createBrowserSnsRouteHandlerDependencies
+} from "./snsMessageStore.ts";
+import { getSnsPublicConfig } from "./snsPublicConfig.ts";
+
 type ActionLink = {
   label: string;
   href: string;
@@ -33,6 +49,17 @@ type SnsAuthState = "guest" | "member" | "operator";
 
 type SnsFlowState = "idle" | "blocked" | "success" | "failure";
 
+type SnsReadbackState = "idle" | "synced" | "stale" | "error";
+
+type SnsSurfaceRuntimeMode = "browser-local-storage" | "memory";
+
+type SnsSurfaceRuntimeStatus = {
+  persistenceMode: SnsSurfaceRuntimeMode;
+  fallbackActive: boolean;
+  completionEligible: boolean;
+  statusMessage: string;
+};
+
 type SnsReadbackEntry = {
   id: number;
   body: string;
@@ -47,7 +74,11 @@ type SnsDemoState = {
   flowState: SnsFlowState;
   feedbackTone: "neutral" | "success" | "error";
   feedbackMessage: string;
+  feedbackErrorCode: string;
+  feedbackRetryable: boolean;
   lastSubmittedBody: string;
+  readbackState: SnsReadbackState;
+  readbackStatusMessage: string;
   readbackEntries: SnsReadbackEntry[];
   nextEntryId: number;
 };
@@ -117,6 +148,67 @@ const portalVariantMetadata: Record<PortalVariant, PortalVariantMetadata> = {
 };
 const importMetaEnv = (import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env;
 const browserRuntimeAvailable = typeof window !== "undefined" && typeof document !== "undefined";
+const snsPublicConfig = getSnsPublicConfig();
+
+function getSnsRouteHandlerPolicy(): SnsRouteHandlerPolicy {
+  return {
+    timelineEndpoint: snsPublicConfig.timelineEndpoint,
+    postsEndpoint: snsPublicConfig.postsEndpoint,
+    allowGuestTimelineRead: true,
+    writesEnabled: snsPublicConfig.writeSurfaceEnabled,
+    requireActorContext: true
+  };
+}
+
+function createInitialSnsSurfaceRuntimeStatus(): SnsSurfaceRuntimeStatus {
+  return {
+    persistenceMode: snsPublicConfig.persistenceMode,
+    fallbackActive: false,
+    completionEligible: snsPublicConfig.writeSurfaceEnabled,
+    statusMessage: snsPublicConfig.writeSurfaceEnabled
+      ? "Service contract path is configured and awaiting runtime verification."
+      : "SNS write surface is disabled by public config."
+  };
+}
+
+function createSnsRouteDependencies(): {
+  dependencies: ReturnType<typeof createInMemorySnsRouteHandlerDependencies>;
+  runtimeStatus: SnsSurfaceRuntimeStatus;
+} {
+  if (
+    browserRuntimeAvailable &&
+    snsPublicConfig.persistenceMode === "browser-local-storage" &&
+    canUseBrowserSnsPersistence(window.localStorage)
+  ) {
+    return {
+      dependencies: createBrowserSnsRouteHandlerDependencies({
+        storage: window.localStorage
+      }),
+      runtimeStatus: {
+        persistenceMode: "browser-local-storage",
+        fallbackActive: false,
+        completionEligible: snsPublicConfig.writeSurfaceEnabled,
+        statusMessage: snsPublicConfig.writeSurfaceEnabled
+          ? "Service contract path is using browser-backed persistence for the declared slice surface."
+          : "SNS write surface is disabled by public config."
+      }
+    };
+  }
+
+  const memoryStatusMessage = browserRuntimeAvailable && snsPublicConfig.persistenceMode === "browser-local-storage"
+    ? "Browser persistence was unavailable, so the surface fell back to memory. Do not treat this as the completed path."
+    : "Surface is using memory persistence for the current environment. Do not treat this as the completed browser path.";
+
+  return {
+    dependencies: createInMemorySnsRouteHandlerDependencies(),
+    runtimeStatus: {
+      persistenceMode: "memory",
+      fallbackActive: true,
+      completionEligible: false,
+      statusMessage: memoryStatusMessage
+    }
+  };
+}
 
 function createInitialSnsDemoState(): SnsDemoState {
   return {
@@ -125,14 +217,102 @@ function createInitialSnsDemoState(): SnsDemoState {
     shouldFailSubmission: false,
     flowState: "idle",
     feedbackTone: "neutral",
-    feedbackMessage: "No submission executed yet. Use the SNS demo controls to exercise the major flow states.",
+    feedbackMessage: "No submission executed yet. Use the SNS service surface to exercise the major flow states.",
+    feedbackErrorCode: "none",
+    feedbackRetryable: false,
     lastSubmittedBody: "",
+    readbackState: "idle",
+    readbackStatusMessage: "Timeline readback has not been confirmed yet.",
     readbackEntries: [],
     nextEntryId: 1
   };
 }
 
 let snsDemoState = createInitialSnsDemoState();
+let snsSurfaceRuntimeStatus = createInitialSnsSurfaceRuntimeStatus();
+let snsRouteDependencyBundle = createSnsRouteDependencies();
+let snsDemoRouteDependencies = snsRouteDependencyBundle.dependencies;
+snsSurfaceRuntimeStatus = snsRouteDependencyBundle.runtimeStatus;
+
+function getSnsRouteRequestContext(): SnsRouteRequestContext {
+  return {
+    actorRole: snsDemoState.authState,
+    actorId: snsDemoState.authState === "guest" ? undefined : mapSnsAuthStateToAuthorId(snsDemoState.authState),
+    simulateWriteFailure: snsDemoState.shouldFailSubmission
+  };
+}
+
+function mapSnsAuthStateToAuthorId(authState: SnsAuthState): string {
+  switch (authState) {
+    case "member":
+      return "member-local";
+    case "operator":
+      return "operator-local";
+    case "guest":
+      return "guest-local";
+  }
+}
+
+function mapTimelineItemAuthor(authorId: string): Exclude<SnsAuthState, "guest"> {
+  return authorId.startsWith("operator") ? "operator" : "member";
+}
+
+function mapTimelineItemsToReadbackEntries(items: SnsTimelineItem[]): SnsReadbackEntry[] {
+  return items.map((item, index) => ({
+    id: index + 1,
+    body: item.message,
+    author: mapTimelineItemAuthor(item.authorId),
+    sequenceLabel: `service timeline item ${item.id}`
+  }));
+}
+
+type SnsReadbackSyncResult =
+  | { ok: true; items: SnsTimelineItem[] }
+  | { ok: false; errorCode: string; message: string };
+
+function setSnsFeedback(message: string, tone: SnsDemoState["feedbackTone"], errorCode = "none", retryable = false): void {
+  snsDemoState.feedbackTone = tone;
+  snsDemoState.feedbackMessage = message;
+  snsDemoState.feedbackErrorCode = errorCode;
+  snsDemoState.feedbackRetryable = retryable;
+}
+
+function setSnsReadbackStatus(state: SnsReadbackState, message: string): void {
+  snsDemoState.readbackState = state;
+  snsDemoState.readbackStatusMessage = message;
+}
+
+async function syncSnsTimelineReadback(): Promise<SnsReadbackSyncResult> {
+  const response = await handleSnsRouteRequest(
+    new Request(snsPublicConfig.timelineEndpoint, { method: "GET" }),
+    getSnsRouteRequestContext(),
+    snsDemoRouteDependencies,
+    getSnsRouteHandlerPolicy()
+  );
+
+  if (!response.ok) {
+    const errorPayload = (await response.json()) as Partial<SnsErrorResponse>;
+    setSnsReadbackStatus("error", errorPayload.message ?? "Timeline readback failed on the service path.");
+    return {
+      ok: false,
+      errorCode: errorPayload.errorCode ?? "SNS_TIMELINE_READ_FAILED",
+      message: errorPayload.message ?? "Timeline readback failed on the service path."
+    };
+  }
+
+  const payload = (await response.json()) as { items?: SnsTimelineItem[] };
+  const items = Array.isArray(payload.items) ? payload.items : [];
+  snsDemoState.readbackEntries = mapTimelineItemsToReadbackEntries(items);
+  setSnsReadbackStatus(
+    "synced",
+    items.length > 0 ? `Timeline readback confirmed ${items.length} service item(s).` : "Timeline readback confirmed with no items yet."
+  );
+
+  return {
+    ok: true,
+    items
+  };
+}
 
 export const routeDefinitions: Record<string, RouteDefinition> = {
   "/": {
@@ -619,11 +799,11 @@ export const routeDefinitions: Record<string, RouteDefinition> = {
       surfaceId: "sns-request-response-surface",
       title: "SNS request-response surface",
       summary:
-        "Issue 119 と Issue 120 で固定した contract baseline を browser-facing route に接続し、surface mount、entry link integrity、posting CTA reachability を narrow scope で検証する専用 panel とする。",
+        "Issue 119 と Issue 120 で固定した app-facing contract baseline を service-backed route に接続し、surface mount、entry link integrity、posting CTA reachability を first-slice scope のまま確認する専用 panel とする。",
       checks: [
         "surface panel が /status route 上で mount している",
         "top/root から専用 surface anchor へ内部遷移できる",
-        "posting CTA から次の browser-side flow target へ reachability を残せる"
+        "posting CTA から service-backed posting surface へ reachability を残せる"
       ],
       entryLink: {
         label: "Root からこの surface を開く",
@@ -633,7 +813,7 @@ export const routeDefinitions: Record<string, RouteDefinition> = {
       postingCta: {
         label: "Posting CTA target を開く",
         href: "/status#sns-posting-cta-guidance",
-        hint: "auth-post-readback 実装前に CTA reachability の固定 target を確認する。",
+        hint: "service-backed surface への CTA reachability と narrow target を確認する。",
         emphasis: "primary"
       }
     },
@@ -1071,14 +1251,79 @@ function renderSnsAuthStateOptions(activeState: SnsAuthState): string {
 function getSnsFlowSummaryText(flowState: SnsFlowState): string {
   switch (flowState) {
     case "blocked":
-      return "Signed-out blocked flow is active. The surface keeps the submit blocked and exposes the reason.";
+      return "Signed-out blocked flow is active. The service-backed surface keeps the submit blocked and exposes the reason.";
     case "success":
-      return "Signed-in submit succeeded. The latest local readback is visible on the same surface.";
+      return "Signed-in submit succeeded. The latest service readback is visible on the same surface.";
     case "failure":
-      return "Signed-in submit failed. The error state stays visible without pretending the write succeeded.";
+      return "Signed-in submit failed. The service error state stays visible without pretending the write succeeded.";
     default:
-      return "The SNS surface is mounted and waiting for the next auth-post-readback interaction.";
+      return "The SNS surface is mounted and wired to the current service contract path.";
   }
+}
+
+function getSnsReadbackStateSummary(state: SnsReadbackState): string {
+  switch (state) {
+    case "synced":
+      return "Readback confirmed";
+    case "stale":
+      return "Readback confirmation failed";
+    case "error":
+      return "Readback route error";
+    default:
+      return "Readback pending";
+  }
+}
+
+function getSnsPersistenceModeLabel(): string {
+  switch (snsSurfaceRuntimeStatus.persistenceMode) {
+    case "memory":
+      return "memory";
+    default:
+      return "browser-local-storage";
+  }
+}
+
+function getSnsCompletionSignalLabel(): string {
+  if (!snsSurfaceRuntimeStatus.completionEligible) {
+    return "not-complete";
+  }
+
+  if (snsDemoState.flowState === "success" && snsDemoState.readbackState === "synced") {
+    return "contract-confirmed";
+  }
+
+  return "wired-awaiting-confirmation";
+}
+
+function getSnsFallbackPolicyLabel(): string {
+  return snsSurfaceRuntimeStatus.fallbackActive ? "fallback-active" : "no-local-only-fallback";
+}
+
+function renderSnsContractMetadata(): string {
+  return `
+    <dl class="status-metadata" data-sns-contract-metadata="true">
+      <div>
+        <dt>Timeline endpoint</dt>
+        <dd data-sns-timeline-endpoint="true">${escapeHtml(snsPublicConfig.timelineEndpoint)}</dd>
+      </div>
+      <div>
+        <dt>Post endpoint</dt>
+        <dd data-sns-posts-endpoint="true">${escapeHtml(snsPublicConfig.postsEndpoint)}</dd>
+      </div>
+      <div>
+        <dt>Persistence mode</dt>
+        <dd data-sns-persistence-mode="true">${escapeHtml(getSnsPersistenceModeLabel())}</dd>
+      </div>
+      <div>
+        <dt>Completion signal</dt>
+        <dd data-sns-completion-signal="true">${escapeHtml(getSnsCompletionSignalLabel())}</dd>
+      </div>
+      <div>
+        <dt>Fallback policy</dt>
+        <dd data-sns-fallback-policy="true">${escapeHtml(getSnsFallbackPolicyLabel())}</dd>
+      </div>
+    </dl>
+  `;
 }
 
 function renderSnsAuthPostReadbackDemo(): string {
@@ -1098,14 +1343,17 @@ function renderSnsAuthPostReadbackDemo(): string {
         .join("")
     : `
         <li class="sns-readback-empty" data-sns-readback-empty="true">
-          No local readback entry yet. Successful signed-in posts will appear here.
+          No service readback entry yet. Successful signed-in posts will appear here.
         </li>
       `;
 
   return `
     <div class="sns-flow-grid" data-sns-auth-flow="true">
       <article class="story-card sns-flow-card">
-        <h3>Auth and submit controls</h3>
+        <h3>Auth and service submit controls</h3>
+        <p class="panel-note">This surface keeps the first-slice route and selectors intact while using the current SNS service contract path.</p>
+        <p class="panel-note subdued" data-sns-runtime-status="true">${escapeHtml(snsSurfaceRuntimeStatus.statusMessage)}</p>
+        ${renderSnsContractMetadata()}
         <div class="sns-field-stack">
           <label class="sns-field">
             <span class="meta-label">Auth state</span>
@@ -1122,13 +1370,13 @@ function renderSnsAuthPostReadbackDemo(): string {
             <textarea
               class="sns-textarea"
               rows="4"
-              placeholder="Post a local SNS flow note"
+              placeholder="Post an SNS service flow note"
               data-sns-composer-input="true"
             >${escapeHtml(snsDemoState.draft)}</textarea>
           </label>
           <div class="sns-button-row">
             <button class="sns-button primary" type="button" data-sns-submit-button="true">Submit SNS post</button>
-            <button class="sns-button secondary" type="button" data-sns-reset-button="true">Reset demo state</button>
+            <button class="sns-button secondary" type="button" data-sns-reset-button="true">Reset SNS surface state</button>
           </div>
         </div>
       </article>
@@ -1140,6 +1388,10 @@ function renderSnsAuthPostReadbackDemo(): string {
         <p class="sns-feedback ${snsDemoState.feedbackTone}" data-sns-feedback="true">${escapeHtml(
           snsDemoState.feedbackMessage
         )}</p>
+        <div class="sns-feedback-meta" data-sns-feedback-meta="true">
+          <span data-sns-feedback-code="true">code: ${escapeHtml(snsDemoState.feedbackErrorCode)}</span>
+          <span data-sns-feedback-retryable="true">retryable: ${snsDemoState.feedbackRetryable ? "yes" : "no"}</span>
+        </div>
         <dl class="status-metadata">
           <div>
             <dt>Current auth</dt>
@@ -1153,7 +1405,12 @@ function renderSnsAuthPostReadbackDemo(): string {
             <dt>Last submitted body</dt>
             <dd data-sns-last-submitted-body="true">${escapeHtml(snsDemoState.lastSubmittedBody || "none")}</dd>
           </div>
+          <div>
+            <dt>Readback state</dt>
+            <dd data-sns-readback-state="true">${escapeHtml(getSnsReadbackStateSummary(snsDemoState.readbackState))}</dd>
+          </div>
         </dl>
+        <p class="panel-note subdued" data-sns-readback-status="true">${escapeHtml(snsDemoState.readbackStatusMessage)}</p>
       </article>
       <article class="story-card sns-flow-card">
         <h3>Readback timeline</h3>
@@ -1186,12 +1443,12 @@ function renderSnsSurface(surface: SnsSurfaceDefinition): string {
         </article>
         <article class="story-card" id="sns-posting-cta-guidance" data-sns-posting-target="true">
           <h3>Posting CTA target</h3>
-          <p>Issue 121 の full auth-post-readback flow 前に、posting CTA が到達すべき narrow target をこの panel で固定する。</p>
+          <p>Posting CTA が到達すべき first-slice target をこの panel で固定し、service-backed wiring と visible surface を同じ route 上で確認する。</p>
           <ul class="story-list">
             ${renderList(
               [
                 "first keep the target on /status so mount failure and CTA failure can be split",
-                "promote this target to a richer SNS interaction surface only after auth-post-readback flow lands",
+                "keep the current app-facing endpoint names aligned with the backend contract before widening the surface",
                 "reuse the stable data-sns-* hooks in browser suites before broadening selectors"
               ],
               "story-item"
@@ -1351,49 +1608,88 @@ function renderRoute(applicationRoot: HTMLDivElement): void {
   `;
 }
 
-function submitSnsDemoState(): void {
+async function submitSnsDemoState(): Promise<void> {
   const submittedBody = snsDemoState.draft.trim();
   snsDemoState.lastSubmittedBody = submittedBody;
+  setSnsFeedback("Submitting against the SNS service contract path.", "neutral");
+  setSnsReadbackStatus("idle", "Waiting for contract-confirmed readback.");
 
-  if (!submittedBody) {
+  const response = await handleSnsRouteRequest(
+    new Request(SNS_POSTS_ENDPOINT, {
+      // Public endpoint selection may vary by environment, but private service config stays outside the browser bundle.
+      method: "POST",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        authorId: mapSnsAuthStateToAuthorId(snsDemoState.authState),
+        message: submittedBody
+      })
+    }),
+    getSnsRouteRequestContext(),
+    snsDemoRouteDependencies,
+    getSnsRouteHandlerPolicy()
+  );
+
+  if (!response.ok) {
+    const errorPayload = (await response.json()) as Partial<SnsErrorResponse>;
+    snsDemoState.flowState = response.status === 403 ? "blocked" : "failure";
+    setSnsFeedback(
+      errorPayload.message ?? "SNS submit failed on the service route.",
+      "error",
+      errorPayload.errorCode ?? "SNS_SUBMIT_FAILED",
+      errorPayload.retryable ?? false
+    );
+    setSnsReadbackStatus(
+      "idle",
+      response.status === 403
+        ? "Readback stayed unchanged because the service blocked the submit path."
+        : "Readback stayed unchanged because the submit path did not complete."
+    );
+    return;
+  }
+
+  const syncResult = await syncSnsTimelineReadback();
+
+  if (!syncResult.ok) {
     snsDemoState.flowState = "failure";
-    snsDemoState.feedbackTone = "error";
-    snsDemoState.feedbackMessage = "A draft body is required before the SNS demo can submit.";
+    setSnsFeedback(syncResult.message, "error", syncResult.errorCode, true);
     return;
   }
 
-  if (snsDemoState.authState === "guest") {
-    snsDemoState.flowState = "blocked";
-    snsDemoState.feedbackTone = "error";
-    snsDemoState.feedbackMessage = "Signed-out users remain blocked from posting to the SNS demo surface.";
-    return;
-  }
+  const confirmedEntry = syncResult.items.find(
+    (item) => item.message === submittedBody && item.authorId === (getSnsRouteRequestContext().actorId ?? "")
+  );
 
-  if (snsDemoState.shouldFailSubmission) {
+  if (!confirmedEntry) {
     snsDemoState.flowState = "failure";
-    snsDemoState.feedbackTone = "error";
-    snsDemoState.feedbackMessage = "Simulated write failure remained visible. No new readback entry was added.";
+    setSnsFeedback(
+      "SNS submit returned success, but the timeline readback did not confirm the new item.",
+      "error",
+      "SNS_READBACK_NOT_CONFIRMED",
+      false
+    );
+    setSnsReadbackStatus("stale", "The service timeline did not confirm the newly submitted post.");
     return;
   }
 
-  snsDemoState.readbackEntries = [
-    {
-      id: snsDemoState.nextEntryId,
-      body: submittedBody,
-      author: snsDemoState.authState,
-      sequenceLabel: `local preview entry #${snsDemoState.nextEntryId}`
-    },
-    ...snsDemoState.readbackEntries
-  ];
-  snsDemoState.nextEntryId += 1;
+  snsDemoState.nextEntryId = snsDemoState.readbackEntries.length + 1;
   snsDemoState.flowState = "success";
-  snsDemoState.feedbackTone = "success";
-  snsDemoState.feedbackMessage = "Signed-in submit path completed. Local readback is now visible on the SNS surface.";
+  setSnsFeedback("Signed-in submit path completed. Service readback is now visible on the SNS surface.", "success");
+  setSnsReadbackStatus("synced", `Timeline readback confirmed post ${confirmedEntry.id} on the service path.`);
   snsDemoState.draft = "";
 }
 
 function resetSnsDemoState(): void {
   snsDemoState = createInitialSnsDemoState();
+
+  if (browserRuntimeAvailable && canUseBrowserSnsPersistence(window.localStorage)) {
+    clearStoredSnsTimeline(window.localStorage);
+  }
+
+  snsRouteDependencyBundle = createSnsRouteDependencies();
+  snsDemoRouteDependencies = snsRouteDependencyBundle.dependencies;
+  snsSurfaceRuntimeStatus = snsRouteDependencyBundle.runtimeStatus;
 }
 
 async function bootstrapBrowserApplication(): Promise<void> {
@@ -1432,7 +1728,7 @@ async function bootstrapBrowserApplication(): Promise<void> {
     }
   });
 
-  document.addEventListener("click", (event) => {
+  document.addEventListener("click", async (event) => {
     const target = event.target;
 
     if (!(target instanceof HTMLElement)) {
@@ -1443,7 +1739,7 @@ async function bootstrapBrowserApplication(): Promise<void> {
 
     if (submitButton) {
       event.preventDefault();
-      submitSnsDemoState();
+      await submitSnsDemoState();
       renderCurrentRoute(applicationRoot);
       return;
     }
@@ -1477,6 +1773,12 @@ async function bootstrapBrowserApplication(): Promise<void> {
   window.addEventListener("popstate", () => {
     renderCurrentRoute(applicationRoot);
   });
+
+  const initialReadbackResult = await syncSnsTimelineReadback();
+
+  if (!initialReadbackResult.ok) {
+    setSnsFeedback(initialReadbackResult.message, "error", initialReadbackResult.errorCode, false);
+  }
 
   renderCurrentRoute(applicationRoot);
 }

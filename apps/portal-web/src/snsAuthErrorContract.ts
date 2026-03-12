@@ -4,6 +4,7 @@ type PermissionExpectation = {
   role: "guest" | "member" | "operator";
   canSubmitPost: boolean;
   expectedOutcome: string;
+  expectedStatus: number;
 };
 
 type WriteFailureVisibilitySpec = {
@@ -12,35 +13,48 @@ type WriteFailureVisibilitySpec = {
   surfaceFields: string[];
 };
 
+type FailClosedErrorSpec = {
+  errorCodes: string[];
+  completionFields: string[];
+};
+
 type AuthErrorContractSpec = {
   permissionMatrix: PermissionExpectation[];
   writeFailureVisibility: WriteFailureVisibilitySpec;
+  failClosedErrors: FailClosedErrorSpec;
 };
 
-// This baseline validates the intended SNS failure contract shape only.
-// It does not assert that the local demo surface performs a real HTTP request.
+// This baseline validates the intended SNS auth/error contract shape only.
+// It asserts that the service-backed SNS slice remains fail-closed and exposes completion-state metadata.
 const snsAuthErrorContractSpec: AuthErrorContractSpec = {
   permissionMatrix: [
     {
       role: "guest",
       canSubmitPost: false,
-      expectedOutcome: "guest-blocked"
+      expectedOutcome: "guest-blocked",
+      expectedStatus: 403
     },
     {
       role: "member",
       canSubmitPost: true,
-      expectedOutcome: "member-allowed"
+      expectedOutcome: "member-allowed",
+      expectedStatus: 201
     },
     {
       role: "operator",
       canSubmitPost: true,
-      expectedOutcome: "operator-allowed"
+      expectedOutcome: "operator-allowed",
+      expectedStatus: 201
     }
   ],
   writeFailureVisibility: {
     expectedStatus: 500,
     expectedErrorCode: "SNS_POST_WRITE_FAILED",
     surfaceFields: ["errorCode", "message", "retryable"]
+  },
+  failClosedErrors: {
+    errorCodes: ["SNS_POST_FORBIDDEN", "SNS_AUTH_CONTEXT_MISSING", "SNS_ACTOR_MISMATCH", "SNS_WRITE_DISABLED"],
+    completionFields: ["errorCode", "retryable", "readbackState", "completionSignal", "fallbackPolicy"]
   }
 };
 
@@ -78,6 +92,13 @@ function validatePermissionMapping(): ContractCheckResult {
         message: "expectedOutcome must not be empty"
       });
     }
+
+    if (entry.canSubmitPost && entry.expectedStatus < 200) {
+      issues.push({
+        scope: `permission-mapping:${entry.role}`,
+        message: "allowed submit roles must keep a success-class expectedStatus"
+      });
+    }
   }
 
   const guestEntry = permissionMatrix.find((entry) => entry.role === "guest");
@@ -86,6 +107,13 @@ function validatePermissionMapping(): ContractCheckResult {
     issues.push({
       scope: "permission-mapping:guest",
       message: "guest must remain blocked from post submission"
+    });
+  }
+
+  if (guestEntry && guestEntry.expectedStatus !== 403) {
+    issues.push({
+      scope: "permission-mapping:guest",
+      message: "guest blocked path must keep 403 as the service-side rejection status"
     });
   }
 
@@ -144,12 +172,72 @@ function validateWriteFailureVisibility(): ContractCheckResult {
   };
 }
 
+function validateFailClosedErrorContract(): ContractCheckResult {
+  const issues: ContractIssue[] = [];
+  const { errorCodes, completionFields } = snsAuthErrorContractSpec.failClosedErrors;
+
+  if (errorCodes.length === 0) {
+    issues.push({
+      scope: "fail-closed-errors",
+      message: "errorCodes must not be empty"
+    });
+  }
+
+  const duplicateErrorCodes = findDuplicates(errorCodes);
+
+  if (duplicateErrorCodes.length > 0) {
+    issues.push({
+      scope: "fail-closed-errors",
+      message: `errorCodes contains duplicates: ${duplicateErrorCodes.join(", ")}`
+    });
+  }
+
+  for (const requiredErrorCode of [
+    "SNS_POST_FORBIDDEN",
+    "SNS_AUTH_CONTEXT_MISSING",
+    "SNS_ACTOR_MISMATCH",
+    "SNS_WRITE_DISABLED"
+  ] as const) {
+    if (!errorCodes.includes(requiredErrorCode)) {
+      issues.push({
+        scope: "fail-closed-errors",
+        message: `errorCodes must include ${requiredErrorCode}`
+      });
+    }
+  }
+
+  const duplicateCompletionFields = findDuplicates(completionFields);
+
+  if (duplicateCompletionFields.length > 0) {
+    issues.push({
+      scope: "fail-closed-errors",
+      message: `completionFields contains duplicates: ${duplicateCompletionFields.join(", ")}`
+    });
+  }
+
+  for (const requiredField of ["errorCode", "completionSignal", "fallbackPolicy"] as const) {
+    if (!completionFields.includes(requiredField)) {
+      issues.push({
+        scope: "fail-closed-errors",
+        message: `completionFields must include ${requiredField}`
+      });
+    }
+  }
+
+  return {
+    label: "Fail-closed auth and completion visibility",
+    issues
+  };
+}
+
 export function validateSnsAuthErrorContract(): ContractIssue[] {
-  return [validatePermissionMapping(), validateWriteFailureVisibility()].flatMap((result) => result.issues);
+  return [validatePermissionMapping(), validateWriteFailureVisibility(), validateFailClosedErrorContract()].flatMap(
+    (result) => result.issues
+  );
 }
 
 export function buildSnsAuthErrorContractReport(): string {
-  const checkResults = [validatePermissionMapping(), validateWriteFailureVisibility()];
+  const checkResults = [validatePermissionMapping(), validateWriteFailureVisibility(), validateFailClosedErrorContract()];
   const allIssues = checkResults.flatMap((result) => result.issues);
   const lines = ["SNS auth-error contract baseline", "- Command: validate-sns-auth-error-contract"];
 
