@@ -1,13 +1,3 @@
-import { buildRouteValidationReport, validateRouteMetadata } from "./routeValidation.ts";
-import {
-  buildSnsRequestResponseContractReport,
-  validateSnsRequestResponseContract
-} from "./snsRequestResponseContract.ts";
-import {
-  buildSnsAuthErrorContractReport,
-  validateSnsAuthErrorContract
-} from "./snsAuthErrorContract.ts";
-
 type ActionLink = {
   label: string;
   href: string;
@@ -1484,7 +1474,8 @@ async function bootstrapBrowserApplication(): Promise<void> {
   renderCurrentRoute(applicationRoot);
 }
 
-function runRouteValidationCli(): void {
+async function runRouteValidationCli(): Promise<void> {
+  const { buildRouteValidationReport, validateRouteMetadata } = await import("./routeValidation.ts");
   const report = buildRouteValidationReport(routeValidationContext);
 
   if (validateRouteMetadata(routeValidationContext).length > 0) {
@@ -1496,7 +1487,10 @@ function runRouteValidationCli(): void {
   console.log(report);
 }
 
-function runSnsRequestResponseContractCli(): void {
+async function runSnsRequestResponseContractCli(): Promise<void> {
+  const { buildSnsRequestResponseContractReport, validateSnsRequestResponseContract } = await import(
+    "./snsRequestResponseContract.ts"
+  );
   const report = buildSnsRequestResponseContractReport();
 
   if (validateSnsRequestResponseContract().length > 0) {
@@ -1508,7 +1502,10 @@ function runSnsRequestResponseContractCli(): void {
   console.log(report);
 }
 
-function runSnsAuthErrorContractCli(): void {
+async function runSnsAuthErrorContractCli(): Promise<void> {
+  const { buildSnsAuthErrorContractReport, validateSnsAuthErrorContract } = await import(
+    "./snsAuthErrorContract.ts"
+  );
   const report = buildSnsAuthErrorContractReport();
 
   if (validateSnsAuthErrorContract().length > 0) {
@@ -1549,25 +1546,22 @@ function runCliCommand(
     | "validate-routes"
     | "validate-sns-request-response-contract"
     | "validate-sns-auth-error-contract"
-): void {
+): Promise<void> {
   switch (command) {
     case "validate-routes":
-      runRouteValidationCli();
-      break;
+      return runRouteValidationCli();
     case "validate-sns-request-response-contract":
-      runSnsRequestResponseContractCli();
-      break;
+      return runSnsRequestResponseContractCli();
     case "validate-sns-auth-error-contract":
-      runSnsAuthErrorContractCli();
-      break;
+      return runSnsAuthErrorContractCli();
   }
 }
 
-function bootstrapApplication(): void {
+async function bootstrapApplication(): Promise<void> {
   const cliCommand = getCliCommand();
 
   if (cliCommand) {
-    runCliCommand(cliCommand);
+    await runCliCommand(cliCommand);
     return;
   }
 
@@ -1576,4 +1570,4 @@ function bootstrapApplication(): void {
   }
 }
 
-bootstrapApplication();
+void bootstrapApplication();

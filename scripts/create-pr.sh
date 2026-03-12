@@ -24,19 +24,26 @@ Behavior:
 EOF
 }
 
-repo="PLAYER1-r7/MultiCloudProject"
+repo=""
 title=""
 body_file=""
 base_branch=""
 head_branch=""
 
+resolve_repo() {
+  gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null || echo "PLAYER1-r7/MultiCloudProject"
+}
+
 resolve_default_branch() {
+  local current_repo="$1"
   local remote_head
 
-  remote_head="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)"
-  if [[ -n "$remote_head" ]]; then
-    echo "${remote_head#origin/}"
-    return 0
+  if [[ -n "$current_repo" && "$repo" == "$current_repo" ]]; then
+    remote_head="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)"
+    if [[ -n "$remote_head" ]]; then
+      echo "${remote_head#origin/}"
+      return 0
+    fi
   fi
 
   gh repo view "$repo" --json defaultBranchRef --jq '.defaultBranchRef.name' 2>/dev/null || true
@@ -113,8 +120,13 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 1
 fi
 
+if [[ -z "$repo" ]]; then
+  repo="$(resolve_repo)"
+fi
+
 current_branch="$(git branch --show-current)"
-default_branch="$(resolve_default_branch)"
+current_repo="$(resolve_repo)"
+default_branch="$(resolve_default_branch "$current_repo")"
 
 if [[ -z "$current_branch" ]]; then
   echo "Could not determine current git branch." >&2
