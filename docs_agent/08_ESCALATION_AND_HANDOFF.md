@@ -86,6 +86,17 @@ Next action: sns-reviewer checks the /sns/ route behavior and handoff package be
 
 ```text
 Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject repository cleanup checkpoint after SNS issue closure and safety-branch dismantling
+Outcome: Handoff ready
+Actions taken: verified that Issues 119 and 120 were already implemented in portal-web, ran the SNS contract validators, synchronized the local issue records and GitHub issue bodies, and closed both issues; dismantled the retained safety snapshot by auditing every remaining bucket, cherry-picked the forward docset and portal-doc updates into main, pushed main, and deleted the temporary re-home branches, worktrees, and final safety snapshot branch
+Evidence: GitHub has no open issues and no open pull requests; main contains the integrated docset and portal-doc updates; all temporary safety/rehome branches and the final safety snapshot branch have been removed; the repository working tree is clean
+Risks or blockers: future work must start from the current main state rather than reviving any deleted safety snapshot content; any new portal, cloud, or process follow-up requires a fresh task contract and should be treated as new scope, not continuation of the dismantled safety branch
+Closure rationale: the retained safety snapshot was kept only until every remaining diff was either integrated into main or intentionally discarded after audit; that condition is now satisfied, so the snapshot and its re-home branches were deleted
+Next action: start the next chat from a fresh task contract, read docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md and the latest current project handoff records in this file first, and treat any further work as new scope on top of clean main
+```
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
 Scope: MultiCloudProject GCP hardening checkpoint after closing Issues 80 through 91
 Outcome: Handoff ready
 Actions taken: completed the horizontal review for Issues 80 through 91; fixed local canonical issue-record inconsistencies before closure; converted the GCP parent map and cloud summary from active execution-entry wording to a closed reference chain; resynchronized GitHub Issue bodies for Issues 80 through 91 and closed them after CloudSonnet review confirmation

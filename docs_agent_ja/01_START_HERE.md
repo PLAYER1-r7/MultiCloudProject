@@ -64,7 +64,8 @@
 ## 現在のリポジトリ到達点
 
 - このファイルを current project state の正本チェックポイントとして扱わない。
-- 現在の正本チェックポイントは `08_ESCALATION_AND_HANDOFF.md` にあり、そこでは以前の GitHub Issue 45-46 baseline を超えた handoff chain が管理されている。そこに出てくる 80-91 および 92-95 は GitHub Issue 番号であり、各番号に対応するローカル `docs/portal/issues/issue-*.md` が必ず存在することを意味しない。
+- 現在の正本チェックポイントは `08_ESCALATION_AND_HANDOFF.md` にあり、そこでは以前の closed issue chain 記録に加えて、SNS issue クローズ後および safety branch 解体後の最新 repository cleanup handoff も管理している。
 - GitHub Issue 45-46 の close 状態は履歴として有効だが、current project checkpoint としてはその後の follow-up chain と handoff record が優先される。
+- 現在、GitHub 上に open issue と open pull request は存在せず、cleanup 中に使っていた safety snapshot branch 群も削除済みである。
 - production governance baseline は、より新しい handoff record に別記がない限り、external DNS を source of truth とし、current phase での Route 53 非採用と operator-assist only の DNS automation を維持する。
 - 次の follow-up に入る前に、まず `08_ESCALATION_AND_HANDOFF.md` の current project handoff record を読み、その後 `docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md` や `docs/portal/issues/` 配下の実在する正本ファイルを確認する。

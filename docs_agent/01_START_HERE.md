@@ -64,7 +64,8 @@ Use this incident entry rule when choosing the first document:
 ## Current Repository Checkpoint
 
 - Do not treat this file as the authoritative current project state checkpoint.
-- The current authoritative checkpoint lives in `08_ESCALATION_AND_HANDOFF.md`, which now tracks the active handoff chain beyond the earlier GitHub Issues 45-46 baseline. The later 80-91 and 92-95 ranges referenced there are GitHub Issue ranges, not a promise that matching local `docs/portal/issues/issue-*.md` files exist for every number.
+- The current authoritative checkpoint lives in `08_ESCALATION_AND_HANDOFF.md`, which now includes the latest repository-cleanup handoff after SNS issue closure and safety-branch dismantling in addition to the earlier closed issue-chain records.
 - The historical GitHub Issues 45-46 close state remains part of the repository history, but newer follow-up chains and handoff records supersede it as the current project checkpoint.
+- There are currently no open GitHub Issues or open pull requests in the repository, and the retained safety snapshot branches used during cleanup have been removed.
 - Current production governance baseline remains fixed around external DNS source of truth, Route 53 non-adoption in the current phase, and operator-assist-only DNS automation unless a newer handoff record says otherwise.
 - Before starting the next follow-up, read `08_ESCALATION_AND_HANDOFF.md` for the current project handoff record and then inspect the current canonical repo artifacts that actually exist, such as `docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md` and the latest files under `docs/portal/issues/`.
