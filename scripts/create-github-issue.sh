@@ -96,6 +96,11 @@ if [[ ! -f "$body_file" ]]; then
   exit 1
 fi
 
+if [[ ! -s "$body_file" ]]; then
+  echo "Body file is empty: $body_file" >&2
+  exit 1
+fi
+
 gh auth status >/dev/null
 
 if [[ -z "$repo" ]]; then
@@ -110,14 +115,13 @@ for label in "${labels[@]}"; do
 done
 
 issue_url="$("${create_cmd[@]}")"
-issue_number="${issue_url##*/}"
 
-view_cmd=(gh issue view "$issue_number" --repo "$repo" --json number,title,labels)
+view_cmd=(gh issue view "$issue_url" --repo "$repo" --json number,title,labels)
 
 label_count="$("${view_cmd[@]}" --jq '.labels | length')"
 
 if [[ "$label_count" -eq 0 ]]; then
-  edit_cmd=(gh issue edit "$issue_number" --repo "$repo")
+  edit_cmd=(gh issue edit "$issue_url" --repo "$repo")
   for label in "${labels[@]}"; do
     edit_cmd+=(--add-label "$label")
   done
