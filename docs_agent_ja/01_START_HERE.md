@@ -63,8 +63,8 @@
 
 ## 現在のリポジトリ到達点
 
-- 2026-03-09 時点で Issue 46 まで完了している。
-- Issue 45 と Issue 46 はローカル issue 記録と GitHub Issue の両方でクローズ済みである。
-- 現在の production governance baseline は、external DNS を source of truth として維持し、current phase では Route 53 へ移行せず、DNS automation は operator-assist only に限定する判断まで固定済みである。
-- 次の候補スコープは GCP baseline design だが、別チャットで新しい task contract から開始する。
+- このファイルを current project state の正本チェックポイントとして扱わない。
+- 現在の正本チェックポイントは `08_ESCALATION_AND_HANDOFF.md` にあり、そこでは以前の Issue 45-46 baseline を超えた handoff chain が管理されている。現在の handoff record で参照されている Issue 80-91 および 92-95 の follow-up 範囲もそちらに含まれる。
+- Issue 45-46 の close 状態は履歴として有効だが、current project checkpoint としてはその後の follow-up chain と handoff record が優先される。
+- production governance baseline は、より新しい handoff record に別記がない限り、external DNS を source of truth とし、current phase での Route 53 非採用と operator-assist only の DNS automation を維持する。
 - 次の follow-up に入る前に、まず `08_ESCALATION_AND_HANDOFF.md` の current project handoff record を読み、その後 `docs/portal/issues/` の最新 issue 記録を確認する。

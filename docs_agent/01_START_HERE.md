@@ -63,8 +63,8 @@ Use this incident entry rule when choosing the first document:
 
 ## Current Repository Checkpoint
 
-- Completed through Issue 46 as of 2026-03-09.
-- Issues 45 and 46 are closed and synchronized to local issue records plus GitHub Issues.
-- Current production governance baseline is fixed around external DNS source of truth, Route 53 non-adoption in the current phase, and operator-assist-only DNS automation.
-- The next candidate scope is GCP baseline design, but it should start in a separate chat with a new task contract.
+- Do not treat this file as the authoritative current project state checkpoint.
+- The current authoritative checkpoint lives in `08_ESCALATION_AND_HANDOFF.md`, which now tracks the active handoff chain beyond the earlier Issue 45-46 baseline, including the later Issue 80-91 and 92-95 follow-up ranges referenced in the current handoff record.
+- The historical Issue 45-46 close state remains part of the repository history, but newer follow-up chains and handoff records supersede it as the current project checkpoint.
+- Current production governance baseline remains fixed around external DNS source of truth, Route 53 non-adoption in the current phase, and operator-assist-only DNS automation unless a newer handoff record says otherwise.
 - Before starting the next follow-up, read `08_ESCALATION_AND_HANDOFF.md` for the current project handoff record and then inspect the latest issue records under `docs/portal/issues/`.
