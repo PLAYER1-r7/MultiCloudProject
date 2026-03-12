@@ -53,6 +53,7 @@ Outcome: Escalation requested
 Actions taken:
 Evidence:
 Risks or blockers:
+Closure rationale:
 Next action:
 ```
 
