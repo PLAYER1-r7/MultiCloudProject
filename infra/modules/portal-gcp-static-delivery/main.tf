@@ -76,7 +76,6 @@ resource "google_compute_security_policy" "preview" {
 
 resource "random_id" "certificate" {
   byte_length = 4
-  prefix      = "${var.resource_name_prefix}-cert-"
 
   keepers = {
     domains = join(",", local.all_hostnames)
@@ -84,7 +83,7 @@ resource "random_id" "certificate" {
 }
 
 resource "google_compute_managed_ssl_certificate" "preview" {
-  name = random_id.certificate.hex
+  name = "${var.resource_name_prefix}-cert-${random_id.certificate.hex}"
 
   lifecycle {
     create_before_destroy = true
