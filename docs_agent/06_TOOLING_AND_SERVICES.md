@@ -79,7 +79,7 @@ When a docs-only or follow-up PR depends on unmerged changes from another branch
 
 - Keep the stacked PR base on the parent branch until the parent PR merges.
 - Record the retarget condition in the PR notes, including when the base should be switched back to `main`.
-- Do not restate the stacked PR as independent from `main` if the effective diff still depends on unmerged parent-branch file history.
+- Do not present the stacked PR as independent from `main` if the effective diff still depends on unmerged parent-branch file history.
 
 ## Quick Verification
 

@@ -99,7 +99,7 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] If a higher-level summary document exists for the scope, it was updated after the implementation chain completed.
 - [ ] Reviewer focus notes were reduced to 2 or 3 concrete review points.
 - [ ] The PR body wording was checked against the local diff, issue states, and summary documents for consistency.
-- [ ] If the PR includes historical issue records or closed-reference docs, predecessor wording and current-status wording were rechecked against the current GitHub issue state.
+- [ ] If the PR includes historical issue records or other documents that describe closed or historical states, such as decision records or postmortems, predecessor wording and current-status wording were rechecked against the current GitHub issue state.
 
 ## After Review Comments
 

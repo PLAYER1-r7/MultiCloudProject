@@ -99,7 +99,7 @@
 - [ ] スコープに高レベル summary 文書がある場合は、実装チェーン完了後にその summary 側も更新した
 - [ ] reviewer が重点的に見るべき差分を 2 から 3 点の具体的な review point に絞って記載した
 - [ ] PR 本文の記述がローカル差分、Issue 状態、summary 文書の記述と矛盾していないことを確認した
-- [ ] PR に履歴用 Issue 文書や closed-reference docs が含まれる場合は、predecessor 表現と current-status 表現を現在の GitHub Issue 状態に対して再確認した
+- [ ] PR に履歴用 Issue 文書や、過去の状態や判断を記録した参照用文書が含まれる場合は、predecessor 表現と current-status 表現を現在の GitHub Issue 状態に対して再確認した
 
 ## レビューコメント対応後
 
