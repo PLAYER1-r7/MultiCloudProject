@@ -59,17 +59,22 @@ Acceptance Criteria
 - multi-cloud persistence
 - moderation expansion
 
-## Local Groundwork Note
+## Local Execution Note
 
-- portal-web now includes a pluggable SNS service client boundary that separates simulated-route mode from future HTTP service mode
-- public SNS config now supports `VITE_PUBLIC_SNS_SERVICE_MODE` and `VITE_PUBLIC_SNS_SERVICE_BASE_URL` so the browser bundle can target a real service boundary without reworking the SNS surface contract again
-- runtime metadata now exposes service mode、service base URL、and next-slice readiness so the current first-slice baseline and the future service-persistence path are no longer conflated on the same surface
-- current local implementation still does not satisfy this issue's full completion line because service-owned persistence and rollback-aware staging evidence are not implemented yet
+- portal-web now includes a runnable HTTP SNS service boundary backed by service-owned file persistence for local execution
+- the HTTP service reuses the SNS route contract for GET /api/sns/timeline and POST /api/sns/posts, reads actor context from stable request headers, and keeps fail-closed write and readback behavior intact
+- local HTTP-mode validation now starts the service and Vite preview together so the browser bundle exercises cross-origin service fetch instead of the simulated-route path
+- service-owned persistence is now locally executable, but cloud deployment shape, shared rollback evidence, and staging-reviewed completion are still pending in later issues
 
 # Current Status
 
-- local groundwork implemented for the service-client boundary and HTTP service configuration path
-- local validation evidence: `cd apps/portal-web && npm run typecheck && npm run test:sns-request-response-contract && npm run test:sns-auth-error-contract && npm run test:sns-surface-reachability && npm run test:sns-auth-post-readback`
+- local HTTP service execution implemented for the service-persistence path
+- local validation evidence target:
+	- `cd apps/portal-web && npm run typecheck`
+	- `cd apps/portal-web && npm run test:sns-request-response-contract`
+	- `cd apps/portal-web && npm run test:sns-auth-error-contract`
+	- `cd apps/portal-web && npm run test:sns-http-surface-reachability`
+	- `cd apps/portal-web && npm run test:sns-http-auth-post-readback`
 - GitHub Issue: not created in this task
 - Sync Status: local-only draft
 
