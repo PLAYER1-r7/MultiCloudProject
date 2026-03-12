@@ -1231,7 +1231,14 @@ function scrollToHashTarget(): void {
     return;
   }
 
-  const targetId = decodeURIComponent(hash.slice(1));
+  let targetId: string | null = null;
+  const rawId = hash.slice(1);
+
+  try {
+    targetId = decodeURIComponent(rawId);
+  } catch {
+    targetId = rawId;
+  }
 
   if (!targetId) {
     return;

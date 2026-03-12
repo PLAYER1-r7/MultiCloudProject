@@ -81,7 +81,6 @@ try {
 
     const routePath = await page.locator(".page-shell").getAttribute("data-route-path");
     assertCondition(routePath?.trim() === target.expectedRoutePath, `${target.name}: route path mismatch`);
-    currentStepStatus.surfaceMount = "passed";
 
     const entryLink = page.locator(`a[data-link="internal"][href="${target.expectedEntryHref}"]`).first();
     await entryLink.waitFor({ state: "visible" });
@@ -94,6 +93,7 @@ try {
     await surface.waitFor({ state: "visible" });
     const surfaceRoutePath = await page.locator(".page-shell").getAttribute("data-route-path");
     assertCondition(surfaceRoutePath?.trim() === "/status", `${target.name}: surface did not mount on /status`);
+    currentStepStatus.surfaceMount = "passed";
 
     const ctaLink = page.locator(`a[data-sns-posting-cta="true"][href="${target.expectedPostingCtaHref}"]`).first();
     await ctaLink.waitFor({ state: "visible" });

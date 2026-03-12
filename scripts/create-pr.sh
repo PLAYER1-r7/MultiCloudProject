@@ -31,7 +31,16 @@ base_branch=""
 head_branch=""
 
 resolve_repo() {
-  gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null || echo "PLAYER1-r7/MultiCloudProject"
+  local resolved_repo
+
+  resolved_repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null || true)"
+  if [[ -n "$resolved_repo" ]]; then
+    echo "$resolved_repo"
+    return 0
+  fi
+
+  echo "Could not determine the GitHub repository automatically. Pass --repo <owner/repo>." >&2
+  exit 1
 }
 
 resolve_default_branch() {
