@@ -33,9 +33,9 @@ Scope
 - Restricted paths: docs/portal/issues/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: portal update の標準手順が 1 文書で読める
-- [ ] AC-2: portal site 内から update workflow の存在が辿れる
-- [ ] AC-3: README が update workflow と validation baseline を案内している
+- [x] AC-1: portal update の標準手順が 1 文書で読める
+- [x] AC-2: portal site 内から update workflow の存在が辿れる
+- [x] AC-3: README が update workflow と validation baseline を案内している
 
 Implementation Plan
 - Files likely to change: docs/portal/21_PORTAL_UPDATE_WORKFLOW.md, apps/portal-web/src/main.ts, apps/portal-web/README.md
