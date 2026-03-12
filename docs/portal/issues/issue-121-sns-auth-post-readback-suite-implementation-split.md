@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web and future SNS service layer
 - Environment: planning
 - Priority: high
-- Predecessor: Issue 116 open
+- Predecessor: Issue 116 (closed baseline reference)
 
 Objective
 - Problem to solve: auth-post-readback grouping は fixed したが、signed-out blocked、signed-in post success、failure visibility、readback consistency をどの single suite implementation unit で実装するかが未固定である

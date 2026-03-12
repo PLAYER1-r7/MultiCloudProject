@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web and future SNS service layer
 - Environment: planning
 - Priority: high
-- Predecessor: Issue 116 open
+- Predecessor: Issue 116 (SNS major flow integration suite baseline)
 
 Objective
 - Problem to solve: surface reachability grouping は fixed したが、SNS surface mount、entry link integrity、posting CTA reachability をどの single suite implementation unit で実装するかが未固定である

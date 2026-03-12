@@ -37,7 +37,7 @@ Target-file rule:
 
 - keep completed draft text block owned by docs until there is repeated operator reuse across multiple execution issues
 - do not move completed draft wording into app code or scripts, because it is review evidence rather than runtime behavior
-- introduce a shared completed-draft fragment only after the same same-issue-path draft shape is reused more than once
+- introduce a shared completed-draft fragment only after the same-issue-path draft shape is reused more than once
 
 ## Placement Candidates
 

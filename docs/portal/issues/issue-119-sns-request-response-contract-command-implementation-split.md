@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web and future SNS service layer
 - Environment: planning
 - Priority: high
-- Predecessor: Issue 115 open
+- Predecessor: Issue 115 (baseline; closed)
 
 Objective
 - Problem to solve: request-response compatibility grouping は fixed したが、post request shape、invalid payload validation、timeline read response mapping をどの single implementation unit で実装するかが未固定である

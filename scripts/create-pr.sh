@@ -108,6 +108,11 @@ if [[ ! -s "$body_file" ]]; then
   exit 1
 fi
 
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "This command must be run inside a git worktree." >&2
+  exit 1
+fi
+
 current_branch="$(git branch --show-current)"
 default_branch="$(resolve_default_branch)"
 
