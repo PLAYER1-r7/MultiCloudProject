@@ -89,7 +89,7 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] Before creating the PR, confirmed the implementation, required tests, related document updates, and issue-state synchronization for the target scope are complete.
 - [ ] Confirmed the PR is not reopening a closed chain for packaging-only continuation, and instead represents either a completed active scope or a fresh-record follow-up.
 - [ ] If the PR is being prepared with AI assistance, confirmed the staged files are limited to the intended scope and unrelated local changes are excluded.
-- [ ] If the PR title, body, or self-review notes were prepared with AI assistance, a human still confirmed scope, validation evidence, and merge risk before final submission or merge.
+- [ ] If the PR title, body, or self-review notes were prepared with AI assistance, ensured the PR explicitly requires human confirmation of scope, validation evidence, and merge risk before final submission or merge, and does not describe that confirmation as already completed unless it was actually obtained.
 - [ ] If scope is ambiguous, unrelated changes are mixed in, or merge safety depends on judgment, stopped autonomous PR execution and requested confirmation before creating the PR.
 - [ ] The PR title states what was completed or added, and does not collapse mixed code-and-doc synchronization work into a vague label.
 - [ ] The PR body includes Summary, What Changed, and Validation as the minimum fixed sections.

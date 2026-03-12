@@ -55,11 +55,11 @@ Use `scripts/create-pr.sh` as a thin wrapper around `gh pr create`.
 
 Use AI assistance for PR preparation and execution when the work is primarily about scoping, summarizing, validating, or submitting already-reviewed changes.
 
-- The agent may inspect diffs, summarize scope, prepare PR titles and bodies, create a branch, stage only intended files, create commits, push the branch, and open the PR.
+- The agent may inspect diffs, summarize scope, prepare PR titles and bodies, create a branch, stage only intended files, create commits, push the branch, and open the PR, including as a draft.
 - The agent may also prepare self-review notes, validation comments, merge-readiness checklists, and follow-up issue candidates.
-- Final scope approval, merge decisions, review-feedback acceptance, production-risk judgment, and sufficiency of validation evidence remain human-owned decisions.
-- If scope is clear and no destructive action is required, the agent should proceed through PR creation autonomously.
-- If scope is ambiguous, if unrelated changes are mixed in, or if merge safety depends on a judgment call, the agent should stop and ask for confirmation.
+- Final scope approval, final submission for merge, merge decisions, review-feedback acceptance, production-risk judgment, and sufficiency of validation evidence remain human-owned decisions and must follow `07_AUTONOMOUS_WORKFLOW_CHECKLIST.md` when AI assistance was used.
+- If scope is clear and no destructive action is required, the agent may proceed autonomously through all preparation steps up to and including opening the PR, but it must not perform final submission or merge actions.
+- If scope is ambiguous, if unrelated changes are mixed in, or if merge safety depends on a judgment call, the agent should stop and ask for human confirmation before proceeding further, including before opening the PR.
 - Expected PR output remains `Summary`, `What Changed`, and `Validation`.
 - Non-goals: auto-merging without human approval, inventing validation that was not run, broadening PR scope without explicit approval, and replacing human judgment on release or operational risk.
 
