@@ -99,6 +99,16 @@
 - [ ] スコープに高レベル summary 文書がある場合は、実装チェーン完了後にその summary 側も更新した
 - [ ] reviewer が重点的に見るべき差分を 2 から 3 点の具体的な review point に絞って記載した
 - [ ] PR 本文の記述がローカル差分、Issue 状態、summary 文書の記述と矛盾していないことを確認した
+- [ ] PR に履歴用 Issue 文書や closed-reference docs が含まれる場合は、predecessor 表現と current-status 表現を現在の GitHub Issue 状態に対して再確認した
+
+## レビューコメント対応後
+
+- [ ] レビュー是正パスを始める前に、以前の review snapshot に頼らず、最新の PR review と inline comment を再取得した
+- [ ] 現在の branch に無関係な作業がある場合は、別 worktree または同等の clean な branch context で是正作業を分離した
+- [ ] 是正 patch 後、commit または push の前に関連検証を再実行した
+- [ ] fix commit の publish 後、対応したコメント内容と再実行した検証を PR コメントで要約した
+- [ ] Copilot の再レビュー依頼は、新しい fix commit と PR コメントの両方が publish された後に行った
+- [ ] follow-up docs PR が未 merge の実装 PR に依存する場合は stacked PR を使い、後で `main` に戻す条件を文書化した
 
 - [ ] テスト結果を記録した
 - [ ] DoD の必須ゲートを満たした
