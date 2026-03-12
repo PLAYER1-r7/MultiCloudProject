@@ -10,6 +10,7 @@
 - AWS CLI
 - Azure CLI
 - gcloud CLI
+- OpenTofu CLI (`tofu`)
 - Pulumi CLI
 - GitHub CLI (`gh`)
 - Project validation scripts: `./scripts/test-endpoints.sh` and `./scripts/test-e2e.sh`
@@ -23,7 +24,7 @@
 
 ## Reference Priority
 
-1. Pulumi outputs and deployed resource state
+1. IaC tool outputs and deployed resource state
 2. Workflow execution results and runtime logs
 3. Existing scripts and validated runbooks
 4. Narrative documentation

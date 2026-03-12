@@ -11,6 +11,7 @@
 - AWS CLI
 - Azure CLI
 - gcloud CLI
+- OpenTofu (`tofu`)
 - Pulumi
 - プロジェクト検証スクリプト: `./scripts/test-endpoints.sh` と `./scripts/test-e2e.sh`
 
@@ -23,7 +24,7 @@
 
 ## 参照優先度
 
-1. Pulumi outputs とデプロイ済みリソースの状態
+1. IaC ツールの outputs とデプロイ済みリソースの状態
 2. ワークフロー実行結果とランタイムログ
 3. 既存スクリプトと検証済みランブック
 4. 説明文書
