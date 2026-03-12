@@ -45,10 +45,10 @@ gh pr list --state open
 ## Issue Labeling Commands
 
 ```bash
-scripts/create-github-issue.sh --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal
 gh issue list --limit 100 --state all --json number,title,labels
+gh issue create --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal
 gh issue view <N> --json number,title,labels
-gh issue edit <N> --add-label "portal,planning"
+gh issue edit <N> --add-label "portal" --add-label "planning"
 gh issue edit <N> --remove-label "documentation"
 ```
 
@@ -57,12 +57,11 @@ gh issue edit <N> --remove-label "documentation"
 - Treat labels as part of Issue creation, not optional cleanup.
 - After creating an Issue, verify its labels before moving to the next Issue.
 - If an Issue is created without labels, correct it immediately instead of carrying unlabeled debt forward.
-- Prefer `scripts/create-github-issue.sh` so issue creation and label verification stay coupled.
+- If the current branch already contains `scripts/create-github-issue.sh`, you may use it to couple issue creation and label verification in one command. Otherwise, use `gh issue create` and verify labels immediately after creation.
 
 ```bash
 gh issue view <N> --json number,title,labels
-gh issue list --limit 200 --state all --json number,title,labels \
-	| jq -r '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
+gh issue list --limit 200 --state all --json number,title,labels --jq '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
 ```
 
 ## Actions

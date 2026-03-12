@@ -45,10 +45,10 @@ gh pr list --state open
 ## Issue タグ操作コマンド
 
 ```bash
-scripts/create-github-issue.sh --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal
 gh issue list --limit 100 --state all --json number,title,labels
+gh issue create --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal
 gh issue view <N> --json number,title,labels
-gh issue edit <N> --add-label "portal,planning"
+gh issue edit <N> --add-label "portal" --add-label "planning"
 gh issue edit <N> --remove-label "documentation"
 ```
 
@@ -57,12 +57,11 @@ gh issue edit <N> --remove-label "documentation"
 - タグは Issue 作成後の任意 cleanup ではなく、作成手順の一部として扱う
 - Issue を作成したら、次の Issue に移る前にタグを確認する
 - タグなしで作成された場合は、未ラベル debt として残さずその場で修正する
-- Issue 作成とタグ確認を分離しないため、可能な限り `scripts/create-github-issue.sh` を使う
+- 現在の branch に `scripts/create-github-issue.sh` が入っている場合は、Issue 作成とタグ確認を 1 コマンドにまとめるために使ってよい。未導入の branch では `gh issue create` を使い、作成直後にタグ確認を行う
 
 ```bash
 gh issue view <N> --json number,title,labels
-gh issue list --limit 200 --state all --json number,title,labels \
-	| jq -r '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
+gh issue list --limit 200 --state all --json number,title,labels --jq '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
 ```
 
 ## ワークフロー
