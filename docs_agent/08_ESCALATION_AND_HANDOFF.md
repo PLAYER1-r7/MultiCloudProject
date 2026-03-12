@@ -89,10 +89,10 @@ Document: 08_ESCALATION_AND_HANDOFF
 Scope: MultiCloudProject GCP hardening checkpoint after closing Issues 80 through 91
 Outcome: Handoff ready
 Actions taken: completed the horizontal review for Issues 80 through 91; fixed local canonical issue-record inconsistencies before closure; converted the GCP parent map and cloud summary from active execution-entry wording to a closed reference chain; resynchronized GitHub Issue bodies for Issues 80 through 91 and closed them after CloudSonnet review confirmation
-Evidence: local issue records for Issues 80 through 91 are marked CLOSED; GitHub Issues 80 through 91 are closed; docs/portal/issues/issue-91-gcp-hardening-batch-follow-up-map.md and docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md now describe the GCP chain as a closed reference chain
+Evidence: GitHub Issues 80 through 91 are closed; docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md describes the GCP chain as a closed reference chain
 Risks or blockers: future GCP work must not reopen or silently extend the closed 80 through 91 chain; any new retained-preview, notification, Cloud Armor, credential-rotation, or destructive-rollback work requires a fresh task contract and a new follow-up issue chain
 Closure rationale: the chain was closed because the latest issues added the required execution evidence and no further child issue was needed to add a new fixed judgment or execution boundary
-Next action: start the next chat from a fresh task contract, read docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md and docs/portal/issues/issue-91-gcp-hardening-batch-follow-up-map.md first, and treat any further GCP work as new follow-up scope rather than reopening the closed reference chain
+Next action: start the next chat from a fresh task contract, read docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md first, and treat any further GCP work as new follow-up scope rather than reopening the closed reference chain
 ```
 
 ```text
@@ -100,7 +100,7 @@ Document: 08_ESCALATION_AND_HANDOFF
 Scope: MultiCloudProject AWS DNS verification checkpoint after closing Issues 92 through 95
 Outcome: Handoff ready
 Actions taken: reviewed the DNS verification chain from Issue 92 through Issue 95; aligned local issue records and GitHub issue bodies; converted the AWS DNS verification flow to a closed reference chain in the cloud status summary; closed GitHub Issues 92 through 95 after confirming no additional DNS verification follow-up remained in the current phase
-Evidence: local issue records for Issues 92 through 95 are marked CLOSED; GitHub Issues 92 through 95 are closed; docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md records the DNS verification chain as a closed reference chain with a short retrospective
+Evidence: GitHub Issues 92 through 95 are closed; docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md records the DNS verification chain as a closed reference chain with a short retrospective
 Risks or blockers: future AWS DNS work must not silently extend the closed 92 through 95 chain; provider credentials, provider API integration, and Route 53 migration remain separate governance or implementation tracks
 Closure rationale: the chain was closed because Issue 95 already provided the terminal dry-run draft and no further child issue would add new evidence, a new fixed judgment, or a new execution boundary
 Next action: start any future AWS DNS-related work from a fresh task contract, keep the closed 92 through 95 chain as reference only, and reject packaging-only child issues unless a human explicitly approves a new distinct scope

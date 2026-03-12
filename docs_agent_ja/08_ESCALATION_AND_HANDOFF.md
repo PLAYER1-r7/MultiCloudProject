@@ -102,10 +102,10 @@ Document: 08_ESCALATION_AND_HANDOFF
 Scope: MultiCloudProject における Issue 80 から Issue 91 クローズ後の GCP hardening 到達点の引き継ぎ
 Outcome: Handoff ready
 Actions taken: Issue 80 から Issue 91 の横断レビューを完了し、クローズ前にローカル正本 issue 記録の不整合を修正した; GCP parent map と cloud summary の文言を active execution entry から closed reference chain へ更新した; Issue 80 から Issue 91 の GitHub Issue 本文を再同期し、CloudSonnet review confirmation 後に全件クローズした
-Evidence: Issue 80 から Issue 91 のローカル issue 記録は CLOSED である; GitHub Issue 80 から 91 は CLOSED である; docs/portal/issues/issue-91-gcp-hardening-batch-follow-up-map.md と docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md は GCP chain を closed reference chain として記録している
+Evidence: GitHub Issue 80 から 91 は CLOSED である; docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md は GCP chain を closed reference chain として記録している
 Risks or blockers: 今後の GCP 作業で closed となった 80 から 91 の chain を再オープンしたり暗黙拡張したりしてはならない; retained preview、notification、Cloud Armor、credential rotation、destructive rollback の追加作業は fresh task contract と新しい follow-up issue chain を前提にする
 Closure rationale: 最新の issue 群で必要な execution evidence が揃い、これ以上 child issue を増やしても新しい固定判断や実行境界が増えないため、この chain を close した
-Next action: 次のチャットでは fresh task contract から開始し、まず docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md と docs/portal/issues/issue-91-gcp-hardening-batch-follow-up-map.md を読んだうえで、追加の GCP 作業を closed reference chain の再開ではなく新規 follow-up scope として扱う
+Next action: 次のチャットでは fresh task contract から開始し、まず docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md を読んだうえで、追加の GCP 作業を closed reference chain の再開ではなく新規 follow-up scope として扱う
 ```
 
 ```text
@@ -113,7 +113,7 @@ Document: 08_ESCALATION_AND_HANDOFF
 Scope: MultiCloudProject における Issue 92 から Issue 95 クローズ後の AWS DNS verification 到達点の引き継ぎ
 Outcome: Handoff ready
 Actions taken: Issue 92 から Issue 95 までの DNS verification chain を見直し、ローカル issue 記録と GitHub issue 本文を揃えた; cloud status summary 上で AWS DNS verification flow を closed reference chain へ更新した; current phase で追加の DNS verification follow-up が残っていないことを確認したうえで GitHub Issue 92 から 95 をクローズした
-Evidence: Issue 92 から Issue 95 のローカル issue 記録は CLOSED である; GitHub Issue 92 から 95 は CLOSED である; docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md に DNS verification chain の closed reference 記述と短い retrospective がある
+Evidence: GitHub Issue 92 から 95 は CLOSED である; docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md に DNS verification chain の closed reference 記述と短い retrospective がある
 Risks or blockers: 今後の AWS DNS 作業で closed となった 92 から 95 の chain を暗黙拡張してはならない; provider credentials、provider API integration、Route 53 migration は別系統の governance または implementation track として残る
 Closure rationale: Issue 95 が terminal dry-run draft を提供しており、これ以上 child issue を増やしても新しい証拠、新しい固定判断、新しい実行境界が増えないため、この chain を close した
 Next action: 今後の AWS DNS 関連作業は fresh task contract から開始し、closed となった 92 から 95 の chain は参照専用として扱い、packaging-only な child issue は人間が明示承認しない限り作成しない
