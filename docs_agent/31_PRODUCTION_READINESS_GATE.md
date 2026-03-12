@@ -25,7 +25,7 @@
 
 For GCP production-equivalent live execution, also require all of the following before GO:
 
-- The reviewed execution package is completed and points to one evidence path for reviewer and approval owner handoff
+- The reviewed execution package is completed and points to one evidence path for reviewer and approval-owner handoff
 - A dedicated hostname candidate, DNS source-of-truth, and operator-managed authoritative DNS write owner are explicitly recorded
 - The live execution is tracked in a separate execution issue rather than being embedded in a summary or preparation record
 - Rollback branches, evidence-retention inputs, and external notification or escalation destinations are fixed before release-sensitive execution starts
