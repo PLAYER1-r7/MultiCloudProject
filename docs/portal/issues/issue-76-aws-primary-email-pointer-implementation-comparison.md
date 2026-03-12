@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: AWS production alert pointer implementation comparison
 - Priority: medium
-- Predecessor: Issue 41 closed, Issue 44 closed, Issue 45 closed, Issue 69 open, Issue 71 open
+- Predecessor: Issue 41 closed, Issue 44 closed, Issue 45 closed, Issue 69 closed, Issue 71 closed
 
 Objective
 - Problem to solve: Issue 71 で primary email pointer の destination、template、fixed Alert Type labels、Issue / Reference Path rule は fixed したが、manual compose、local text generator、provider-native email integration のどれを next execution candidate にするかは未決定である

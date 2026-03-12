@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: GCP preview credential rotation pack execution
 - Priority: medium
-- Predecessor: Issue 52 closed, Issue 54 closed, Issue 68 closed, Issue 87 open
+- Predecessor: Issue 52 closed, Issue 54 closed, Issue 68 closed, Issue 87 closed
 
 Objective
 - Problem to solve: Issue 87 で manual owner-reviewed rotation pack の boundary は fixed したが、operator が current issue にそのまま残せる actual rotation pack draft、review-only checklist fallback、validation shape、comment-ready usage はまだ execution issue として追跡されていない

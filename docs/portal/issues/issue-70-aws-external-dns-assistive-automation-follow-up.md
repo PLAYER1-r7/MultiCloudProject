@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: AWS production DNS follow-up planning
 - Priority: medium
-- Predecessor: Issue 42 closed, Issue 46 closed, Issue 69 open
+- Predecessor: Issue 42 closed, Issue 46 closed, Issue 69 closed
 
 Objective
 - Problem to solve: external DNS source-of-truth と Route 53 non-adoption judgment は fixed したが、manual helper automation、provider credential boundary、provider API integration の比較軸はまだ薄く、次の execution-ready preparation がどこまでか読み切れない

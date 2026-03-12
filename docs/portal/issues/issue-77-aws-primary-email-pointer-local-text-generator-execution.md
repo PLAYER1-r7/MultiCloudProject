@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: AWS production alert pointer generator execution
 - Priority: medium
-- Predecessor: Issue 41 closed, Issue 44 closed, Issue 45 closed, Issue 69 open, Issue 71 open, Issue 76 open
+- Predecessor: Issue 41 closed, Issue 44 closed, Issue 45 closed, Issue 69 closed, Issue 71 closed, Issue 76 closed
 
 Objective
 - Problem to solve: Issue 76 で local text generator の boundary は fixed したが、operator が local shell で single-run 実行できる generator text、manual compose fallback、validation shape、template compatibility はまだ execution issue として追跡されていない

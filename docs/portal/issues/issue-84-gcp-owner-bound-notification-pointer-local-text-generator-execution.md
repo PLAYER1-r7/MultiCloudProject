@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: GCP preview / retained preview notification pointer generator execution
 - Priority: medium
-- Predecessor: Issue 55 closed, Issue 68 closed, Issue 80 open, Issue 83 open
+- Predecessor: Issue 55 closed, Issue 68 closed, Issue 80 closed, Issue 83 closed
 
 Objective
 - Problem to solve: Issue 83 で local text generator の boundary は fixed したが、operator が local shell で single-run 実行できる generator text、manual compose fallback、validation shape、Issue 55 compatibility はまだ execution issue として追跡されていない

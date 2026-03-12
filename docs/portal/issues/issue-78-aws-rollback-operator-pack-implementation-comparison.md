@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: AWS production rollback operator pack implementation comparison
 - Priority: medium
-- Predecessor: Issue 40 closed, Issue 42 closed, Issue 69 open, Issue 72 open
+- Predecessor: Issue 40 closed, Issue 42 closed, Issue 69 closed, Issue 72 closed
 
 Objective
 - Problem to solve: Issue 72 で checklist、walkthrough note、override request path は fixed したが、single current-issue operator pack、split templates、local text generator のどれを next execution candidate にするかは未決定である

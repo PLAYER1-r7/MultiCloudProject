@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: GCP preview / retained preview notification uplift comparison
 - Priority: medium
-- Predecessor: Issue 55 closed, Issue 68 closed, Issue 80 open
+- Predecessor: Issue 55 closed, Issue 68 closed, Issue 80 closed
 
 Objective
 - Problem to solve: Issue 55 で notification owner、first-response path、operator hold 条件は fixed したが、owner-bound external destination uplift を manual compose、local text generator、provider-native integration のどれで進めるかは未決定である

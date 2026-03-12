@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: GCP retained preview purpose completion judgment support
 - Priority: medium
-- Predecessor: Issue 57 closed, Issue 68 closed, Issue 80 open
+- Predecessor: Issue 57 closed, Issue 68 closed, Issue 80 closed
 
 Objective
 - Problem to solve: Issue 80 では `preview purpose complete` が not positively met と整理されているが、retained preview の remaining purpose が終わったときに何を supporting evidence として扱い、どの note shape で Issue 80 の再判定へ接続するかが current issue path にない

@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: GCP preview retention / production-equivalent hardening follow-up planning
 - Priority: medium
-- Predecessor: Issue 52 closed, Issue 53 closed, Issue 54 closed, Issue 55 closed, Issue 56 closed, Issue 57 closed, Issue 65 closed, Issue 68 closed, Issue 80 open, Issue 83 open, Issue 85 open, Issue 87 open, Issue 89 open
+- Predecessor: Issue 52 closed, Issue 53 closed, Issue 54 closed, Issue 55 closed, Issue 56 closed, Issue 57 closed, Issue 65 closed, Issue 68 closed, Issue 80 closed, Issue 83 closed, Issue 85 closed, Issue 87 closed, Issue 89 closed
 
 Objective
 - Problem to solve: GCP remaining work は retained preview lifecycle、notification uplift、Cloud Armor hardening、credential rotation、destructive rollback に分散しており、current execution-ready issue と supporting path を 1 箇所で辿れる親記録がまだない

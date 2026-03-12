@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: GCP preview / production-equivalent destructive rollback pack execution
 - Priority: medium
-- Predecessor: Issue 56 closed, Issue 65 closed, Issue 68 closed, Issue 89 open
+- Predecessor: Issue 56 closed, Issue 65 closed, Issue 68 closed, Issue 89 closed
 
 Objective
 - Problem to solve: Issue 89 で review-only destructive rollback pack の boundary は fixed したが、operator が current issue にそのまま残せる actual rollback pack draft、destructive rollback checklist fallback、validation shape、comment-ready usage はまだ execution issue として追跡されていない

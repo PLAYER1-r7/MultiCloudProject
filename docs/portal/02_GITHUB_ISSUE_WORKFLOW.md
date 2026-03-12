@@ -114,8 +114,6 @@ Recommended order:
 
 Use `gh issue create` with labels in the same command so creation and label assignment stay coupled.
 
-If the current branch already contains `scripts/create-github-issue.sh`, you may use it as a wrapper around the same flow.
-
 Example:
 
 ```bash
@@ -233,7 +231,7 @@ Use this sequence as the default path.
 Recommended no-label sweep command:
 
 ```bash
-gh issue list --state all --json number,title,labels --jq '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
+gh issue list --state all --limit 1000 --json number,title,labels --jq '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
 ```
 
 ## Example Session

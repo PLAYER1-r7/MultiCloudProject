@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: AWS production rollback operator pack execution
 - Priority: medium
-- Predecessor: Issue 40 closed, Issue 42 closed, Issue 69 open, Issue 72 open, Issue 78 open
+- Predecessor: Issue 40 closed, Issue 42 closed, Issue 69 closed, Issue 72 closed, Issue 78 closed
 
 Objective
 - Problem to solve: Issue 78 で single current-issue operator pack の boundary は fixed したが、operator が current issue か current handoff note にそのまま貼れる actual pack draft、manual copy fallback、validation shape、comment-ready usage はまだ execution issue として追跡されていない

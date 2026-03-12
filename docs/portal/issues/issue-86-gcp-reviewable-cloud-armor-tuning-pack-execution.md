@@ -18,7 +18,7 @@ Metadata
 - Target App: portal-web
 - Environment: GCP preview / production-equivalent Cloud Armor tuning pack execution
 - Priority: medium
-- Predecessor: Issue 54 closed, Issue 68 closed, Issue 85 open
+- Predecessor: Issue 54 closed, Issue 68 closed, Issue 85 closed
 
 Objective
 - Problem to solve: Issue 85 で reviewable custom rule tuning pack の boundary は fixed したが、operator が current issue にそのまま残せる actual tuning pack draft、keep-minimum fallback、validation shape、comment-ready usage はまだ execution issue として追跡されていない
