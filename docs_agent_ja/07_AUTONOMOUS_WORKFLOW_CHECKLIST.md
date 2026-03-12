@@ -110,6 +110,8 @@
 - [ ] Copilot の再レビュー依頼は、新しい fix commit と PR コメントの両方が publish された後に行った
 - [ ] follow-up docs PR が未 merge の実装 PR に依存する場合は stacked PR を使い、後で `main` に戻す条件を文書化した
 
+## 最終確認ゲート（Final Gate）
+
 - [ ] テスト結果を記録した
 - [ ] DoD の必須ゲートを満たした
 - [ ] Issue close または引き継ぎの流れに、無関係な未コミット変更を混ぜていない

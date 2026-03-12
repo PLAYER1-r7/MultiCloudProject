@@ -110,6 +110,8 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] A fresh Copilot review was requested only after the new fix commit and PR comment were both published.
 - [ ] If a follow-up docs PR depends on an unmerged implementation PR, a stacked PR was used and the future retarget condition was documented.
 
+## Finalization
+
 - [ ] Tests recorded.
 - [ ] DoD mandatory gates passed.
 - [ ] Unrelated uncommitted changes are not being mixed into the issue close or handoff flow.
