@@ -32,9 +32,9 @@ GCP architecture baseline を実務で使える粒度に整理し、preview stat
 - 制限パス: infra/**, apps/portal-web/**, .github/workflows/*.yml, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP preview static delivery の request path と resource topology が文書から一意に読める
-- [ ] 条件 2: Cloud Storage、load balancer、Cloud CDN、Cloud Armor、certificate の責務分離が明示されている
-- [ ] 条件 3: IaC backend、workflow、DNS operator step など本 issue 非対象が architecture baseline から切り分けられている
+- [x] 条件 1: GCP preview static delivery の request path と resource topology が文書から一意に読める
+- [x] 条件 2: Cloud Storage、load balancer、Cloud CDN、Cloud Armor、certificate の責務分離が明示されている
+- [x] 条件 3: IaC backend、workflow、DNS operator step など本 issue 非対象が architecture baseline から切り分けられている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-48-gcp-architecture-baseline.md
@@ -196,11 +196,15 @@ User
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
+- GitHub Issue: #48
+- GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/48
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record は未作成だったため、このファイルを GCP architecture baseline の initial draft として追加した
 - preview request path と service decision は Resolution へ統合し、architecture baseline は 1 案に固定した
-- implementation work は未実施であり、次段は IaC topology、deploy workflow、DNS operator memo への分割である
+- follow-up issue として Issue 49 から Issue 56 まで起票・整理済みであり、Issue 52 / 53 の implementation と validation も完了している
 - GitHub Issue #48 は local issue record の最新版へ再同期済みである
 
 ## Dependencies

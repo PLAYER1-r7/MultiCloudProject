@@ -32,9 +32,9 @@ GCP baseline design の議論を始めるためのたたき台を作り、target
 - 制限パス: apps/portal-web/**, infra/**, .github/workflows/*.yml, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP 対応で最初に固定したい architecture / delivery / operations の論点が文書から一意に読める
-- [ ] 条件 2: AWS-first baseline と衝突しない scope boundary と非対象が明示されている
-- [ ] 条件 3: 次に起こすべき実装系 follow-up issue を切り出せる粒度で open questions と暫定方向が整理されている
+- [x] 条件 1: GCP 対応で最初に固定したい architecture / delivery / operations の論点が文書から一意に読める
+- [x] 条件 2: AWS-first baseline と衝突しない scope boundary と非対象が明示されている
+- [x] 条件 3: 次に起こすべき実装系 follow-up issue を切り出せる粒度で open questions と暫定方向が整理されている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-47-gcp-baseline-design.md
@@ -280,14 +280,18 @@ Issue 47 の判断結果は次の通りとする。
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
+- GitHub Issue: #47
+- GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/47
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record として GCP baseline design の議論たたき台を作成した
 - preview domain の第一候補は `preview.gcp.ashnova.jp` とした
 - GCP の第一候補 architecture は `Cloud Storage + global external HTTPS load balancer + Cloud CDN + Cloud Armor + Google-managed certificate` とした
 - open questions は Resolution へ統合し、GCP first-step scope と provisional direction は固定した
-- follow-up chain は Issue 48 から Issue 56 まで起票済みであり、Issue 54 から Issue 56 の Resolution も固定済みである
-- implementation work は未実施であり、次段は implementation order の決定と Issue 52 / 53 実装着手である
+- follow-up chain は Issue 48 から Issue 56 まで起票済みであり、Issue 48 から Issue 56 までの Resolution は固定済みである
+- follow-up chain のうち Issue 52 / 53 の implementation と validation は完了して CLOSED であり、本 issue は GCP preview planning chain の上位基準として参照する状態である
 - GitHub Issue #47 は local issue record の最新版へ再同期済みである
 
 ## Dependencies

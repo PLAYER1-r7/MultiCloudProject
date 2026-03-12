@@ -32,9 +32,9 @@ GCP preview path の IaC topology と state backend judgment の論点を small-
 - 制限パス: infra/**, .github/workflows/*.yml, apps/portal-web/**, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP preview path を OpenTofu で表現する責務単位と environment isolation の論点が文書から一意に読める
-- [ ] 条件 2: state backend の候補と判断軸が AWS 現行方針との関係を含めて整理されている
-- [ ] 条件 3: deploy workflow、DNS operator step、resource execution など本 issue 非対象が IaC planning から切り分けられている
+- [x] 条件 1: GCP preview path を OpenTofu で表現する責務単位と environment isolation の論点が文書から一意に読める
+- [x] 条件 2: state backend の候補と判断軸が AWS 現行方針との関係を含めて整理されている
+- [x] 条件 3: deploy workflow、DNS operator step、resource execution など本 issue 非対象が IaC planning から切り分けられている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-49-gcp-iac-topology-and-state-backend-judgment.md
@@ -228,12 +228,16 @@ Issue 49 の判断結果は次の通りとする。
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
+- GitHub Issue: #49
+- GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/49
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record は未作成だったため、このファイルを GCP IaC topology と state backend judgment の initial draft として追加する
 - architecture baseline は Issue 48 を前提にし、IaC planning の論点だけを分離する
 - open questions は Resolution へ統合し、module boundary、environment entrypoint、backend 方針、output contract は固定した
-- 実装作業は未実施であり、次段は deploy workflow issue か resource execution issue への分割である
+- follow-up issue として deploy workflow、DNS/operator、security、monitoring、rollback、execution issue まで整備済みであり、Issue 52 / 53 の implementation と validation も完了している
 - GitHub Issue #49 は local issue record の最新版へ再同期済みである
 
 ## Dependencies

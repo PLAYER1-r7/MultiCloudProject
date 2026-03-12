@@ -32,9 +32,9 @@ GCP preview rollback and recovery memo の議論たたき台を作り、preview 
 - 制限パス: apps/portal-web/**, infra/**, .github/workflows/*.yml, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP preview rollback unit と restore sequence が文書から一意に読める
-- [ ] 条件 2: artifact rollback、resource correction、DNS/operator rollback boundary の責務分離が整理されている
-- [ ] 条件 3: automatic rollback や production recovery depth を混ぜず、preview recovery memo に限定できている
+- [x] 条件 1: GCP preview rollback unit と restore sequence が文書から一意に読める
+- [x] 条件 2: artifact rollback、resource correction、DNS/operator rollback boundary の責務分離が整理されている
+- [x] 条件 3: automatic rollback や production recovery depth を混ぜず、preview recovery memo に限定できている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-56-gcp-preview-rollback-and-recovery-memo.md
@@ -191,14 +191,15 @@ Issue 56 の判断結果は次の通りとする。
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
 - GitHub Issue: #56
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/56
-- Sync Status: local resolution updated and GitHub issue body resynced
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record として GCP preview rollback and recovery memo の議論たたき台を追加した
 - rollback unit、restore sequence、post-recovery verification、safe stop 条件を Resolution として固定した
-- implementation work は未実施であり、次段は workflow / resource execution 実装と monitoring path との接続である
+- Issue 52 / 53 の implementation と validation により、artifact / resource evidence と monitoring path を recovery 起点へ接続する前提は live state で確認済みである
 
 ## Dependencies
 

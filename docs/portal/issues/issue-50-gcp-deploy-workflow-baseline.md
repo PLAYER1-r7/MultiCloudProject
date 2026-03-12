@@ -32,9 +32,9 @@ GCP preview deploy workflow baseline の議論たたき台を作り、artifact r
 - 制限パス: .github/workflows/*.yml, infra/**, apps/portal-web/**, closed issue records except explicit evidence references
 
 受け入れ条件
-- [ ] 条件 1: GCP preview deploy workflow の責務分離と trigger 候補が文書から一意に読める
-- [ ] 条件 2: build artifact reuse と deploy evidence / verification evidence の流れが整理されている
-- [ ] 条件 3: secrets 実登録、resource execution、DNS operator step など本 issue 非対象が workflow planning から切り分けられている
+- [x] 条件 1: GCP preview deploy workflow の責務分離と trigger 候補が文書から一意に読める
+- [x] 条件 2: build artifact reuse と deploy evidence / verification evidence の流れが整理されている
+- [x] 条件 3: secrets 実登録、resource execution、DNS operator step など本 issue 非対象が workflow planning から切り分けられている
 
 実装計画
 - 変更見込みファイル: docs/portal/issues/issue-50-gcp-deploy-workflow-baseline.md
@@ -203,12 +203,16 @@ Issue 50 の判断結果は次の通りとする。
 
 ## Current Status
 
-- RESOLUTION FIXED
+- ISSUE CLOSED
+- GitHub Issue: #50
+- GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/50
+- Sync Status: local close note updated and GitHub issue body resynced before closing
+- Close Status: GitHub issue closed; local record retained as final reference
 
 - local issue record は未作成だったため、このファイルを GCP deploy workflow baseline の initial draft として追加する
 - workflow planning の論点は IaC / architecture / DNS operator work から分離して扱う
 - open questions は Resolution へ統合し、artifact reuse、trigger、evidence、operator handoff の方針は固定した
-- 実装作業は未実施であり、次段は workflow execution issue か DNS operator memo issue への分割である
+- follow-up issue として workflow execution と DNS/operator memo は整備済みであり、Issue 52 の implementation と positive-path validation も完了している
 - GitHub Issue #50 は local issue record の最新版へ再同期済みである
 
 ## Dependencies
