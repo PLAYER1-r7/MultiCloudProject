@@ -101,7 +101,11 @@ if [[ ! -s "$body_file" ]]; then
   exit 1
 fi
 
-gh auth status >/dev/null
+if ! auth_status_output="$(gh auth status 2>&1)"; then
+  printf '%s\n' "$auth_status_output" >&2
+  echo "GitHub CLI is not authenticated. Please run 'gh auth login' and try again." >&2
+  exit 1
+fi
 
 if [[ -z "$repo" ]]; then
   repo="$(resolve_repo)"
@@ -134,5 +138,5 @@ if [[ "$label_count" -eq 0 ]]; then
   exit 1
 fi
 
-echo "Created issue: $issue_url"
+echo "Created issue: $issue_url" >&2
 "${view_cmd[@]}" --jq '[.number, .title, (.labels | map(.name) | join(","))] | @tsv'
