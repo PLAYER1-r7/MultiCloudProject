@@ -27,4 +27,16 @@ locals {
     },
     var.common_labels
   )
+
+  monitoring_uptime_checks = {
+    for path in var.monitoring_uptime_paths :
+    (path == "/" ? "root" : replace(trim(path, "/"), "/", "-")) => path
+  }
+
+  required_2xx_monitoring_paths = toset([
+    "/",
+    "/overview",
+    "/guidance",
+    "/status"
+  ])
 }

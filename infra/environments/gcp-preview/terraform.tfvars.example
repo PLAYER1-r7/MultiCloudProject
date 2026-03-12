@@ -1,8 +1,12 @@
 project_id                               = "your-gcp-project-id"
 google_region                            = "asia-northeast1"
 preview_hostname                         = "preview.gcp.ashnova.jp"
+additional_hostnames                     = ["www.gcp.ashnova.jp"]
 resource_name_suffix                     = "preview"
 selected_environment_entrypoint_reference = "infra/environments/gcp-preview"
+monitoring_enabled                        = true
+monitoring_uptime_paths                   = ["/", "/overview", "/guidance", "/status"]
+monitoring_notification_email             = ""
 
 common_labels = {
   owner = "repository-owner"

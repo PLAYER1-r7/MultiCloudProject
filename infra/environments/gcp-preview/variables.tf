@@ -57,6 +57,12 @@ variable "preview_hostname" {
   default     = "preview.gcp.ashnova.jp"
 }
 
+variable "additional_hostnames" {
+  description = "Optional additional hostnames served by the same delivery surface."
+  type        = list(string)
+  default     = []
+}
+
 variable "selected_environment_entrypoint_reference" {
   description = "Reviewed environment entrypoint reference exposed to workflows and operators."
   type        = string
@@ -67,4 +73,34 @@ variable "common_labels" {
   description = "Additional labels for preview resources."
   type        = map(string)
   default     = {}
+}
+
+variable "monitoring_enabled" {
+  description = "Whether Cloud Monitoring uptime checks and alert policies are created for the GCP preview path."
+  type        = bool
+  default     = true
+}
+
+variable "monitoring_uptime_paths" {
+  description = "Preview paths monitored as first-response reachability checks."
+  type        = list(string)
+  default     = ["/", "/overview", "/guidance", "/status"]
+}
+
+variable "monitoring_uptime_period" {
+  description = "Cloud Monitoring uptime-check cadence for the preview path."
+  type        = string
+  default     = "300s"
+}
+
+variable "monitoring_uptime_timeout" {
+  description = "Cloud Monitoring uptime-check timeout for the preview path."
+  type        = string
+  default     = "10s"
+}
+
+variable "monitoring_notification_email" {
+  description = "Optional owner-bound email destination for preview alert notifications. Leave empty to keep the deploy evidence path as the only approved alert route."
+  type        = string
+  default     = ""
 }

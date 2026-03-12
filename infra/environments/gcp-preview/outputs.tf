@@ -47,3 +47,26 @@ output "security_policy_name" {
   description = "Cloud Armor policy name used by the preview backend bucket."
   value       = module.portal_gcp_static_delivery.security_policy_name
 }
+
+output "monitoring_uptime_check_ids" {
+  description = "Cloud Monitoring uptime-check IDs keyed by preview path alias."
+  value = {
+    for key, check in google_monitoring_uptime_check_config.preview_route :
+    key => check.uptime_check_id
+  }
+}
+
+output "monitoring_alert_policy_names" {
+  description = "Cloud Monitoring alert policy names keyed by preview path alias."
+  value = {
+    for key, policy in google_monitoring_alert_policy.preview_route_failure :
+    key => policy.name
+  }
+}
+
+output "monitoring_notification_channel_names" {
+  description = "Optional Cloud Monitoring notification channel names for the preview path."
+  value = [
+    for channel in google_monitoring_notification_channel.preview_owner_email : channel.name
+  ]
+}
