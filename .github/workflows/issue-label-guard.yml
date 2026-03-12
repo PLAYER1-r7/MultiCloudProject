@@ -83,6 +83,7 @@ jobs:
               '- verify labels immediately after `gh issue create`',
               '',
               'Helpful commands:',
+              `- \`scripts/create-github-issue.sh --repo ${repoName} --title "..." --body-file path/to/issue.md --label planning --label portal\``,
               `- \`gh issue view ${issue.number} --repo ${repoName} --json number,title,labels\``,
               `- \`gh issue edit ${issue.number} --repo ${repoName} --add-label "planning" --add-label "portal"\``,
               '',
