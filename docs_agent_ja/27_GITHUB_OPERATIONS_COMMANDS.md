@@ -57,7 +57,7 @@ gh issue edit <N> --remove-label "documentation"
 - タグは Issue 作成後の任意 cleanup ではなく、作成手順の一部として扱う
 - Issue を作成したら、次の Issue に移る前にタグを確認する
 - タグなしで作成された場合は、未ラベル debt として残さずその場で修正する
-- 現在の branch に `scripts/create-github-issue.sh` が入っている場合は、Issue 作成とタグ確認を 1 コマンドにまとめるために使ってよい。未導入の branch では `gh issue create` を使い、作成直後にタグ確認を行う
+- Issue 作成時は `gh issue create` を使い、作成直後にタグ確認を行う
 
 ```bash
 gh issue view <N> --json number,title,labels

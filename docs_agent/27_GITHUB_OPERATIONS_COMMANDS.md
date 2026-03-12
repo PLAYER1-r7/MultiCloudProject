@@ -57,7 +57,7 @@ gh issue edit <N> --remove-label "documentation"
 - Treat labels as part of Issue creation, not optional cleanup.
 - After creating an Issue, verify its labels before moving to the next Issue.
 - If an Issue is created without labels, correct it immediately instead of carrying unlabeled debt forward.
-- If the current branch already contains `scripts/create-github-issue.sh`, you may use it to couple issue creation and label verification in one command. Otherwise, use `gh issue create` and verify labels immediately after creation.
+- Use `gh issue create` and verify labels immediately after creation so that issue creation and label verification remain coupled.
 
 ```bash
 gh issue view <N> --json number,title,labels

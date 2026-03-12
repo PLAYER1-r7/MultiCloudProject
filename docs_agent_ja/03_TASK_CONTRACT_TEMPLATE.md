@@ -8,7 +8,7 @@
 - 各プレースホルダは同じ行で置き換え、本当に不要な行だけ削除する
 - 受け入れ条件と検証コマンドは、別のエージェントが再解釈なしで引き継げる粒度まで具体化する
 - browser-facing な portal copy や他の公開向け文面を変更する作業では、scope が `local-only` なのか live reflection を含むのかを明記する
-- 作業が follow-up issue chain を新規作成または継続する可能性がある場合は、次の Issue を作る前に `terminal condition` を埋める
+- 作業が follow-up issue chain を新規作成または継続する可能性がある場合は、次の Issue を作る前に `Terminal condition` を埋める
 - reviewer と approval owner の境界が関わる場合は、`依頼者`、`期待する価値`、引き継ぎ系のスコープ記述を埋める前に `ROLE_HANDOFF_OWNERSHIP.md` に合わせる
 - 通常の実装だけでなく、レビュー指摘への是正、文書だけの修正、Final Review の取りまとめ作業にもこのテンプレートを使う
 
@@ -41,7 +41,7 @@
 目的
 - 解決する問題:
 - 期待する価値: TBD
-- terminal condition: TBD
+- Terminal condition: TBD
 
 スコープ
 - 含むもの:
@@ -87,7 +87,7 @@
 目的
 - 解決する問題:
 - 期待する価値:
-- terminal condition:
+- Terminal condition:
 
 スコープ
 - 含むもの:
@@ -136,7 +136,7 @@
 目的
 - 解決する問題: exam-solver のフロントエンドと API 作業で callback と timeout のガイダンスが揃っていない
 - 期待する価値: exam-solver-reviewer への引き継ぎと exam-solver-approval-owner への承認依頼を行う前に、deploy-exam-solver-aws.yml 対象の staging 挙動を安全に更新できる
-- terminal condition: callback と timeout の契約文言が 1 つの正本で固定され、この更新のための追加 child issue が不要になった時点で完了とする
+- Terminal condition: callback と timeout の契約文言が 1 つの正本で固定され、この更新のための追加 child issue が不要になった時点で完了とする
 
 スコープ
 - 含むもの: Issue #451 に対する docs_agent の callback と timeout 判断文言、および exam-solver-reviewer 向け引き継ぎメモ

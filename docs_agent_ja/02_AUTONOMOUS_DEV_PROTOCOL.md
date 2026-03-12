@@ -52,7 +52,7 @@ flowchart TD
 - 実装前にタスク契約を作成する。
 - すべての詳細がまだ固まっていない場合でも、契約なしで始めず、未確定項目を `TBD` とした最小着手版の契約を先に書く。
 - スコープ、受け入れ条件、テスト、ロールバックを固定する。
-- 作業が follow-up issue chain を新規作成または継続する可能性がある場合は、次の Issue を作る前にタスク契約へ `terminal condition` を記載する。
+- 作業が follow-up issue chain を新規作成または継続する可能性がある場合は、次の Issue を作る前にタスク契約へ `Terminal condition` を記載する。
 - レビュー指摘への是正、文書だけの修正、Final Review の取りまとめ作業であっても、編集開始前にその作業専用のタスク契約を作成する。
 - Discussion Draft に論点節を置く場合は、`論点`・`判断方向（Discussion 時点の仮）`・`Resolution 確定文言` の 3 列テーブル形式で記述する。既存の英語表記を使う場合は `Question`・`Provisional direction (at draft time)`・`Resolution confirmed wording` を同義の正準名として扱う。人間合意後は 3 列目を候補文言のまま残さず、Resolution 本文と整合する確定文言へ更新する。`Resolution 確定文言` 列は Resolution セクションを書く前に必ず埋める。3 列目が空のままの行、または candidate wording のまま凍結されている行がある場合は Resolution を書いてはならない。
 
