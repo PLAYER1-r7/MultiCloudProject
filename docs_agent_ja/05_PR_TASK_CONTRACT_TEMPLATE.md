@@ -11,6 +11,7 @@
 - `What Changed` では、実装変更、検証追加、Issue またはドキュメント同期を曖昧な 1 文に潰さず区別して書く
 - タスクが Issue chain を close した、または提案中の child issue を見送った場合は、共有 Execution Record と一致するよう、その stop-condition の根拠を `Closure rationale` に引き継ぐ
 - reviewer や approval owner の動きが入る記入例では、PR 文書内で責務を再定義せず `ROLE_HANDOFF_OWNERSHIP.md` の境界に合わせる
+- PR が未 merge branch に積み上がる stacked PR の場合は、一時的な base branch と retarget 条件を `レビュアーメモ` または `Closure rationale` に記載する
 
 ## コピー用テンプレート
 

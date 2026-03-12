@@ -11,6 +11,7 @@ Use this template when packaging implementation into a PR or handoff review unit
 - In `What Changed`, separate implementation changes, validation additions, and issue or document synchronization instead of collapsing them into one vague bullet.
 - If the task closed an issue chain or refused a proposed child issue, carry the stop-condition basis into `Closure rationale` so the PR package matches the shared execution record.
 - If the example includes reviewer or approval-owner actions, keep their boundary aligned with `ROLE_HANDOFF_OWNERSHIP.md` instead of redefining it in the PR note.
+- If the PR is stacked on top of another unmerged branch, note the temporary base branch and retarget condition in `Reviewer Notes` or `Closure rationale`.
 
 ## Copy-Ready Template
 

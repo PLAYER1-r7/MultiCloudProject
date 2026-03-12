@@ -63,6 +63,24 @@ Use AI assistance for PR preparation and execution when the work is primarily ab
 - Expected PR output remains `Summary`, `What Changed`, and `Validation`.
 - Non-goals: auto-merging without human approval, inventing validation that was not run, broadening PR scope without explicit approval, and replacing human judgment on release or operational risk.
 
+## PR Review Remediation Loop
+
+Use a fixed review-remediation loop when the agent is responding to PR comments.
+
+- Re-fetch the latest PR reviews and inline review comments before each remediation pass; do not assume an earlier no-new-comments review is still current if a later review exists.
+- If the current workspace branch is serving other work, prefer an isolated worktree in a temporary directory, for example under `/tmp/` on Linux, for PR review remediation so fixes can be committed and pushed without mixing in unrelated changes.
+- After each remediation pass, rerun the relevant validation, push the fixes first, and then add a PR comment that lists what was addressed and which checks were rerun.
+- Request a fresh Copilot review only after the fix commit is published and the validation summary comment is posted.
+- If the PR also changes issue records or status-tracking docs, re-check predecessor wording, meaning the text that identifies prior or dependent issues, PRs, or status entries, plus closed/open labels and status summaries against the current GitHub state before requesting re-review.
+
+## Stacked PR Rule
+
+When a docs-only or follow-up PR depends on unmerged changes from another branch, prefer a stacked PR over forcing a mixed or misleading diff against `main`.
+
+- Keep the stacked PR base on the parent branch until the parent PR merges.
+- Record the retarget condition in the PR notes, including when the base should be switched back to `main`.
+- Do not present the stacked PR as independent from `main` if the effective diff still depends on unmerged parent-branch file history.
+
 ## Quick Verification
 
 ```bash
