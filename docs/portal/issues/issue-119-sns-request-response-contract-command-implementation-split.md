@@ -167,12 +167,19 @@ Order meaning:
 - CI workflow integration
 - integration suite implementation
 
+## Resolution
+
+- Added the request-response contract validator entry on the existing Node CLI path in [apps/portal-web/src/main.ts](apps/portal-web/src/main.ts) and kept the command surface fixed as `--validate-sns-request-response-contract`
+- Added the dedicated validator/report module in [apps/portal-web/src/snsRequestResponseContract.ts](apps/portal-web/src/snsRequestResponseContract.ts) and shared support in [apps/portal-web/src/snsContractShared.ts](apps/portal-web/src/snsContractShared.ts)
+- Added package wiring in [apps/portal-web/package.json](apps/portal-web/package.json) as `test:sns-request-response-contract`
+- Validation result: `node --experimental-strip-types ./src/main.ts --validate-sns-request-response-contract` returned passed for request shape compatibility, invalid payload rejection, and timeline read response mapping
+
 ## Current Status
 
-- OPEN
+- CLOSED
 - GitHub Issue: #119
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/119
-- Sync Status: synced to GitHub as open issue
+- Sync Status: local body updated for closure sync
 
 ## Dependencies
 

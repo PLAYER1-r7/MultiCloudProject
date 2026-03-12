@@ -164,12 +164,19 @@ Order meaning:
 - CI workflow integration
 - integration suite implementation
 
+## Resolution
+
+- Added the auth-error contract validator entry on the existing Node CLI path in [apps/portal-web/src/main.ts](apps/portal-web/src/main.ts) and kept the command surface fixed as `--validate-sns-auth-error-contract`
+- Added the dedicated validator/report module in [apps/portal-web/src/snsAuthErrorContract.ts](apps/portal-web/src/snsAuthErrorContract.ts) and reused shared support in [apps/portal-web/src/snsContractShared.ts](apps/portal-web/src/snsContractShared.ts)
+- Added package wiring in [apps/portal-web/package.json](apps/portal-web/package.json) as `test:sns-auth-error-contract`
+- Validation result: `node --experimental-strip-types ./src/main.ts --validate-sns-auth-error-contract` returned passed for guest/member/operator permission mapping and write failure error visibility
+
 ## Current Status
 
-- OPEN
+- CLOSED
 - GitHub Issue: #120
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/120
-- Sync Status: synced to GitHub as open issue
+- Sync Status: local body updated for closure sync
 
 ## Dependencies
 
