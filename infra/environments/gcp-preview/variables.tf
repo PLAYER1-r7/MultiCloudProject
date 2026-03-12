@@ -85,6 +85,22 @@ variable "monitoring_uptime_paths" {
   description = "Preview paths monitored as first-response reachability checks."
   type        = list(string)
   default     = ["/", "/overview", "/guidance", "/status"]
+
+  validation {
+    condition = (
+      length(var.monitoring_uptime_paths) == length(distinct(var.monitoring_uptime_paths)) &&
+      alltrue([for path in var.monitoring_uptime_paths : startswith(path, "/")]) &&
+      length([
+        for path in var.monitoring_uptime_paths :
+        (path == "/" ? "root" : replace(trim(path, "/"), "/", "-"))
+        ]) == length(distinct([
+          for path in var.monitoring_uptime_paths :
+          (path == "/" ? "root" : replace(trim(path, "/"), "/", "-"))
+      ]))
+    )
+
+    error_message = "monitoring_uptime_paths must be unique, each path must start with '/', and normalized path aliases must not collide."
+  }
 }
 
 variable "monitoring_uptime_period" {

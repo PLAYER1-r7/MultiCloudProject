@@ -1,5 +1,5 @@
 locals {
-  all_hostnames = distinct(concat([var.preview_hostname], var.additional_hostnames))
+  all_hostnames = sort(distinct(concat([var.preview_hostname], var.additional_hostnames)))
 
   common_labels = merge(
     {
