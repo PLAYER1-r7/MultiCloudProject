@@ -132,11 +132,11 @@ Use `blocked pending state` as the status value when certificate or target readi
 
 ## Preview Recovery Walkthrough Execution Aid
 
-- Use [infra/environments/gcp-preview/recovery-walkthrough-template.md](infra/environments/gcp-preview/recovery-walkthrough-template.md) to record the minimum operator-reviewed walkthrough before `2026-03-31`
+- Use [recovery-walkthrough-template.md](./recovery-walkthrough-template.md) to record the minimum operator-reviewed walkthrough before `2026-03-31`
 - Start from the latest reviewed `portal-gcp-preview-deploy` run URL and keep the step summary, deployment record artifact, `resource_execution_reference`, monitoring state, reviewed target reference, and certificate-related reference on the same review path
 - Select one of the approved trigger classes first: artifact-path failure, resource-path failure, DNS/operator-path failure, or blocked pending state safe-stop
 - Record any additional follow-up separately if the walkthrough identifies a real implementation change rather than a runbook or evidence-path gap
 
 ## tfvars Example
 
-See [infra/environments/gcp-preview/terraform.tfvars.example](infra/environments/gcp-preview/terraform.tfvars.example) for the reviewed input skeleton.
+See [terraform.tfvars.example](./terraform.tfvars.example) for the reviewed input skeleton.

@@ -43,8 +43,9 @@ resource "google_monitoring_uptime_check_config" "preview_route" {
 
     dynamic "accepted_response_status_codes" {
       for_each = contains(local.required_2xx_monitoring_paths, each.value) ? [] : [404]
+      iterator = code
       content {
-        status_value = accepted_response_status_codes.value
+        status_value = code.value
       }
     }
   }
