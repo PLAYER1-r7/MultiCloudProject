@@ -1,10 +1,11 @@
 Document: 08_ESCALATION_AND_HANDOFF
-Scope: Dev Container 起動失敗の調査・修正と、チャット再開用ハンドオフ
+Scope: Dev Container 起動失敗の調査・修正、およびチャット再開用ハンドオフ
 Outcome: Handoff ready
 Actions taken: remoteContainers ログを確認し、.devcontainer/Dockerfile で corepack enable が Node feature より先に実行されていたことを原因特定した; .devcontainer/Dockerfile から corepack enable を削除し、.devcontainer/postCreate.sh で node と npm の確認後に corepack enable を実行するよう変更した; 起動時にホストの .gitconfig が存在せず bind mount で失敗していたため、.devcontainer/devcontainer.json に initializeCommand を追加し、.devcontainer/ensure-host-mounts.sh で .aws、.config/gh、.gitconfig を事前作成するようにした
 Evidence: Dev Containers CLI で build と start が成功した; コンテナ内で node --version が v22.22.1、npm --version が 10.9.4、corepack --version が 0.34.6 を返すことを確認した; 修正対象は .devcontainer/devcontainer.json、.devcontainer/Dockerfile、.devcontainer/postCreate.sh、.devcontainer/ensure-host-mounts.sh
-Risks or blockers: .devcontainer/devcontainer.json の typescript.tsdk 設定には既存の非推奨警告が残っているが、今回の起動失敗とは無関係; リポジトリ内には unrelated な削除差分が多数あるため、この件とは切り分けて扱う必要がある
-Next action: 新しいチャットでこのファイルと .devcontainer/devcontainer.json を開き、このハンドオフを読んだうえで続行する; reviewer 観点では Dev Container の再起動と Rebuild and Reopen in Container の再確認、approval owner 観点では不要
+Risks or blockers: .devcontainer/devcontainer.json の typescript.tsdk 設定には既存の非推奨警告が残っているが、今回の起動失敗や DNS 検証ツール反映とは無関係; リポジトリ内には unrelated な削除差分が多数あるため、この件とは切り分けて扱う必要がある
+Closure rationale: このチェーンについてのクローズ判断は行っていない。この記録は Dev Container 起動修正後の継続作業のためのハンドオフであり、明示的なクローズ判断は行っていない
+Next action: 新しいチャットでこのファイルと .devcontainer/devcontainer.json を開き、このハンドオフを読んだうえで続行する; reviewer 観点では Dev Container の再起動と Rebuild and Reopen in Container 後に node、npm、corepack の確認をやり直す; approval owner 観点では不要
 
 # 再開用メモ
 

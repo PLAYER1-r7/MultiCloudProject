@@ -29,6 +29,7 @@
 - reviewer と approval owner の役割境界: ROLE_HANDOFF_OWNERSHIP.md
 - タイムアウト変更のようなアプリ固有の運用判断: 20_MANUAL_DEPLOY_DECISION_CRITERIA.md
 - GitHub 運用: 25_GITHUB_GOVERNANCE_QUICK_REF.md から 27_GITHUB_OPERATIONS_COMMANDS.md
+  Issue タグの正規化やタグ選定を伴う場合は 27_GITHUB_OPERATIONS_COMMANDS.md を使う
 - 監視/障害対応: 18_INCIDENT_TRIAGE_RUNBOOK.md から 29_ONCALL_MONITORING_ONEPAGE.md
 - 本番判定/テスト判定: 31_PRODUCTION_READINESS_GATE.md, 32_TEST_EXECUTION_GATE.md
 - レビュー雛形: 10_WEEKLY_REVIEW_TEMPLATE.md から 13_ANNUAL_REVIEW_TEMPLATE.md
@@ -40,6 +41,7 @@
 | 自律作業を安全に開始する           | `02_AUTONOMOUS_DEV_PROTOCOL.md`                                                                                        | `03_TASK_CONTRACT_TEMPLATE.md`, `04_DEFINITION_OF_DONE.md`                     |
 | エスカレーションまたは引き継ぎ     | `08_ESCALATION_AND_HANDOFF.md`                                                                                         | `05_PR_TASK_CONTRACT_TEMPLATE.md`                                              |
 | アプリ境界やワークフロー範囲       | `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`                                                                              | `26_GITHUB_ENVIRONMENT_GATES_EXTRACT.md`                                       |
+| GitHub Issue 運用やタグ付与        | `27_GITHUB_OPERATIONS_COMMANDS.md`                                                                                     | `25_GITHUB_GOVERNANCE_QUICK_REF.md`                                            |
 | 認証、シークレット、運用者アクセス | `17_AUTH_REQUEST_PLAYBOOK.md`                                                                                          | `14_CRITICAL_GUARDRAILS_EXTRACT.md`                                            |
 | 障害対応                           | `29_ONCALL_MONITORING_ONEPAGE.md`、`18_INCIDENT_TRIAGE_RUNBOOK.md`、または `28_MONITORING_ALERT_RESPONSE_QUICK_REF.md` | `21_AWS_INCIDENT_PATTERN_PLAYBOOK.md` から `24_CROSS_CLOUD_INCIDENT_MATRIX.md` |
 | 本番投入の可否判断                 | `31_PRODUCTION_READINESS_GATE.md`                                                                                      | `32_TEST_EXECUTION_GATE.md`, `08_ESCALATION_AND_HANDOFF.md`                    |
@@ -61,8 +63,8 @@
 
 ## 現在のリポジトリ到達点
 
-- 2026-03-09 時点で Issue 46 まで完了している。
-- Issue 45 と Issue 46 はローカル issue 記録と GitHub Issue の両方でクローズ済みである。
-- 現在の production governance baseline は、external DNS を source of truth として維持し、current phase では Route 53 へ移行せず、DNS automation は operator-assist only に限定する判断まで固定済みである。
-- 次の候補スコープは GCP baseline design だが、別チャットで新しい task contract から開始する。
-- 次の follow-up に入る前に、まず `08_ESCALATION_AND_HANDOFF.md` の current project handoff record を読み、その後 `docs/portal/issues/` の最新 issue 記録を確認する。
+- このファイルを current project state の正本チェックポイントとして扱わない。
+- 現在の正本チェックポイントは `08_ESCALATION_AND_HANDOFF.md` にあり、そこでは以前の GitHub Issue 45-46 baseline を超えた handoff chain が管理されている。そこに出てくる 80-91 および 92-95 は GitHub Issue 番号であり、各番号に対応するローカル `docs/portal/issues/issue-*.md` が必ず存在することを意味しない。
+- GitHub Issue 45-46 の close 状態は履歴として有効だが、current project checkpoint としてはその後の follow-up chain と handoff record が優先される。
+- production governance baseline は、より新しい handoff record に別記がない限り、external DNS を source of truth とし、current phase での Route 53 非採用と operator-assist only の DNS automation を維持する。
+- 次の follow-up に入る前に、まず `08_ESCALATION_AND_HANDOFF.md` の current project handoff record を読み、その後 `docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md` や `docs/portal/issues/` 配下の実在する正本ファイルを確認する。

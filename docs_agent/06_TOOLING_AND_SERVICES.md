@@ -10,6 +10,7 @@
 - AWS CLI
 - Azure CLI
 - gcloud CLI
+- OpenTofu CLI (`tofu`)
 - Pulumi CLI
 - GitHub CLI (`gh`)
 - Project validation scripts: `./scripts/test-endpoints.sh` and `./scripts/test-e2e.sh`
@@ -23,7 +24,7 @@
 
 ## Reference Priority
 
-1. Pulumi outputs and deployed resource state
+1. IaC tool outputs and deployed resource state
 2. Workflow execution results and runtime logs
 3. Existing scripts and validated runbooks
 4. Narrative documentation
@@ -45,8 +46,8 @@
 
 Use `scripts/create-pr.sh` as a thin wrapper around `gh pr create`.
 
-- Prepare the PR body first using `05_PR_TASK_CONTRACT_TEMPLATE.md` or the Japanese counterpart in `docs_agent_ja/`.
-- Confirm the pre-PR checks in `07_AUTONOMOUS_WORKFLOW_CHECKLIST.md` or the Japanese counterpart in `docs_agent_ja/`.
+- Prepare the PR body first using `05_PR_TASK_CONTRACT_TEMPLATE.md` or `docs_agent_ja/05_PR_TASK_CONTRACT_TEMPLATE.md`.
+- Confirm the pre-PR checks in `07_AUTONOMOUS_WORKFLOW_CHECKLIST.md` or `docs_agent_ja/07_AUTONOMOUS_WORKFLOW_CHECKLIST.md`.
 - Store the final PR body in a temporary file such as `/tmp/pr-body.md`.
 - Run `scripts/create-pr.sh --title "<title>" --body-file /tmp/pr-body.md`.
 - This helper does not generate PR content, run tests, infer issue state, or replace the PR checklist. It only validates required inputs and forwards them to `gh pr create`.
@@ -55,11 +56,11 @@ Use `scripts/create-pr.sh` as a thin wrapper around `gh pr create`.
 
 Use AI assistance for PR preparation and execution when the work is primarily about scoping, summarizing, validating, or submitting already-reviewed changes.
 
-- The agent may inspect diffs, summarize scope, prepare PR titles and bodies, create a branch, stage only intended files, create commits, push the branch, and open the PR, including as a draft.
+- The agent may inspect diffs, summarize scope, prepare PR titles and bodies, create a branch, stage only intended files, create commits, push the branch, and open the PR.
 - The agent may also prepare self-review notes, validation comments, merge-readiness checklists, and follow-up issue candidates.
-- Final scope approval, final submission for merge, merge decisions, review-feedback acceptance, production-risk judgment, and sufficiency of validation evidence remain human-owned decisions and must follow `07_AUTONOMOUS_WORKFLOW_CHECKLIST.md` when AI assistance was used.
-- If scope is clear and no destructive action is required, the agent may proceed autonomously through all preparation steps up to and including opening the PR, but it must not perform final submission or merge actions.
-- If scope is ambiguous, if unrelated changes are mixed in, or if merge safety depends on a judgment call, the agent should stop and ask for human confirmation before proceeding further, including before opening the PR.
+- Final scope approval, merge decisions, review-feedback acceptance, production-risk judgment, and sufficiency of validation evidence remain human-owned decisions.
+- If scope is clear and no destructive action is required, the agent should proceed through PR creation autonomously.
+- If scope is ambiguous, if unrelated changes are mixed in, or if merge safety depends on a judgment call, the agent should stop and ask for confirmation.
 - Expected PR output remains `Summary`, `What Changed`, and `Validation`.
 - Non-goals: auto-merging without human approval, inventing validation that was not run, broadening PR scope without explicit approval, and replacing human judgment on release or operational risk.
 
@@ -68,10 +69,10 @@ Use AI assistance for PR preparation and execution when the work is primarily ab
 Use a fixed review-remediation loop when the agent is responding to PR comments.
 
 - Re-fetch the latest PR reviews and inline review comments before each remediation pass; do not assume an earlier no-new-comments review is still current if a later review exists.
-- If the current workspace branch is serving other work, prefer an isolated worktree in a temporary directory, for example under `/tmp/` on Linux, for PR review remediation so fixes can be committed and pushed without mixing in unrelated changes.
+- If the current workspace branch is serving other work, prefer an isolated worktree under `/tmp/` for PR review remediation so fixes can be committed and pushed without mixing in unrelated changes.
 - After each remediation pass, rerun the relevant validation, push the fixes first, and then add a PR comment that lists what was addressed and which checks were rerun.
 - Request a fresh Copilot review only after the fix commit is published and the validation summary comment is posted.
-- If the PR also changes issue records or status-tracking docs, re-check predecessor wording, meaning the text that identifies prior or dependent issues, PRs, or status entries, plus closed/open labels and status summaries against the current GitHub state before requesting re-review.
+- If the PR also changes issue records or status-tracking docs, re-check predecessor wording, closed/open labels, and status summaries against the current GitHub state before requesting re-review.
 
 ## Stacked PR Rule
 

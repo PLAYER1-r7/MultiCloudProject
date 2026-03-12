@@ -23,6 +23,15 @@
 - 影響対象クラウドの health endpoint を確認済みである
 - プロバイダ別のセキュリティ状態がプロジェクト方針の下限を満たしている
 
+GCP production-equivalent の live execution では、さらに次もすべて満たしていることを必須条件とする。
+
+- reviewed execution package が completed 状態で揃い、reviewer と approval owner の handoff が同一 evidence path を指している
+- dedicated hostname candidate、DNS source-of-truth、operator-managed な authoritative DNS write owner が明示的に記録されている
+- live execution が summary や preparation record に埋め込まれず、separate execution issue として追跡されている
+- rollback branches、evidence retention input、external notification / escalation destination が release-sensitive execution 開始前に固定されている
+- shared Google-managed certificate に含まれる全 hostname が public に名前解決でき、certificate の `domainStatus=ACTIVE` になっている。1 つだけ `ACTIVE` でも、別 hostname が `FAILED_NOT_VISIBLE` などなら不十分とする
+- post-change の monitoring state acknowledgment が同じ evidence path 上に残っており、route-level curl だけでなく uptime check の存在または状態と alert policy の enable 状態まで確認されている
+
 ## セキュリティ確認ポイント
 
 - production CORS は実際にデプロイされた origin で確認する。Azure では Function App CORS と Blob Storage CORS の両方を確認する
@@ -43,6 +52,8 @@ curl -s -I -X OPTIONS \
 - 公開された production 経路で HTTPS redirect と必要なセキュリティヘッダーを確認し、未対応ならクラウド固有ギャップとして明示記録する
 - 影響したプロバイダ経路で監査ログが有効であり、直近のデプロイまたは管理イベントを検索できることを確認する
 - ログ欠落、audit source 無効化、保持方針欠落が見つかった場合は、明示的なリスク受容がない限り NO-GO とする
+- GCP の shared Google-managed certificate では、GO 判断前に served certificate の SAN 集合と provider 側が返す各 hostname の `domainStatus` の両方を確認する
+- GCP production-equivalent execution の close gate または post-change approval では、期待する uptime check が残っていることと、参照する alert policy が enabled のままであることを同じ evidence path に記録する
 
 1つでも落ちたら判断は NO-GO です。
 

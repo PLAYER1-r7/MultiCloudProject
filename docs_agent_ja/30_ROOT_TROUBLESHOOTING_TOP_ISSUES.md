@@ -16,19 +16,21 @@
 
 1. Azure で一部失敗だがランタイムは稼働しているデプロイ
 2. AWS Lambda 更新競合
-3. Pulumi stack path の不一致
+3. `tofu` workspace/state の不一致
 4. GitHub Actions YAML 構文エラー
 5. API 層と storage 層の CORS 設定不整合
+6. hostname 追加後に GCP managed certificate が `PROVISIONING` のまま止まる
 
 ## 症状から最初の安全対応へ
 
-| 症状                                                   | 最初の確認                                          | 安全な緩和策                                                                 |
-| ------------------------------------------------------ | --------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Azure デプロイが一部失敗と表示される                   | まず health endpoint を確認する                     | ランタイムが健全なら成功扱いとし、ヘルスベースで検証を続ける                 |
-| Lambda 更新中に AWS `ResourceConflictException` が出る | 関数がまだ更新中か確認する                          | 関数が `Active` に戻るまで待ち、1 回だけ再試行する                           |
-| Pulumi が stack なしと出す                             | 現在のクラウド用ディレクトリと選択 stack を確認する | 対応する `infrastructure/pulumi/<cloud>` へ移動して stack を再選択する       |
-| GitHub Actions で YAML parse/scanner エラーが出る      | 変更した heredoc や複数行ブロックを特定する         | 壊れやすい heredoc を安全な quoting または単純な echo ベース生成へ置き換える |
-| ブラウザで preflight/CORS エラーが出る                 | API 層と storage 層の両方の CORS を確認する         | 欠けている層を修正し、本番 origin は実ドメインに限定する                     |
+| 症状                                                                                          | 最初の確認                                                                   | 安全な緩和策                                                                                                                                                                       |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Azure デプロイが一部失敗と表示される                                                          | まず health endpoint を確認する                                              | ランタイムが健全なら成功扱いとし、ヘルスベースで検証を続ける                                                                                                                       |
+| Lambda 更新中に AWS `ResourceConflictException` が出る                                        | 関数がまだ更新中か確認する                                                   | 関数が `Active` に戻るまで待ち、1 回だけ再試行する                                                                                                                                 |
+| `tofu` が workspace または state なしと出す                                                   | 対象 environment ディレクトリと state/workspace の選択を確認する             | 対応する `infra/environments/<env>/` へ移動し、その environment 用の `tofu` コマンドをやり直して正しい IaC entrypoint から state を扱う                                            |
+| GitHub Actions で YAML parse/scanner エラーが出る                                             | 変更した heredoc や複数行ブロックを特定する                                  | 壊れやすい heredoc を安全な quoting または単純な echo ベース生成へ置き換える                                                                                                       |
+| ブラウザで preflight/CORS エラーが出る                                                        | API 層と storage 層の両方の CORS を確認する                                  | 欠けている層を修正し、本番 origin は実ドメインに限定する                                                                                                                           |
+| hostname 追加後に GCP managed certificate が `PROVISIONING` のまま、または古い SAN だけを返す | 証明書に含まれる全 hostname の `domainStatus` と public DNS 可視性を確認する | 全 hostname が public に見え、`ACTIVE` になるまで block 扱いにする。固定名 certificate の IaC 置換に失敗した場合は、一意な certificate 名と `create_before_destroy` で rotate する |
 
 ## ルール
 
@@ -41,6 +43,8 @@
 3. 本番承認を必要としない対処。
 
 この優先順を適用しても明確な候補が決まらない場合は、推測せずにエスカレーションします。
+
+GCP の hostname expansion では、1 つの hostname だけが `ACTIVE` でも十分とはみなさないでください。shared Google-managed certificate は、含まれる全 hostname が public に見え、`ACTIVE` になるまで完了しません。
 
 ## 実行記録
 

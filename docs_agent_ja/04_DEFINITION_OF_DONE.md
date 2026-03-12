@@ -14,6 +14,8 @@
 - [ ] リスクとトレードオフが明示されている。`03_TASK_CONTRACT_TEMPLATE.md` の Risk and Rollback セクションに記録する
 - [ ] レビュアー向けの確認ポイントがある。`05_PR_TASK_CONTRACT_TEMPLATE.md` の Reviewer Notes 形式に従う
 - [ ] 必要な後続作業が記録されている。`08_ESCALATION_AND_HANDOFF.md` の正規 Execution Record にある `Next action` に記録する
+- [ ] タスクが Issue chain を close した、または提案中の child issue を見送った場合は、その stop-condition の根拠を `08_ESCALATION_AND_HANDOFF.md` の正規 Execution Record にある `Closure rationale` へ記録している
+- [ ] browser-facing な portal copy や他の公開向け文面を変更した場合は、live reflection を確認した、または deploy-ready/local-only 作業であることと未反映理由・引き継ぎ先を明記している
 - [ ] Issue close を確認した。人間の close 承認（承認形式と承認根拠の引用または参照を Process Review Notes に記録済み）を取得した上で `gh issue close <N>` を実行し、`gh issue view <N> --json state` で closed 状態を確認した。このステップが完了するまで次の受領（Intake）を開始しない
 
 ## ロールバック記載の最低要件

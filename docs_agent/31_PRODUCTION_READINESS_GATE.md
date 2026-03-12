@@ -23,6 +23,15 @@
 - Target health endpoints were verified on the affected cloud paths
 - Provider security posture matches the project policy baseline
 
+For GCP production-equivalent live execution, also require all of the following before GO:
+
+- The reviewed execution package is completed and points to one evidence path for reviewer and approval owner handoff
+- A dedicated hostname candidate, DNS source-of-truth, and operator-managed authoritative DNS write owner are explicitly recorded
+- The live execution is tracked in a separate execution issue rather than being embedded in a summary or preparation record
+- Rollback branches, evidence-retention inputs, and external notification or escalation destinations are fixed before release-sensitive execution starts
+- Every hostname included on the shared Google-managed certificate is publicly resolvable and has certificate `domainStatus=ACTIVE`; one active hostname is not sufficient if another remains `FAILED_NOT_VISIBLE` or equivalent
+- Post-change monitoring state is acknowledged on the same evidence path, including uptime-check presence or status and alert-policy enablement, rather than relying only on route-level curls
+
 ## Security Verification Points
 
 - Verify production CORS with the actual deployed origins. For Azure, confirm both Function App CORS and Blob Storage CORS.
@@ -43,6 +52,8 @@ curl -s -I -X OPTIONS \
 - Verify HTTPS redirect and required security headers on the exposed production path, or record the cloud-specific gap explicitly before release.
 - Verify audit logging is active on the affected provider path and that recent deployment or admin events are queryable.
 - If a logging gap, disabled audit source, or missing retention policy is discovered, treat the release as NO-GO until the risk is accepted explicitly.
+- For GCP shared Google-managed certificates, verify both the served certificate SAN set and the provider-reported `domainStatus` for every included hostname before declaring GO.
+- For close-gate or post-change approval on GCP production-equivalent execution, record monitoring acknowledgment on the same evidence path by confirming the expected uptime checks still exist and the referenced alert policies remain enabled.
 
 If any mandatory item fails, the decision is NO-GO.
 

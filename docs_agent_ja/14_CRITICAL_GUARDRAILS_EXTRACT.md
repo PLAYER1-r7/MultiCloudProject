@@ -20,6 +20,15 @@
 - Pulumi outputs を設定の正本とする
 - デプロイ成果物は amd64 互換を前提に確認する
 
+## Issue 分解ガードレール
+
+- 新しい Issue は、次のいずれかを少なくとも 1 つ追加する場合に限って作成する: 新しい証拠採取、新しい固定判断、新しい実行境界
+- packaging-only issue を作成しない。提案中の child issue が既存スコープの言い換え、再包装、再記述に留まるなら、作業は現行 Issue に残す
+- 最初の child issue を作る前に、親 Issue に terminal condition を記載する
+- 単一の planning または execution chain は、人間が明示的に長鎖化を承認しない限り 4 Issue 以内に保つ
+- 連続する 2 件の Issue で、新しい証拠、新しい固定判断、新しい実行境界のいずれも増えない場合は、分解を停止し、その chain を close すべきか見直す
+- 同じ chain の 4 件目に当たる child issue を提案する場合は、それが本当に別 Issue なのか、close または現 Issue 内解決で足りるのかについて、明示的な人間確認を取得する
+
 ## セキュリティデプロイ ガードレール
 
 - デプロイまたは管理に使う GitHub と各クラウドアカウントでは MFA を必須とする

@@ -31,6 +31,7 @@
 - 本番影響が未管理
 - ロールバックが不明
 - 境界違反がある
+- release-sensitive な GCP production-equivalent 変更で、reviewed execution package、approval owner handoff、separate live execution issue のいずれかが欠けている
 
 ## アプリ固有ランタイム判断ルール
 

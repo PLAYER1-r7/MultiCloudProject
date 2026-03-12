@@ -30,6 +30,7 @@ Use these documents as needed after the core reading set:
 - Reviewer and approval owner role boundaries: `ROLE_HANDOFF_OWNERSHIP.md`
 - App-specific operational decisions such as runtime timeout changes: `20_MANUAL_DEPLOY_DECISION_CRITERIA.md`
 - GitHub operations: `25_GITHUB_GOVERNANCE_QUICK_REF.md` to `27_GITHUB_OPERATIONS_COMMANDS.md`
+  Use `27_GITHUB_OPERATIONS_COMMANDS.md` when the task includes Issue label normalization or label selection.
 - Incident and monitoring response: `18_INCIDENT_TRIAGE_RUNBOOK.md` to `29_ONCALL_MONITORING_ONEPAGE.md`
 - Release and test decisions: `31_PRODUCTION_READINESS_GATE.md`, `32_TEST_EXECUTION_GATE.md`
 - Review templates: `10_WEEKLY_REVIEW_TEMPLATE.md` to `13_ANNUAL_REVIEW_TEMPLATE.md`
@@ -41,6 +42,7 @@ Use these documents as needed after the core reading set:
 | Starting autonomous work safely   | `02_AUTONOMOUS_DEV_PROTOCOL.md`                                                                                    | `03_TASK_CONTRACT_TEMPLATE.md`, `04_DEFINITION_OF_DONE.md`                   |
 | Escalation or handoff             | `08_ESCALATION_AND_HANDOFF.md`                                                                                     | `05_PR_TASK_CONTRACT_TEMPLATE.md`                                            |
 | App boundaries or workflow scope  | `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`                                                                          | `26_GITHUB_ENVIRONMENT_GATES_EXTRACT.md`                                     |
+| GitHub Issue operations or labels | `27_GITHUB_OPERATIONS_COMMANDS.md`                                                                                 | `25_GITHUB_GOVERNANCE_QUICK_REF.md`                                          |
 | Auth, secrets, or operator access | `17_AUTH_REQUEST_PLAYBOOK.md`                                                                                      | `14_CRITICAL_GUARDRAILS_EXTRACT.md`                                          |
 | Incident response                 | `29_ONCALL_MONITORING_ONEPAGE.md`, `18_INCIDENT_TRIAGE_RUNBOOK.md`, or `28_MONITORING_ALERT_RESPONSE_QUICK_REF.md` | `21_AWS_INCIDENT_PATTERN_PLAYBOOK.md` to `24_CROSS_CLOUD_INCIDENT_MATRIX.md` |
 | Production release judgment       | `31_PRODUCTION_READINESS_GATE.md`                                                                                  | `32_TEST_EXECUTION_GATE.md`, `08_ESCALATION_AND_HANDOFF.md`                  |
@@ -61,8 +63,8 @@ Use this incident entry rule when choosing the first document:
 
 ## Current Repository Checkpoint
 
-- Completed through Issue 46 as of 2026-03-09.
-- Issues 45 and 46 are closed and synchronized to local issue records plus GitHub Issues.
-- Current production governance baseline is fixed around external DNS source of truth, Route 53 non-adoption in the current phase, and operator-assist-only DNS automation.
-- The next candidate scope is GCP baseline design, but it should start in a separate chat with a new task contract.
-- Before starting the next follow-up, read `08_ESCALATION_AND_HANDOFF.md` for the current project handoff record and then inspect the latest issue records under `docs/portal/issues/`.
+- Do not treat this file as the authoritative current project state checkpoint.
+- The current authoritative checkpoint lives in `08_ESCALATION_AND_HANDOFF.md`, which now tracks the active handoff chain beyond the earlier GitHub Issues 45-46 baseline. The later 80-91 and 92-95 ranges referenced there are GitHub Issue ranges, not a promise that matching local `docs/portal/issues/issue-*.md` files exist for every number.
+- The historical GitHub Issues 45-46 close state remains part of the repository history, but newer follow-up chains and handoff records supersede it as the current project checkpoint.
+- Current production governance baseline remains fixed around external DNS source of truth, Route 53 non-adoption in the current phase, and operator-assist-only DNS automation unless a newer handoff record says otherwise.
+- Before starting the next follow-up, read `08_ESCALATION_AND_HANDOFF.md` for the current project handoff record and then inspect the current canonical repo artifacts that actually exist, such as `docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md` and the latest files under `docs/portal/issues/`.
