@@ -29,6 +29,9 @@
     "AWS_PAGER": "",
     "OPENTOFU_IN_AUTOMATION": "1"
   },
+  "remoteEnv": {
+    "PATH": "/usr/local/share/nvm/current/bin:${containerEnv:PATH}"
+  },
   "customizations": {
     "vscode": {
       "extensions": [

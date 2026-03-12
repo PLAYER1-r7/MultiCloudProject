@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export PATH="/usr/local/share/nvm/current/bin:$PATH"
+
 echo "Verifying toolchain..."
 node --version
 npm --version
@@ -12,6 +14,14 @@ tofu version
 docker version
 rg --version | head -n 1
 dig -v | head -n 1
+
+if [[ -f /workspaces/MultiCloudProject/apps/portal-web/package-lock.json ]]; then
+	echo "Installing portal-web dependencies..."
+	pushd /workspaces/MultiCloudProject/apps/portal-web >/dev/null
+	npm ci
+	npx playwright install chromium
+	popd >/dev/null
+fi
 
 echo "Corepack enabled. You can now use pnpm or npm."
 echo "ripgrep is available via rg for fast file and text search."
