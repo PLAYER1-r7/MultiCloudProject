@@ -53,10 +53,10 @@ Expected result:
 
 The safest pattern is to prepare the issue body in a markdown file and pass it to gh.
 
-Preferred repository wrapper:
+Preferred creation pattern:
 
 ```bash
-scripts/create-github-issue.sh \
+gh issue create \
   --title "新規ポータルのプロダクト定義を確定する" \
   --body-file docs/portal/issues/issue-01-product-definition.md \
   --label planning \
@@ -112,12 +112,14 @@ Recommended order:
 
 ## 6. Labels are required during creation in this repository
 
-Use the repository wrapper when possible so creation and label verification stay in one command.
+Use `gh issue create` with labels in the same command so creation and label assignment stay coupled.
+
+If the current branch already contains `scripts/create-github-issue.sh`, you may use it as a wrapper around the same flow.
 
 Example:
 
 ```bash
-scripts/create-github-issue.sh \
+gh issue create \
   --title "MVP スコープを確定する" \
   --body-file docs/portal/issues/issue-02-mvp-scope.md \
   --label planning \
@@ -231,8 +233,7 @@ Use this sequence as the default path.
 Recommended no-label sweep command:
 
 ```bash
-gh issue list --state all --json number,title,labels \
-  | jq -r '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
+gh issue list --state all --json number,title,labels --jq '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
 ```
 
 ## Example Session
@@ -241,7 +242,7 @@ gh issue list --state all --json number,title,labels \
 gh auth status
 gh repo view
 mkdir -p docs/portal/issues
-scripts/create-github-issue.sh \
+gh issue create \
   --title "新規ポータルのプロダクト定義を確定する" \
   --body-file docs/portal/issues/issue-01-product-definition.md \
   --label planning \

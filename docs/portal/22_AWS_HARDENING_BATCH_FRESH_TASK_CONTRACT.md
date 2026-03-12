@@ -56,11 +56,11 @@ Risk and Rollback
 
 ## Source Of Truth References
 
-- [docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md](docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md)
-- [docs/portal/issues/issue-69-aws-hardening-batch-follow-up-map.md](docs/portal/issues/issue-69-aws-hardening-batch-follow-up-map.md)
-- [docs/portal/issues/issue-75-aws-external-dns-helper-material-shell-snippet-execution.md](docs/portal/issues/issue-75-aws-external-dns-helper-material-shell-snippet-execution.md)
-- [docs/portal/issues/issue-77-aws-primary-email-pointer-local-text-generator-execution.md](docs/portal/issues/issue-77-aws-primary-email-pointer-local-text-generator-execution.md)
-- [docs/portal/issues/issue-79-aws-single-current-issue-operator-pack-execution.md](docs/portal/issues/issue-79-aws-single-current-issue-operator-pack-execution.md)
+- [docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md](18_CLOUD_STATUS_AND_REMAINING_TASKS.md)
+- [docs/portal/issues/issue-69-aws-hardening-batch-follow-up-map.md](issues/issue-69-aws-hardening-batch-follow-up-map.md)
+- [docs/portal/issues/issue-75-aws-external-dns-helper-material-shell-snippet-execution.md](issues/issue-75-aws-external-dns-helper-material-shell-snippet-execution.md)
+- [docs/portal/issues/issue-77-aws-primary-email-pointer-local-text-generator-execution.md](issues/issue-77-aws-primary-email-pointer-local-text-generator-execution.md)
+- [docs/portal/issues/issue-79-aws-single-current-issue-operator-pack-execution.md](issues/issue-79-aws-single-current-issue-operator-pack-execution.md)
 
 ## Fresh Contract Boundary
 
@@ -96,7 +96,7 @@ current repository state から見る first fresh batch の推奨形は次の通
 
 Current derived follow-up:
 
-- First DNS single-stream follow-up は [docs/portal/issues/issue-92-aws-manual-public-dns-verification-fallback.md](docs/portal/issues/issue-92-aws-manual-public-dns-verification-fallback.md) として起票済みで、GitHub Issue #92 が open
+- First DNS single-stream follow-up は [docs/portal/issues/issue-92-aws-manual-public-dns-verification-fallback.md](issues/issue-92-aws-manual-public-dns-verification-fallback.md) として起票済みで、GitHub Issue #92 が open
 - この contract 自体は引き続き batch start point であり、Issue 92 を含む後続 issue の source contract として reference する
 
 ## Non-Goals For This Contract
