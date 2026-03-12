@@ -177,7 +177,7 @@ Failure handling:
 ## Execution Record
 
 ```text
-Document: 08_ESCALATION_AND_HANDOFF
+Document: docs/portal/21_PORTAL_UPDATE_WORKFLOW.md
 Scope: portal-web update workflow を docs と portal route に固定し、以後の content update を source-of-truth driven に揃える
 Outcome: Handoff ready
 Actions taken: portal update runbook を追加した | Release Path route に update loop 要約と canonical runbook link を追加した | portal-web README を update workflow に同期した

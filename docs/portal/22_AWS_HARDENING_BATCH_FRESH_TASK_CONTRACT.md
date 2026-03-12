@@ -130,7 +130,7 @@ Current derived follow-up:
 ## Execution Record
 
 ```text
-Document: 08_ESCALATION_AND_HANDOFF
+Document: docs/portal/22_AWS_HARDENING_BATCH_FRESH_TASK_CONTRACT.md
 Scope: start the next AWS hardening batch from a fresh task contract instead of reopening the closed Issue 69 chain
 Outcome: Handoff ready
 Actions taken: source-of-truth references were fixed | fresh contract boundary was defined | stream selection rule and non-goals were documented
