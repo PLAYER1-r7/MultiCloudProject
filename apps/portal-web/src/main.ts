@@ -967,7 +967,7 @@ function renderActionLinks(actions: ActionLink[], className: string): string {
     .map((action, index) => {
       const emphasis = action.emphasis === "primary" ? `${className} primary` : `${className} secondary`;
       const external = /^https?:\/\//.test(action.href);
-      const destination = external ? action.href : toApplicationPath(action.href);
+      const destination = escapeHtml(external ? action.href : toApplicationPath(action.href));
       const interactionAttributes = external
         ? 'target="_blank" rel="noreferrer"'
         : 'data-link="internal"';

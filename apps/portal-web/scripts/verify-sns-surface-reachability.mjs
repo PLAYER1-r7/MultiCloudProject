@@ -61,20 +61,33 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 const rows = [];
 let currentTargetName = "setup";
+let currentStepStatus = {
+  surfaceMount: "unknown",
+  entryLink: "unknown",
+  ctaReachability: "unknown"
+};
 
 try {
   for (const target of targets) {
     currentTargetName = target.name;
+    currentStepStatus = {
+      surfaceMount: "unknown",
+      entryLink: "unknown",
+      ctaReachability: "unknown"
+    };
+
     await page.goto(target.url, { waitUntil: "networkidle" });
     await page.locator(".page-shell").waitFor({ state: "visible" });
 
     const routePath = await page.locator(".page-shell").getAttribute("data-route-path");
     assertCondition(routePath?.trim() === target.expectedRoutePath, `${target.name}: route path mismatch`);
+    currentStepStatus.surfaceMount = "passed";
 
     const entryLink = page.locator(`a[data-link="internal"][href="${target.expectedEntryHref}"]`).first();
     await entryLink.waitFor({ state: "visible" });
     const entryLinkHref = await entryLink.getAttribute("href");
     assertCondition(entryLinkHref === target.expectedEntryHref, `${target.name}: entry link href mismatch`);
+    currentStepStatus.entryLink = "passed";
 
     await entryLink.click();
     const surface = page.locator(target.expectedSurfaceSelector).first();
@@ -90,12 +103,13 @@ try {
     await postingTarget.waitFor({ state: "visible" });
     const ctaRoutePath = await page.locator(".page-shell").getAttribute("data-route-path");
     assertCondition(ctaRoutePath?.trim() === "/status", `${target.name}: CTA did not stay on /status`);
+    currentStepStatus.ctaReachability = "passed";
 
     rows.push({
       target: target.name,
-      surfaceMount: "passed",
-      entryLink: "passed",
-      ctaReachability: "passed",
+      surfaceMount: currentStepStatus.surfaceMount,
+      entryLink: currentStepStatus.entryLink,
+      ctaReachability: currentStepStatus.ctaReachability,
       result: "passed"
     });
   }
@@ -104,9 +118,9 @@ try {
 
   rows.push({
     target: currentTargetName,
-    surfaceMount: "failed",
-    entryLink: "failed",
-    ctaReachability: "failed",
+    surfaceMount: currentStepStatus.surfaceMount,
+    entryLink: currentStepStatus.entryLink,
+    ctaReachability: currentStepStatus.ctaReachability,
     result: message.replace(/\|/g, "/")
   });
   process.exitCode = 1;

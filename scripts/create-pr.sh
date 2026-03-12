@@ -30,6 +30,18 @@ body_file=""
 base_branch=""
 head_branch=""
 
+resolve_default_branch() {
+  local remote_head
+
+  remote_head="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)"
+  if [[ -n "$remote_head" ]]; then
+    echo "${remote_head#origin/}"
+    return 0
+  fi
+
+  gh repo view "$repo" --json defaultBranchRef --jq '.defaultBranchRef.name' 2>/dev/null || true
+}
+
 require_option_value() {
   local option_name="$1"
   local option_value="${2-}"
@@ -97,14 +109,15 @@ if [[ ! -s "$body_file" ]]; then
 fi
 
 current_branch="$(git branch --show-current)"
+default_branch="$(resolve_default_branch)"
 
 if [[ -z "$current_branch" ]]; then
   echo "Could not determine current git branch." >&2
   exit 1
 fi
 
-if [[ "$current_branch" == "main" && -z "$head_branch" ]]; then
-  echo "Warning: current branch is the default branch 'main'." >&2
+if [[ -n "$default_branch" && "$current_branch" == "$default_branch" && -z "$head_branch" ]]; then
+  echo "Warning: current branch is the default branch '$default_branch'." >&2
   echo "Consider creating the PR from a feature branch or pass --head explicitly." >&2
 fi
 
