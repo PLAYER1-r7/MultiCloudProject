@@ -39,16 +39,18 @@ gh pr list --state open
 - `security`: auth、certificate、WAF / Cloud Armor、credential governance、rotation、security baseline の Issue に付ける
 - `architecture`: architecture、topology、boundary、design structure を主題にする Issue に付ける
 - `documentation`: docs-only、process、summary、sync、cleanup、operator memo の Issue に付ける
-- `aws`: AWS 経路または AWS production governance を明示的に扱う Issue にだけ付ける。GCP 専用ラベルはないため、GCP Issue は機能軸のラベルで表す
+- `aws`: AWS 経路または AWS production governance を明示的に扱う Issue にだけ付ける
+- `gcp`: GCP 経路、GCP preview、GCP production-equivalent 作業を明示的に扱う Issue に付ける
 - タイトル、本文、canonical issue record から直接裏づけできるタグだけを付ける。近接 Issue と似ているだけで推測付与しない
 
 ## Issue タグ操作コマンド
 
 ```bash
+scripts/create-github-issue.sh --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal
+scripts/create-github-issue.sh --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal --label gcp
 gh issue list --limit 100 --state all --json number,title,labels
-gh issue create --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal
 gh issue view <N> --json number,title,labels
-gh issue edit <N> --add-label "portal" --add-label "planning"
+gh issue edit <N> --add-label "portal,planning"
 gh issue edit <N> --remove-label "documentation"
 ```
 
@@ -57,11 +59,12 @@ gh issue edit <N> --remove-label "documentation"
 - タグは Issue 作成後の任意 cleanup ではなく、作成手順の一部として扱う
 - Issue を作成したら、次の Issue に移る前にタグを確認する
 - タグなしで作成された場合は、未ラベル debt として残さずその場で修正する
-- Issue 作成時は `gh issue create` を使い、作成直後にタグ確認を行う
+- Issue 作成とタグ確認を分離しないため、可能な限り `scripts/create-github-issue.sh` を使う
 
 ```bash
 gh issue view <N> --json number,title,labels
-gh issue list --limit 200 --state all --json number,title,labels --jq '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
+gh issue list --limit 200 --state all --json number,title,labels \
+	| jq -r '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
 ```
 
 ## ワークフロー

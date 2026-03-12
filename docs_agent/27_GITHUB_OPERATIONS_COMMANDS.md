@@ -39,16 +39,18 @@ gh pr list --state open
 - Apply `security` to auth, certificate, WAF or Cloud Armor, credential governance, rotation, and security-baseline Issues.
 - Apply `architecture` to architecture, topology, boundary, and design-structure Issues.
 - Apply `documentation` to docs-only, process, summary, sync, cleanup, and operator-memo Issues.
-- Apply `aws` only when the issue is specifically about the AWS path or AWS production governance. There is no dedicated GCP label, so label GCP Issues by function instead.
+- Apply `aws` only when the issue is specifically about the AWS path or AWS production governance.
+- Apply `gcp` when the issue is specifically about the GCP path, GCP preview, or GCP production-equivalent work.
 - Use only labels that are directly supported by the title, body, or canonical issue record. Do not add speculative labels just because adjacent Issues used them.
 
 ## Issue Labeling Commands
 
 ```bash
+scripts/create-github-issue.sh --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal
+scripts/create-github-issue.sh --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal --label gcp
 gh issue list --limit 100 --state all --json number,title,labels
-gh issue create --title "..." --body-file docs/portal/issues/issue-XX.md --label planning --label portal
 gh issue view <N> --json number,title,labels
-gh issue edit <N> --add-label "portal" --add-label "planning"
+gh issue edit <N> --add-label "portal,planning"
 gh issue edit <N> --remove-label "documentation"
 ```
 
@@ -57,11 +59,12 @@ gh issue edit <N> --remove-label "documentation"
 - Treat labels as part of Issue creation, not optional cleanup.
 - After creating an Issue, verify its labels before moving to the next Issue.
 - If an Issue is created without labels, correct it immediately instead of carrying unlabeled debt forward.
-- Use `gh issue create` and verify labels immediately after creation so that issue creation and label verification remain coupled.
+- Prefer `scripts/create-github-issue.sh` so issue creation and label verification stay coupled.
 
 ```bash
 gh issue view <N> --json number,title,labels
-gh issue list --limit 200 --state all --json number,title,labels --jq '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
+gh issue list --limit 200 --state all --json number,title,labels \
+	| jq -r '.[] | select((.labels | length) == 0) | [.number, .title] | @tsv'
 ```
 
 ## Actions
