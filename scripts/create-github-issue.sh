@@ -27,21 +27,49 @@ title=""
 body_file=""
 labels=()
 
+resolve_repo() {
+  local resolved_repo
+
+  resolved_repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null || true)"
+  if [[ -n "$resolved_repo" ]]; then
+    echo "$resolved_repo"
+    return 0
+  fi
+
+  echo "Could not determine the GitHub repository automatically. Pass --repo <owner/repo>." >&2
+  exit 1
+}
+
+require_option_value() {
+  local option_name="$1"
+  local option_value="${2-}"
+
+  if [[ -z "$option_value" || "$option_value" == --* ]]; then
+    echo "Missing value for $option_name." >&2
+    usage >&2
+    exit 1
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --repo)
+      require_option_value "$1" "${2-}"
       repo="$2"
       shift 2
       ;;
     --title)
+      require_option_value "$1" "${2-}"
       title="$2"
       shift 2
       ;;
     --body-file)
+      require_option_value "$1" "${2-}"
       body_file="$2"
       shift 2
       ;;
     --label)
+      require_option_value "$1" "${2-}"
       labels+=("$2")
       shift 2
       ;;
@@ -70,33 +98,31 @@ fi
 
 gh auth status >/dev/null
 
-create_cmd=(gh issue create --title "$title" --body-file "$body_file")
-if [[ -n "$repo" ]]; then
-  create_cmd+=(--repo "$repo")
+if [[ -z "$repo" ]]; then
+  repo="$(resolve_repo)"
 fi
+
+create_cmd=(gh issue create --title "$title" --body-file "$body_file")
+create_cmd+=(--repo "$repo")
 
 for label in "${labels[@]}"; do
   create_cmd+=(--label "$label")
 done
 
-issue_url="$(${create_cmd[@]})"
+issue_url="$("${create_cmd[@]}")"
 issue_number="${issue_url##*/}"
 
-view_cmd=(gh issue view "$issue_number" --json number,title,labels)
-if [[ -n "$repo" ]]; then
-  view_cmd+=(--repo "$repo")
-fi
+view_cmd=(gh issue view "$issue_number" --repo "$repo" --json number,title,labels)
 
-label_count="$(${view_cmd[@]} | jq '.labels | length')"
+label_count="$("${view_cmd[@]}" --jq '.labels | length')"
 
 if [[ "$label_count" -eq 0 ]]; then
-  label_csv="$(IFS=,; echo "${labels[*]}")"
-  edit_cmd=(gh issue edit "$issue_number" --add-label "$label_csv")
-  if [[ -n "$repo" ]]; then
-    edit_cmd+=(--repo "$repo")
-  fi
+  edit_cmd=(gh issue edit "$issue_number" --repo "$repo")
+  for label in "${labels[@]}"; do
+    edit_cmd+=(--add-label "$label")
+  done
   "${edit_cmd[@]}" >/dev/null
-  label_count="$(${view_cmd[@]} | jq '.labels | length')"
+  label_count="$("${view_cmd[@]}" --jq '.labels | length')"
 fi
 
 if [[ "$label_count" -eq 0 ]]; then
@@ -105,4 +131,4 @@ if [[ "$label_count" -eq 0 ]]; then
 fi
 
 echo "Created issue: $issue_url"
-${view_cmd[@]} | jq -r '[.number, .title, (.labels | map(.name) | join(","))] | @tsv'
+"${view_cmd[@]}" --jq '[.number, .title, (.labels | map(.name) | join(","))] | @tsv'
