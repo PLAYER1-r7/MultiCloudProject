@@ -24,7 +24,13 @@ jobs:
               return;
             }
 
-            if ((issue.labels || []).length > 0) {
+            const { data: liveIssue } = await github.rest.issues.get({
+              ...context.repo,
+              issue_number: issue.number,
+            });
+
+            const labels = Array.isArray(liveIssue.labels) ? liveIssue.labels : [];
+            if (labels.length > 0) {
               core.info('Issue already has labels.');
               return;
             }
