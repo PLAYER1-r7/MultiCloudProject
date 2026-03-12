@@ -9,6 +9,10 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test:routes": "node --experimental-strip-types ./src/main.ts --validate-routes",
+    "test:sns-request-response-contract": "node --experimental-strip-types ./src/main.ts --validate-sns-request-response-contract",
+    "test:sns-auth-error-contract": "node --experimental-strip-types ./src/main.ts --validate-sns-auth-error-contract",
+    "test:sns-surface-reachability": "npm run build && node ./scripts/run-sns-surface-reachability.mjs",
+    "test:sns-auth-post-readback": "npm run build && node ./scripts/run-sns-auth-post-readback.mjs",
     "test:baseline": "npm run typecheck && npm run test:routes",
     "test:public-variants": "node ./scripts/verify-public-variants.mjs"
   },

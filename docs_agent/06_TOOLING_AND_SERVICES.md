@@ -6,6 +6,7 @@
 - Python
 - Node.js and npm
 - Docker
+- DNS query utilities (`dnsutils`, including `dig`)
 - AWS CLI
 - Azure CLI
 - gcloud CLI
@@ -37,7 +38,18 @@
 
 - Put cloud authentication architecture and operator auth expectations in `17_AUTH_REQUEST_PLAYBOOK.md`.
 - Put app-specific operational tuning decisions, such as timeout increases, in `20_MANUAL_DEPLOY_DECISION_CRITERIA.md`.
+- Put Issue label selection and normalization rules in `27_GITHUB_OPERATIONS_COMMANDS.md` rather than redefining them in task-specific notes.
 - Keep product implementation details in `docs/`; only import stable decision rules or operating baselines here.
+
+## PR Creation Helper
+
+Use `scripts/create-pr.sh` as a thin wrapper around `gh pr create`.
+
+- Prepare the PR body first using `05_PR_TASK_CONTRACT_TEMPLATE.md` or the Japanese counterpart in `docs_agent_ja/`.
+- Confirm the pre-PR checks in `07_AUTONOMOUS_WORKFLOW_CHECKLIST.md` or the Japanese counterpart in `docs_agent_ja/`.
+- Store the final PR body in a temporary file such as `/tmp/pr-body.md`.
+- Run `scripts/create-pr.sh --title "<title>" --body-file /tmp/pr-body.md`.
+- This helper does not generate PR content, run tests, infer issue state, or replace the PR checklist. It only validates required inputs and forwards them to `gh pr create`.
 
 ## Quick Verification
 
@@ -46,4 +58,5 @@ gh auth status
 aws sts get-caller-identity
 az account show
 gcloud auth list
+dig -v | head -n 1
 ```

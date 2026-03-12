@@ -460,6 +460,137 @@ a {
   gap: 10px;
 }
 
+.sns-flow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.sns-flow-card {
+  display: grid;
+  gap: 14px;
+}
+
+.sns-field-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.sns-field {
+  display: grid;
+  gap: 8px;
+}
+
+.sns-select,
+.sns-textarea {
+  width: 100%;
+  border: 1px solid rgba(24, 33, 39, 0.14);
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--ink);
+  font: inherit;
+}
+
+.sns-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.sns-checkbox-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--ink);
+}
+
+.sns-button-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sns-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.sns-button:hover,
+.sns-button:focus-visible {
+  transform: translateY(-1px);
+}
+
+.sns-button.primary {
+  background: linear-gradient(135deg, rgba(177, 79, 45, 0.94), rgba(216, 154, 99, 0.94));
+  color: #fff;
+}
+
+.sns-button.secondary {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ink);
+  border: 1px solid rgba(24, 33, 39, 0.1);
+}
+
+.sns-feedback {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(24, 33, 39, 0.08);
+}
+
+.sns-feedback.neutral {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
+}
+
+.sns-feedback.success {
+  background: rgba(214, 235, 221, 0.86);
+  color: #16422e;
+}
+
+.sns-feedback.error {
+  background: rgba(247, 223, 214, 0.92);
+  color: #7b2c16;
+}
+
+.sns-readback-list {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.sns-readback-item,
+.sns-readback-empty {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(24, 33, 39, 0.08);
+}
+
+.sns-readback-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--accent-deep);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sns-readback-item p,
+.sns-readback-empty {
+  margin: 0;
+  color: var(--ink);
+}
+
 .story-item {
   position: relative;
   padding-left: 18px;
@@ -489,6 +620,7 @@ a {
   .hero-meta,
   .story-grid,
   .status-grid,
+  .sns-flow-grid,
   .hero-actions,
   .action-grid {
     grid-template-columns: 1fr;
