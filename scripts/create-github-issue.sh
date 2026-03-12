@@ -122,19 +122,42 @@ issue_url="$("${create_cmd[@]}")"
 
 view_cmd=(gh issue view "$issue_url" --repo "$repo" --json number,title,labels)
 
-label_count="$("${view_cmd[@]}" --jq '.labels | length')"
+collect_missing_labels() {
+  local actual_labels_text
+  local requested_label
+  local actual_label
+  local -A actual_label_map=()
+  local -a unresolved_labels=()
 
-if [[ "$label_count" -eq 0 ]]; then
+  actual_labels_text="$("${view_cmd[@]}" --jq '.labels | map(.name) | join("\n")')"
+
+  while IFS= read -r actual_label; do
+    [[ -z "$actual_label" ]] && continue
+    actual_label_map["$actual_label"]=1
+  done <<< "$actual_labels_text"
+
+  for requested_label in "${labels[@]}"; do
+    if [[ -z "${actual_label_map[$requested_label]+x}" ]]; then
+      unresolved_labels+=("$requested_label")
+    fi
+  done
+
+  printf '%s\n' "${unresolved_labels[@]}"
+}
+
+mapfile -t missing_labels < <(collect_missing_labels)
+
+if [[ ${#missing_labels[@]} -gt 0 ]]; then
   edit_cmd=(gh issue edit "$issue_url" --repo "$repo")
-  for label in "${labels[@]}"; do
-    edit_cmd+=(--add-label "$label")
+  for missing_label in "${missing_labels[@]}"; do
+    edit_cmd+=(--add-label "$missing_label")
   done
   "${edit_cmd[@]}" >/dev/null
-  label_count="$("${view_cmd[@]}" --jq '.labels | length')"
+  mapfile -t missing_labels < <(collect_missing_labels)
 fi
 
-if [[ "$label_count" -eq 0 ]]; then
-  echo "Issue created without labels and automatic repair failed: $issue_url" >&2
+if [[ ${#missing_labels[@]} -gt 0 ]]; then
+  echo "Issue created without the full requested label set and automatic repair failed: $issue_url" >&2
   exit 1
 fi
 
