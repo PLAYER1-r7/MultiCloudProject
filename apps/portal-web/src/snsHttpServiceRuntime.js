@@ -91,14 +91,15 @@ async function readRequestBody(request) {
 }
 
 async function writeFetchResponseToNodeResponse(response, nodeResponse, config) {
-  const responseBody = nodeResponse.req?.method === "HEAD" ? Buffer.alloc(0) : Buffer.from(await response.arrayBuffer());
+  const fullBody = Buffer.from(await response.arrayBuffer());
+  const responseBody = nodeResponse.req?.method === "HEAD" ? Buffer.alloc(0) : fullBody;
   const responseHeaders = createCorsHeaders(config);
 
   response.headers.forEach((value, key) => {
     responseHeaders[key] = value;
   });
 
-  responseHeaders["content-length"] = String(responseBody.byteLength);
+  responseHeaders["content-length"] = String(fullBody.byteLength);
   nodeResponse.writeHead(response.status, responseHeaders);
   nodeResponse.end(responseBody);
 }
