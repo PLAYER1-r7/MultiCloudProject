@@ -176,9 +176,11 @@ the slice is not complete if any of the following remain true.
 
 # Current Status
 
-- local draft created
+- planning contract accepted as the next-slice reference and executed through derived Issue 149、Issue 150、and Issue 151
+- derived execution chain is now complete on a Terraform-managed staging backend consisting of Lambda Function URL plus DynamoDB timeline persistence
+- reviewed staging evidence passed through `portal-staging-deploy` run `23041594174` and `portal-sns-staging-review` run `23041628020` after the OpenTofu-backed cutover
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local docs updated to reflect completed derived execution status
 
 # Dependencies
 

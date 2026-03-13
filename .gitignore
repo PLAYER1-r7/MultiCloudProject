@@ -19,3 +19,4 @@ dist/
 *.tfstate.*
 *.tfplan
 tfplan.*
+infra/modules/portal-sns-service/*.zip

@@ -1,0 +1,841 @@
+{
+  "generatedAt": "2026-03-12T16:11:16.570Z",
+  "combinedPdf": "docs/portal/issues/pdf/closed-issues-compendium.pdf",
+  "renderedIssues": [
+    {
+      "number": 1,
+      "title": "新規ポータルのプロダクト定義を確定する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-01-product-definition.pdf",
+      "sourcePath": "docs/portal/issues/issue-01-product-definition.md"
+    },
+    {
+      "number": 2,
+      "title": "MVP スコープを確定する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-02-mvp-scope.pdf",
+      "sourcePath": "docs/portal/issues/issue-02-mvp-scope.md"
+    },
+    {
+      "number": 3,
+      "title": "認証方針と保護範囲を確定する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-03-auth-decision.pdf",
+      "sourcePath": "docs/portal/issues/issue-03-auth-decision.md"
+    },
+    {
+      "number": 4,
+      "title": "初期 AWS アーキテクチャを決定する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-04-aws-architecture.pdf",
+      "sourcePath": "docs/portal/issues/issue-04-aws-architecture.md"
+    },
+    {
+      "number": 5,
+      "title": "既存アプリとの境界を定義する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-05-app-boundary.pdf",
+      "sourcePath": "docs/portal/issues/issue-05-app-boundary.md"
+    },
+    {
+      "number": 6,
+      "title": "フロントエンド技術選定を確定する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-06-frontend-technical-choice.pdf",
+      "sourcePath": "docs/portal/issues/issue-06-frontend-technical-choice.md"
+    },
+    {
+      "number": 7,
+      "title": "バックエンドと永続化方針を決定する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-07-backend-persistence-decision.pdf",
+      "sourcePath": "docs/portal/issues/issue-07-backend-persistence-decision.md"
+    },
+    {
+      "number": 8,
+      "title": "マルチクラウド設計制約を定義する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-08-multicloud-design-constraints.pdf",
+      "sourcePath": "docs/portal/issues/issue-08-multicloud-design-constraints.md"
+    },
+    {
+      "number": 9,
+      "title": "IaC 方針を確定する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-09-iac-policy.pdf",
+      "sourcePath": "docs/portal/issues/issue-09-iac-policy.md"
+    },
+    {
+      "number": 10,
+      "title": "CI/CD 方針を確定する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-10-cicd-policy.pdf",
+      "sourcePath": "docs/portal/issues/issue-10-cicd-policy.md"
+    },
+    {
+      "number": 11,
+      "title": "セキュリティ ベースラインを定義する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-11-security-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-11-security-baseline.md"
+    },
+    {
+      "number": 12,
+      "title": "監視方針を定義する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-12-monitoring-policy.pdf",
+      "sourcePath": "docs/portal/issues/issue-12-monitoring-policy.md"
+    },
+    {
+      "number": 13,
+      "title": "テスト戦略を定義する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-13-test-strategy.pdf",
+      "sourcePath": "docs/portal/issues/issue-13-test-strategy.md"
+    },
+    {
+      "number": 14,
+      "title": "ロールバック方針を定義する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-14-rollback-policy.pdf",
+      "sourcePath": "docs/portal/issues/issue-14-rollback-policy.md"
+    },
+    {
+      "number": 15,
+      "title": "実装バックログを作成する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-15-implementation-backlog.pdf",
+      "sourcePath": "docs/portal/issues/issue-15-implementation-backlog.md"
+    },
+    {
+      "number": 16,
+      "title": "portal フロントエンド基盤を実装する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-16-frontend-foundation.pdf",
+      "sourcePath": "docs/portal/issues/issue-16-frontend-foundation.md"
+    },
+    {
+      "number": 17,
+      "title": "AWS 静的配信基盤を実装する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-17-aws-delivery-foundation.pdf",
+      "sourcePath": "docs/portal/issues/issue-17-aws-delivery-foundation.md"
+    },
+    {
+      "number": 18,
+      "title": "CI と staging deploy 基盤を実装する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-18-ci-staging-foundation.pdf",
+      "sourcePath": "docs/portal/issues/issue-18-ci-staging-foundation.md"
+    },
+    {
+      "number": 19,
+      "title": "checklist-driven Issue の同期と close 手順を標準化する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-19-issue-sync-governance.pdf",
+      "sourcePath": "docs/portal/issues/issue-19-issue-sync-governance.md"
+    },
+    {
+      "number": 20,
+      "title": "production entry 条件とガードレールを明文化する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-20-production-entry-guardrails.pdf",
+      "sourcePath": "docs/portal/issues/issue-20-production-entry-guardrails.md"
+    },
+    {
+      "number": 21,
+      "title": "closed issue の状態表記を整合し review tables を整える",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-21-closed-issue-record-cleanup.pdf",
+      "sourcePath": "docs/portal/issues/issue-21-closed-issue-record-cleanup.md"
+    },
+    {
+      "number": 22,
+      "title": "portal-web README に route card links の説明を追加する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-22-portal-web-readme-route-card-links.pdf",
+      "sourcePath": "docs/portal/issues/issue-22-portal-web-readme-route-card-links.md"
+    },
+    {
+      "number": 23,
+      "title": "formatting-only cleanup を独立整理する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-23-formatting-only-cleanup.pdf",
+      "sourcePath": "docs/portal/issues/issue-23-formatting-only-cleanup.md"
+    },
+    {
+      "number": 24,
+      "title": "test hardening baseline を実装する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-24-test-hardening-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-24-test-hardening-baseline.md"
+    },
+    {
+      "number": 25,
+      "title": "staging monitoring hardening を実装する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-25-staging-monitoring-hardening.pdf",
+      "sourcePath": "docs/portal/issues/issue-25-staging-monitoring-hardening.md"
+    },
+    {
+      "number": 26,
+      "title": "rollback readiness を実装する",
+      "updatedAtJa": "2026/03/08",
+      "pdfName": "issue-26-rollback-readiness-implementation.pdf",
+      "sourcePath": "docs/portal/issues/issue-26-rollback-readiness-implementation.md"
+    },
+    {
+      "number": 27,
+      "title": "artifact retention と release evidence baseline を実装する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-27-artifact-retention-release-evidence.pdf",
+      "sourcePath": "docs/portal/issues/issue-27-artifact-retention-release-evidence.md"
+    },
+    {
+      "number": 28,
+      "title": "production readiness gate baseline を実装する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-28-production-readiness-gate-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-28-production-readiness-gate-baseline.md"
+    },
+    {
+      "number": 29,
+      "title": "state locking baseline を実装する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-29-state-locking-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-29-state-locking-baseline.md"
+    },
+    {
+      "number": 30,
+      "title": "monthly cost ceiling baseline を決定する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-30-monthly-cost-ceiling-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-30-monthly-cost-ceiling-baseline.md"
+    },
+    {
+      "number": 31,
+      "title": "production backend wiring baseline を実装する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-31-production-backend-wiring-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-31-production-backend-wiring-baseline.md"
+    },
+    {
+      "number": 32,
+      "title": "accepted portability boundary を production gate に同期する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-32-production-portability-boundary-sync.pdf",
+      "sourcePath": "docs/portal/issues/issue-32-production-portability-boundary-sync.md"
+    },
+    {
+      "number": 33,
+      "title": "production certificate sourcing baseline を明文化する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-33-production-certificate-sourcing-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-33-production-certificate-sourcing-baseline.md"
+    },
+    {
+      "number": 34,
+      "title": "production domain ownership baseline を明文化する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-34-production-domain-ownership-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-34-production-domain-ownership-baseline.md"
+    },
+    {
+      "number": 35,
+      "title": "production rollback target baseline を明文化する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-35-production-rollback-target-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-35-production-rollback-target-baseline.md"
+    },
+    {
+      "number": 36,
+      "title": "production rollout implementation baseline を定義する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-36-production-rollout-implementation-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-36-production-rollout-implementation-baseline.md"
+    },
+    {
+      "number": 38,
+      "title": "production cutover execution baseline を定義する",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-38-production-cutover-execution-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-38-production-cutover-execution-baseline.md"
+    },
+    {
+      "number": 39,
+      "title": "production delivery resource execution を行う",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-39-production-delivery-resource-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-39-production-delivery-resource-execution.md"
+    },
+    {
+      "number": 40,
+      "title": "production rollback readiness を実運用レベルで固める",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-40-production-rollback-readiness-operations.pdf",
+      "sourcePath": "docs/portal/issues/issue-40-production-rollback-readiness-operations.md"
+    },
+    {
+      "number": 41,
+      "title": "production monitoring follow-up を実運用レベルで固める",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-41-production-monitoring-follow-up.pdf",
+      "sourcePath": "docs/portal/issues/issue-41-production-monitoring-follow-up.md"
+    },
+    {
+      "number": 42,
+      "title": "external DNS operations memo を実運用レベルで固める",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-42-external-dns-operations-memo.pdf",
+      "sourcePath": "docs/portal/issues/issue-42-external-dns-operations-memo.md"
+    },
+    {
+      "number": 43,
+      "title": "production certificate renewal operator memo を実運用レベルで固める",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-43-production-certificate-renewal-operator-memo.pdf",
+      "sourcePath": "docs/portal/issues/issue-43-production-certificate-renewal-operator-memo.md"
+    },
+    {
+      "number": 44,
+      "title": "production alert routing baseline を実運用レベルで固める",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-44-production-alert-routing-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-44-production-alert-routing-baseline.md"
+    },
+    {
+      "number": 45,
+      "title": "production alert delivery baseline を実運用レベルで固める",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-45-production-alert-delivery-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-45-production-alert-delivery-baseline.md"
+    },
+    {
+      "number": 46,
+      "title": "external DNS automation / Route 53 migration judgment を実運用レベルで固める",
+      "updatedAtJa": "2026/03/09",
+      "pdfName": "issue-46-external-dns-automation-route53-judgment.pdf",
+      "sourcePath": "docs/portal/issues/issue-46-external-dns-automation-route53-judgment.md"
+    },
+    {
+      "number": 47,
+      "title": "GCP baseline design の議論たたき台を作成する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-47-gcp-baseline-design.pdf",
+      "sourcePath": "docs/portal/issues/issue-47-gcp-baseline-design.md"
+    },
+    {
+      "number": 48,
+      "title": "GCP architecture baseline を具体化する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-48-gcp-architecture-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-48-gcp-architecture-baseline.md"
+    },
+    {
+      "number": 49,
+      "title": "GCP IaC topology と state backend judgment を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-49-gcp-iac-topology-and-state-backend-judgment.pdf",
+      "sourcePath": "docs/portal/issues/issue-49-gcp-iac-topology-and-state-backend-judgment.md"
+    },
+    {
+      "number": 50,
+      "title": "GCP deploy workflow baseline を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-50-gcp-deploy-workflow-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-50-gcp-deploy-workflow-baseline.md"
+    },
+    {
+      "number": 51,
+      "title": "GCP preview domain / certificate / DNS operator memo を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-51-gcp-preview-domain-certificate-dns-operator-memo.pdf",
+      "sourcePath": "docs/portal/issues/issue-51-gcp-preview-domain-certificate-dns-operator-memo.md"
+    },
+    {
+      "number": 52,
+      "title": "GCP preview workflow execution を行う",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-52-gcp-preview-workflow-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-52-gcp-preview-workflow-execution.md"
+    },
+    {
+      "number": 53,
+      "title": "GCP preview delivery resource execution を行う",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-53-gcp-preview-delivery-resource-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-53-gcp-preview-delivery-resource-execution.md"
+    },
+    {
+      "number": 54,
+      "title": "GCP security baseline を定義する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-54-gcp-security-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-54-gcp-security-baseline.md"
+    },
+    {
+      "number": 55,
+      "title": "GCP monitoring / alert routing baseline を定義する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-55-gcp-monitoring-alert-routing-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-55-gcp-monitoring-alert-routing-baseline.md"
+    },
+    {
+      "number": 56,
+      "title": "GCP preview rollback and recovery memo を定義する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-56-gcp-preview-rollback-and-recovery-memo.pdf",
+      "sourcePath": "docs/portal/issues/issue-56-gcp-preview-rollback-and-recovery-memo.md"
+    },
+    {
+      "number": 57,
+      "title": "GCP preview continuation / shutdown judgment を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-57-gcp-preview-continuation-shutdown-judgment.pdf",
+      "sourcePath": "docs/portal/issues/issue-57-gcp-preview-continuation-shutdown-judgment.md"
+    },
+    {
+      "number": 58,
+      "title": "GCP preview monitoring / alert implementation を行う",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-58-gcp-preview-monitoring-alert-implementation.pdf",
+      "sourcePath": "docs/portal/issues/issue-58-gcp-preview-monitoring-alert-implementation.md"
+    },
+    {
+      "number": 59,
+      "title": "GCP preview recovery runbook and drill baseline を整備する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-59-gcp-preview-recovery-runbook-and-drill-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-59-gcp-preview-recovery-runbook-and-drill-baseline.md"
+    },
+    {
+      "number": 60,
+      "title": "GCP preview security hardening implementation を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-60-gcp-preview-security-hardening-implementation.pdf",
+      "sourcePath": "docs/portal/issues/issue-60-gcp-preview-security-hardening-implementation.md"
+    },
+    {
+      "number": 61,
+      "title": "GCP production-equivalent promotion judgment を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-61-gcp-production-equivalent-promotion-judgment.pdf",
+      "sourcePath": "docs/portal/issues/issue-61-gcp-production-equivalent-promotion-judgment.md"
+    },
+    {
+      "number": 62,
+      "title": "GCP production-equivalent hostname / DNS governance judgment を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-62-gcp-production-equivalent-hostname-dns-governance-judgment.pdf",
+      "sourcePath": "docs/portal/issues/issue-62-gcp-production-equivalent-hostname-dns-governance-judgment.md"
+    },
+    {
+      "number": 63,
+      "title": "GCP production-equivalent approval gate と environment protection uplift を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-63-gcp-production-equivalent-approval-gate-and-environment-protection.pdf",
+      "sourcePath": "docs/portal/issues/issue-63-gcp-production-equivalent-approval-gate-and-environment-protection.md"
+    },
+    {
+      "number": 64,
+      "title": "GCP production-equivalent security / monitoring / rollback uplift を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-64-gcp-production-equivalent-security-monitoring-and-rollback-uplift.pdf",
+      "sourcePath": "docs/portal/issues/issue-64-gcp-production-equivalent-security-monitoring-and-rollback-uplift.md"
+    },
+    {
+      "number": 65,
+      "title": "GCP production cutover と same-hostname migration execution boundary を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-65-gcp-production-cutover-and-same-hostname-migration-execution-boundary.pdf",
+      "sourcePath": "docs/portal/issues/issue-65-gcp-production-cutover-and-same-hostname-migration-execution-boundary.md"
+    },
+    {
+      "number": 66,
+      "title": "GCP production-equivalent judgment summary と execution handoff を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-66-gcp-production-equivalent-judgment-summary-and-execution-handoff.pdf",
+      "sourcePath": "docs/portal/issues/issue-66-gcp-production-equivalent-judgment-summary-and-execution-handoff.md"
+    },
+    {
+      "number": 67,
+      "title": "GCP production-equivalent execution package を準備する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-67-gcp-production-equivalent-execution-preparation.pdf",
+      "sourcePath": "docs/portal/issues/issue-67-gcp-production-equivalent-execution-preparation.md"
+    },
+    {
+      "number": 68,
+      "title": "GCP production-equivalent live execution を行う",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-68-gcp-production-equivalent-live-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-68-gcp-production-equivalent-live-execution.md"
+    },
+    {
+      "number": 69,
+      "title": "AWS hardening batch の follow-up map を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-69-aws-hardening-batch-follow-up-map.pdf",
+      "sourcePath": "docs/portal/issues/issue-69-aws-hardening-batch-follow-up-map.md"
+    },
+    {
+      "number": 70,
+      "title": "AWS external DNS assistive automation follow-up を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-70-aws-external-dns-assistive-automation-follow-up.pdf",
+      "sourcePath": "docs/portal/issues/issue-70-aws-external-dns-assistive-automation-follow-up.md"
+    },
+    {
+      "number": 71,
+      "title": "AWS alert tooling depth follow-up を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-71-aws-alert-tooling-depth-follow-up.pdf",
+      "sourcePath": "docs/portal/issues/issue-71-aws-alert-tooling-depth-follow-up.md"
+    },
+    {
+      "number": 72,
+      "title": "AWS rollback and runbook depth follow-up を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-72-aws-rollback-and-runbook-depth-follow-up.pdf",
+      "sourcePath": "docs/portal/issues/issue-72-aws-rollback-and-runbook-depth-follow-up.md"
+    },
+    {
+      "number": 73,
+      "title": "AWS external DNS helper material preparation を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-73-aws-external-dns-helper-material-preparation.pdf",
+      "sourcePath": "docs/portal/issues/issue-73-aws-external-dns-helper-material-preparation.md"
+    },
+    {
+      "number": 74,
+      "title": "AWS external DNS helper material implementation comparison を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-74-aws-external-dns-helper-material-implementation-comparison.pdf",
+      "sourcePath": "docs/portal/issues/issue-74-aws-external-dns-helper-material-implementation-comparison.md"
+    },
+    {
+      "number": 75,
+      "title": "AWS external DNS helper material shell snippet execution を進める",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-75-aws-external-dns-helper-material-shell-snippet-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-75-aws-external-dns-helper-material-shell-snippet-execution.md"
+    },
+    {
+      "number": 76,
+      "title": "AWS primary email pointer implementation comparison を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-76-aws-primary-email-pointer-implementation-comparison.pdf",
+      "sourcePath": "docs/portal/issues/issue-76-aws-primary-email-pointer-implementation-comparison.md"
+    },
+    {
+      "number": 77,
+      "title": "AWS primary email pointer local text generator execution を進める",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-77-aws-primary-email-pointer-local-text-generator-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-77-aws-primary-email-pointer-local-text-generator-execution.md"
+    },
+    {
+      "number": 78,
+      "title": "AWS rollback operator pack implementation comparison を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-78-aws-rollback-operator-pack-implementation-comparison.pdf",
+      "sourcePath": "docs/portal/issues/issue-78-aws-rollback-operator-pack-implementation-comparison.md"
+    },
+    {
+      "number": 79,
+      "title": "AWS single current-issue operator pack execution を進める",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-79-aws-single-current-issue-operator-pack-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-79-aws-single-current-issue-operator-pack-execution.md"
+    },
+    {
+      "number": 80,
+      "title": "[Portal] GCP retained preview shutdown decision",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-80-gcp-retained-preview-shutdown-decision.pdf",
+      "sourcePath": "docs/portal/issues/issue-80-gcp-retained-preview-shutdown-decision.md"
+    },
+    {
+      "number": 81,
+      "title": "[Portal] GCP retained preview cost anomaly supporting note",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-81-gcp-retained-preview-cost-anomaly-supporting-note.pdf",
+      "sourcePath": "docs/portal/issues/issue-81-gcp-retained-preview-cost-anomaly-supporting-note.md"
+    },
+    {
+      "number": 82,
+      "title": "[Portal] GCP retained preview purpose complete supporting note",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-82-gcp-retained-preview-purpose-complete-supporting-note.pdf",
+      "sourcePath": "docs/portal/issues/issue-82-gcp-retained-preview-purpose-complete-supporting-note.md"
+    },
+    {
+      "number": 83,
+      "title": "[Portal] GCP owner-bound external notification uplift comparison",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-83-gcp-owner-bound-external-notification-uplift-comparison.pdf",
+      "sourcePath": "docs/portal/issues/issue-83-gcp-owner-bound-external-notification-uplift-comparison.md"
+    },
+    {
+      "number": 84,
+      "title": "[Portal] GCP owner-bound notification pointer local text generator execution",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-84-gcp-owner-bound-notification-pointer-local-text-generator-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-84-gcp-owner-bound-notification-pointer-local-text-generator-execution.md"
+    },
+    {
+      "number": 85,
+      "title": "[Portal] GCP Cloud Armor deep tuning comparison",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-85-gcp-cloud-armor-deep-tuning-comparison.pdf",
+      "sourcePath": "docs/portal/issues/issue-85-gcp-cloud-armor-deep-tuning-comparison.md"
+    },
+    {
+      "number": 86,
+      "title": "[Portal] GCP reviewable Cloud Armor tuning pack execution",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-86-gcp-reviewable-cloud-armor-tuning-pack-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-86-gcp-reviewable-cloud-armor-tuning-pack-execution.md"
+    },
+    {
+      "number": 87,
+      "title": "[Portal] GCP credential rotation execution comparison",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-87-gcp-credential-rotation-execution-comparison.pdf",
+      "sourcePath": "docs/portal/issues/issue-87-gcp-credential-rotation-execution-comparison.md"
+    },
+    {
+      "number": 88,
+      "title": "[Portal] GCP manual owner-reviewed rotation pack execution",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-88-gcp-manual-owner-reviewed-rotation-pack-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-88-gcp-manual-owner-reviewed-rotation-pack-execution.md"
+    },
+    {
+      "number": 89,
+      "title": "[Portal] GCP destructive rollback implementation comparison",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-89-gcp-destructive-rollback-implementation-comparison.pdf",
+      "sourcePath": "docs/portal/issues/issue-89-gcp-destructive-rollback-implementation-comparison.md"
+    },
+    {
+      "number": 90,
+      "title": "[portal] GCP review-only destructive rollback pack execution",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-90-gcp-review-only-destructive-rollback-pack-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-90-gcp-review-only-destructive-rollback-pack-execution.md"
+    },
+    {
+      "number": 91,
+      "title": "[portal] GCP hardening batch follow-up map",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-91-gcp-hardening-batch-follow-up-map.pdf",
+      "sourcePath": "docs/portal/issues/issue-91-gcp-hardening-batch-follow-up-map.md"
+    },
+    {
+      "number": 92,
+      "title": "AWS manual public DNS verification fallback を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-92-aws-manual-public-dns-verification-fallback.pdf",
+      "sourcePath": "docs/portal/issues/issue-92-aws-manual-public-dns-verification-fallback.md"
+    },
+    {
+      "number": 93,
+      "title": "AWS resolver-assisted manual public DNS comparison",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-93-aws-resolver-assisted-manual-public-dns-comparison.pdf",
+      "sourcePath": "docs/portal/issues/issue-93-aws-resolver-assisted-manual-public-dns-comparison.md"
+    },
+    {
+      "number": 94,
+      "title": "AWS manual public DNS verification checklist execution",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-94-aws-manual-public-dns-verification-checklist-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-94-aws-manual-public-dns-verification-checklist-execution.md"
+    },
+    {
+      "number": 95,
+      "title": "AWS manual public DNS verification paste-back dry-run を進める",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-95-aws-manual-public-dns-verification-paste-back-dry-run.pdf",
+      "sourcePath": "docs/portal/issues/issue-95-aws-manual-public-dns-verification-paste-back-dry-run.md"
+    },
+    {
+      "number": 106,
+      "title": "portal live reflection execution を進める",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-106-portal-live-reflection-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-106-portal-live-reflection-execution.md"
+    },
+    {
+      "number": 107,
+      "title": "GCP portal live reflection parity recovery を進める",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-107-gcp-portal-live-reflection-parity-recovery.pdf",
+      "sourcePath": "docs/portal/issues/issue-107-gcp-portal-live-reflection-parity-recovery.md"
+    },
+    {
+      "number": 108,
+      "title": "portal cloud-specific variant design and delivery strategy を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-108-portal-cloud-specific-variant-design-and-delivery-strategy.pdf",
+      "sourcePath": "docs/portal/issues/issue-108-portal-cloud-specific-variant-design-and-delivery-strategy.md"
+    },
+    {
+      "number": 109,
+      "title": "portal runtime cloud detection and content model implementation を進める",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-109-portal-runtime-cloud-detection-and-content-model-implementation.pdf",
+      "sourcePath": "docs/portal/issues/issue-109-portal-runtime-cloud-detection-and-content-model-implementation.md"
+    },
+    {
+      "number": 110,
+      "title": "AWS portal variant live reflection execution を進める",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-110-aws-portal-variant-live-reflection-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-110-aws-portal-variant-live-reflection-execution.md"
+    },
+    {
+      "number": 111,
+      "title": "GCP portal variant live reflection execution を進める",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-111-gcp-portal-variant-live-reflection-execution.pdf",
+      "sourcePath": "docs/portal/issues/issue-111-gcp-portal-variant-live-reflection-execution.md"
+    },
+    {
+      "number": 112,
+      "title": "SNS implementation protection and change-isolation baseline を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-112-sns-implementation-protection-and-change-isolation-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-112-sns-implementation-protection-and-change-isolation-baseline.md"
+    },
+    {
+      "number": 113,
+      "title": "SNS critical-path regression test baseline を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-113-sns-critical-path-regression-test-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-113-sns-critical-path-regression-test-baseline.md"
+    },
+    {
+      "number": 114,
+      "title": "SNS shared-layer manual major-flow check baseline を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-114-sns-shared-layer-manual-major-flow-check-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-114-sns-shared-layer-manual-major-flow-check-baseline.md"
+    },
+    {
+      "number": 115,
+      "title": "SNS contract regression test command baseline を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-115-sns-contract-regression-test-command-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-115-sns-contract-regression-test-command-baseline.md"
+    },
+    {
+      "number": 116,
+      "title": "SNS major-flow integration suite baseline を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-116-sns-major-flow-integration-suite-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-116-sns-major-flow-integration-suite-baseline.md"
+    },
+    {
+      "number": 117,
+      "title": "SNS manual major-flow operator template baseline を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-117-sns-manual-major-flow-operator-template-baseline.pdf",
+      "sourcePath": "docs/portal/issues/issue-117-sns-manual-major-flow-operator-template-baseline.md"
+    },
+    {
+      "number": 118,
+      "title": "SNS manual major-flow paste-back dry-run を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-118-sns-manual-major-flow-paste-back-dry-run.pdf",
+      "sourcePath": "docs/portal/issues/issue-118-sns-manual-major-flow-paste-back-dry-run.md"
+    },
+    {
+      "number": 119,
+      "title": "SNS request-response contract command implementation split を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-119-sns-request-response-contract-command-implementation-split.pdf",
+      "sourcePath": "docs/portal/issues/issue-119-sns-request-response-contract-command-implementation-split.md"
+    },
+    {
+      "number": 120,
+      "title": "SNS auth-error contract command implementation split を整理する",
+      "updatedAtJa": "2026/03/12",
+      "pdfName": "issue-120-sns-auth-error-contract-command-implementation-split.pdf",
+      "sourcePath": "docs/portal/issues/issue-120-sns-auth-error-contract-command-implementation-split.md"
+    },
+    {
+      "number": 121,
+      "title": "SNS auth-post-readback suite implementation split を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-121-sns-auth-post-readback-suite-implementation-split.pdf",
+      "sourcePath": "docs/portal/issues/issue-121-sns-auth-post-readback-suite-implementation-split.md"
+    },
+    {
+      "number": 122,
+      "title": "SNS surface reachability suite implementation split を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-122-sns-surface-reachability-suite-implementation-split.pdf",
+      "sourcePath": "docs/portal/issues/issue-122-sns-surface-reachability-suite-implementation-split.md"
+    },
+    {
+      "number": 123,
+      "title": "SNS manual major-flow template section implementation split を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-123-sns-manual-major-flow-template-section-implementation-split.pdf",
+      "sourcePath": "docs/portal/issues/issue-123-sns-manual-major-flow-template-section-implementation-split.md"
+    },
+    {
+      "number": 124,
+      "title": "SNS manual major-flow validation shape implementation split を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-124-sns-manual-major-flow-validation-shape-implementation-split.pdf",
+      "sourcePath": "docs/portal/issues/issue-124-sns-manual-major-flow-validation-shape-implementation-split.md"
+    },
+    {
+      "number": 125,
+      "title": "SNS manual major-flow completed draft implementation split を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-125-sns-manual-major-flow-completed-draft-implementation-split.pdf",
+      "sourcePath": "docs/portal/issues/issue-125-sns-manual-major-flow-completed-draft-implementation-split.md"
+    },
+    {
+      "number": 126,
+      "title": "SNS incomplete manual check fallback implementation split を整理する",
+      "updatedAtJa": "2026/03/11",
+      "pdfName": "issue-126-sns-incomplete-manual-check-fallback-implementation-split.pdf",
+      "sourcePath": "docs/portal/issues/issue-126-sns-incomplete-manual-check-fallback-implementation-split.md"
+    }
+  ],
+  "skippedIssues": [
+    {
+      "number": 37,
+      "reason": "ローカル issue 文書が存在しない"
+    },
+    {
+      "number": 100,
+      "reason": "ローカル issue 文書が存在しない"
+    },
+    {
+      "number": 101,
+      "reason": "ローカル issue 文書が存在しない"
+    },
+    {
+      "number": 102,
+      "reason": "ローカル issue 文書が存在しない"
+    },
+    {
+      "number": 103,
+      "reason": "ローカル issue 文書が存在しない"
+    },
+    {
+      "number": 104,
+      "reason": "ローカル issue 文書が存在しない"
+    },
+    {
+      "number": 105,
+      "reason": "ローカル issue 文書が存在しない"
+    }
+  ]
+}

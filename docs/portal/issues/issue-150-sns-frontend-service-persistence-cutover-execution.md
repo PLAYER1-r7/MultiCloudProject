@@ -62,9 +62,13 @@ Acceptance Criteria
 
 - frontend runtime cutover now reads SNS public config from runtime-config.js first, so staging can switch the SNS surface to HTTP service mode without rebuilding the bundle
 - local HTTP-mode validation rewrites dist/runtime-config.js before preview, which keeps the browser evidence on the service-backed path instead of depending on stale build-time env or browser-local state
-- live staging cutover confirmation remains pending until a staging deploy publishes reviewed SNS service settings and the matching staging review passes against that runtime config
+- staging GitHub environment now declares STAGING_SNS_SERVICE_MODE=http and STAGING_SNS_SERVICE_BASE_URL=https://cosq3c2bb2gso5xds4wtoqnwsa0srusr.lambda-url.ap-northeast-1.on.aws
+- the reviewed staging SNS HTTP target is now Terraform-managed and persists timeline state in DynamoDB table `multicloudproject-portal-sns-staging-timeline` rather than temporary `/tmp` storage
+- direct GET, HEAD, POST, and readback probes succeeded against the reviewed Lambda Function URL after the DynamoDB-backed cutover, and the stored timeline item was visible in DynamoDB
+- portal-staging-deploy run 23041594174 completed successfully after the Terraform-backed staging SNS backend was applied, keeping runtime-config.js aligned with the reviewed HTTP service URL on the staging site
+- current live-state check: https://d32v64hg1mmmau.cloudfront.net/runtime-config.js now resolves VITE_PUBLIC_SNS_SERVICE_MODE=http and the reviewed Lambda Function URL as the staging SNS service base URL
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: Terraform-backed staging deploy and live runtime evidence captured locally
 
 # Dependencies
 

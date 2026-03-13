@@ -26,6 +26,8 @@ This directory is reserved for the staging entrypoint of the portal delivery inf
   - `STAGING_CLOUDFRONT_DISTRIBUTION_ID`
   - `STAGING_BASE_URL`
   - `STAGING_SMOKE_PATHS`
+  - `STAGING_SNS_SERVICE_MODE`
+  - `STAGING_SNS_SERVICE_BASE_URL`
 
 ## Build Artifact Handoff Expectation
 
@@ -54,6 +56,14 @@ This directory is reserved for the staging entrypoint of the portal delivery inf
 - S3 public access is blocked and CloudFront reads through Origin Access Control
 - CloudFront redirects viewers to HTTPS
 - the shared module attaches a baseline response headers policy for content type, frame, referrer, and HSTS controls
+- staging SNS review now relies on a dedicated Lambda Function URL plus DynamoDB timeline persistence managed from this staging entrypoint
+
+## SNS Service Resources
+
+- Lambda function name pattern: `multicloudproject-portal-sns-staging`
+- DynamoDB table pattern: `multicloudproject-portal-sns-staging-timeline`
+- Function URL is expected to feed `STAGING_SNS_SERVICE_BASE_URL` after apply
+- the Lambda package is built from `apps/portal-web/src` through the `portal-sns-service` module archive step
 
 ## Example Computed Bucket Pattern
 

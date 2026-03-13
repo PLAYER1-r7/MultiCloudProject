@@ -18,4 +18,6 @@ locals {
     },
     var.common_tags
   )
+
+  staging_base_url = var.staging_base_url != "" ? var.staging_base_url : "https://${module.portal_static_site.distribution_domain_name}"
 }

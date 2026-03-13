@@ -194,8 +194,8 @@ export async function handleSnsRouteRequest(
   const pathname = getPathname(request.url);
 
   if (pathname === policy.timelineEndpoint) {
-    if (request.method !== "GET") {
-      return buildErrorResponse("SNS_METHOD_NOT_ALLOWED", "Timeline route accepts GET only.", false, 405);
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      return buildErrorResponse("SNS_METHOD_NOT_ALLOWED", "Timeline route accepts GET or HEAD only.", false, 405);
     }
 
     if (context.actorRole === "guest" && !policy.allowGuestTimelineRead) {

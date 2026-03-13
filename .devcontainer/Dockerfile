@@ -35,6 +35,7 @@ RUN apt-get update \
     libcairo2 \
     libpango-1.0-0 \
     libasound2 \
+    fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \

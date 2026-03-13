@@ -47,6 +47,10 @@ jobs:
       PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID }}
       PRODUCTION_BASE_URL: ${{ vars.PRODUCTION_BASE_URL }}
       PRODUCTION_SMOKE_PATHS: ${{ vars.PRODUCTION_SMOKE_PATHS != '' && vars.PRODUCTION_SMOKE_PATHS || '/,/overview,/guidance' }}
+      PRODUCTION_SNS_SERVICE_MODE: ${{ vars['PRODUCTION_SNS_SERVICE_MODE'] }}
+      PRODUCTION_SNS_SERVICE_BASE_URL: ${{ vars['PRODUCTION_SNS_SERVICE_BASE_URL'] }}
+      PRODUCTION_SNS_PERSISTENCE_MODE: ${{ vars['PRODUCTION_SNS_PERSISTENCE_MODE'] }}
+      PRODUCTION_SNS_WRITE_SURFACE_ENABLED: ${{ vars['PRODUCTION_SNS_WRITE_SURFACE_ENABLED'] }}
     steps:
       - name: Verify promotion source runs
         uses: actions/github-script@v7
@@ -121,16 +125,51 @@ jobs:
           cp build-evidence/portal-build-evidence.md production-source-build-evidence.md
           cp staging-evidence/staging-monitoring-record.md production-staging-verification-evidence.md
 
+      - name: Write production runtime config overlay
+        run: |
+          node <<'EOF'
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          const runtimeConfig = {
+            VITE_PUBLIC_SNS_SERVICE_MODE: process.env.PRODUCTION_SNS_SERVICE_MODE,
+            VITE_PUBLIC_SNS_SERVICE_BASE_URL: process.env.PRODUCTION_SNS_SERVICE_BASE_URL,
+            VITE_PUBLIC_SNS_PERSISTENCE_MODE: process.env.PRODUCTION_SNS_PERSISTENCE_MODE,
+            VITE_PUBLIC_SNS_WRITE_SURFACE_ENABLED: process.env.PRODUCTION_SNS_WRITE_SURFACE_ENABLED
+          };
+
+          const filePath = path.join(process.cwd(), 'portal-dist', 'runtime-config.js');
+          const fileBody = `globalThis.__PORTAL_RUNTIME_CONFIG__ = Object.assign({}, globalThis.__PORTAL_RUNTIME_CONFIG__ ?? {}, ${JSON.stringify(runtimeConfig, null, 2)});\n`;
+          fs.writeFileSync(filePath, fileBody, 'utf8');
+          EOF
+
       - name: Validate production settings
         env:
           AWS_ROLE_TO_ASSUME_PRODUCTION: ${{ secrets.AWS_ROLE_TO_ASSUME_PRODUCTION }}
         run: |
+          case "$PRODUCTION_SNS_SERVICE_MODE" in
+            simulated-route|http) ;;
+            *)
+              echo "Unsupported PRODUCTION_SNS_SERVICE_MODE: $PRODUCTION_SNS_SERVICE_MODE" >&2
+              exit 1
+              ;;
+          esac
+          case "$PRODUCTION_SNS_PERSISTENCE_MODE" in
+            browser-local-storage|memory) ;;
+            *)
+              echo "Unsupported PRODUCTION_SNS_PERSISTENCE_MODE: $PRODUCTION_SNS_PERSISTENCE_MODE" >&2
+              exit 1
+              ;;
+          esac
           test -f portal-dist/index.html
           test -f production-source-build-evidence.md
           test -f production-staging-verification-evidence.md
           test -n "$PRODUCTION_SITE_BUCKET_NAME"
           test -n "$AWS_ROLE_TO_ASSUME_PRODUCTION"
           test -n "${{ inputs.rollback_target_reference }}"
+          if [[ "$PRODUCTION_SNS_SERVICE_MODE" == 'http' ]]; then
+            test -n "$PRODUCTION_SNS_SERVICE_BASE_URL"
+          fi
 
       - name: Show deploy inputs
         run: |
@@ -143,6 +182,10 @@ jobs:
           echo "distribution_id=${PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID:-<none>}"
           echo "base_url=${PRODUCTION_BASE_URL:-<none>}"
           echo "smoke_paths=$PRODUCTION_SMOKE_PATHS"
+          echo "sns_service_mode=$PRODUCTION_SNS_SERVICE_MODE"
+          echo "sns_service_base_url=${PRODUCTION_SNS_SERVICE_BASE_URL:-<none>}"
+          echo "sns_persistence_mode=$PRODUCTION_SNS_PERSISTENCE_MODE"
+          echo "sns_write_surface_enabled=$PRODUCTION_SNS_WRITE_SURFACE_ENABLED"
           echo "release_owner=$release_owner"
           echo "deploy_operator=$deploy_operator"
           echo "verification_owner=$verification_owner"
@@ -189,6 +232,10 @@ jobs:
           - Bucket: ${PRODUCTION_SITE_BUCKET_NAME:-not configured}
           - CloudFront distribution: ${PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID:-not configured}
           - Base URL: ${PRODUCTION_BASE_URL:-not configured}
+          - SNS service mode: ${PRODUCTION_SNS_SERVICE_MODE:-not configured}
+          - SNS service base URL: ${PRODUCTION_SNS_SERVICE_BASE_URL:-not configured}
+          - SNS persistence mode: ${PRODUCTION_SNS_PERSISTENCE_MODE:-not configured}
+          - SNS write surface enabled: ${PRODUCTION_SNS_WRITE_SURFACE_ENABLED:-not configured}
           - Smoke paths: ${PRODUCTION_SMOKE_PATHS}
           - Release owner: ${release_owner}
           - Deploy operator: ${deploy_operator}
@@ -272,6 +319,10 @@ jobs:
             echo "- Source build run ID: ${{ inputs.source_build_run_id }}"
             echo "- Source build commit SHA: ${{ inputs.source_build_commit_sha }}"
             echo "- Staging verification run ID: ${{ inputs.staging_deploy_run_id }}"
+            echo "- SNS service mode: ${PRODUCTION_SNS_SERVICE_MODE:-not configured}"
+            echo "- SNS service base URL: ${PRODUCTION_SNS_SERVICE_BASE_URL:-not configured}"
+            echo "- SNS persistence mode: ${PRODUCTION_SNS_PERSISTENCE_MODE:-not configured}"
+            echo "- SNS write surface enabled: ${PRODUCTION_SNS_WRITE_SURFACE_ENABLED:-not configured}"
             echo "- Rollback target reference: ${{ inputs.rollback_target_reference }}"
             echo "- Deployment record artifact: ${DEPLOYMENT_RECORD_ARTIFACT_NAME}"
             echo ""
