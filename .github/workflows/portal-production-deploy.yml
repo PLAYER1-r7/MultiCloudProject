@@ -127,27 +127,21 @@ jobs:
 
       - name: Write production runtime config overlay
         run: |
-          json_string() {
-            python3 -c 'import json, sys; print(json.dumps(sys.argv[1]))' "$1"
-          }
+          node <<'EOF'
+          const fs = require('node:fs');
+          const path = require('node:path');
 
-          {
-            echo 'window.__PORTAL_RUNTIME_CONFIG__ = {'
-            echo '  ...(window.__PORTAL_RUNTIME_CONFIG__ || {}),'
-            if [[ -n "${PRODUCTION_SNS_SERVICE_MODE:-}" ]]; then
-              printf '  VITE_PUBLIC_SNS_SERVICE_MODE: %s,\n' "$(json_string "$PRODUCTION_SNS_SERVICE_MODE")"
-            fi
-            if [[ -n "${PRODUCTION_SNS_SERVICE_BASE_URL:-}" ]]; then
-              printf '  VITE_PUBLIC_SNS_SERVICE_BASE_URL: %s,\n' "$(json_string "$PRODUCTION_SNS_SERVICE_BASE_URL")"
-            fi
-            if [[ -n "${PRODUCTION_SNS_PERSISTENCE_MODE:-}" ]]; then
-              printf '  VITE_PUBLIC_SNS_PERSISTENCE_MODE: %s,\n' "$(json_string "$PRODUCTION_SNS_PERSISTENCE_MODE")"
-            fi
-            if [[ -n "${PRODUCTION_SNS_WRITE_SURFACE_ENABLED:-}" ]]; then
-              printf '  VITE_PUBLIC_SNS_WRITE_SURFACE_ENABLED: %s,\n' "$(json_string "$PRODUCTION_SNS_WRITE_SURFACE_ENABLED")"
-            fi
-            echo '};'
-          } > portal-dist/runtime-config.js
+          const runtimeConfig = {
+            VITE_PUBLIC_SNS_SERVICE_MODE: process.env.PRODUCTION_SNS_SERVICE_MODE,
+            VITE_PUBLIC_SNS_SERVICE_BASE_URL: process.env.PRODUCTION_SNS_SERVICE_BASE_URL,
+            VITE_PUBLIC_SNS_PERSISTENCE_MODE: process.env.PRODUCTION_SNS_PERSISTENCE_MODE,
+            VITE_PUBLIC_SNS_WRITE_SURFACE_ENABLED: process.env.PRODUCTION_SNS_WRITE_SURFACE_ENABLED
+          };
+
+          const filePath = path.join(process.cwd(), 'portal-dist', 'runtime-config.js');
+          const fileBody = `globalThis.__PORTAL_RUNTIME_CONFIG__ = Object.assign({}, globalThis.__PORTAL_RUNTIME_CONFIG__ ?? {}, ${JSON.stringify(runtimeConfig, null, 2)});\n`;
+          fs.writeFileSync(filePath, fileBody, 'utf8');
+          EOF
 
       - name: Validate production settings
         env:

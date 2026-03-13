@@ -15,6 +15,23 @@ function createServiceConfig() {
   });
 }
 
+const serviceConfig = createServiceConfig();
+const dependencies =
+  serviceConfig.persistenceBackend === "dynamodb"
+    ? createDynamoBackedSnsRouteHandlerDependencies({
+        tableName: serviceConfig.dynamoTableName
+      })
+    : createFileBackedSnsRouteHandlerDependencies({
+        filePath: serviceConfig.storageFilePath
+      });
+const policy = {
+  timelineEndpoint: serviceConfig.timelineEndpoint,
+  postsEndpoint: serviceConfig.postsEndpoint,
+  allowGuestTimelineRead: serviceConfig.allowGuestTimelineRead,
+  writesEnabled: serviceConfig.writesEnabled,
+  requireActorContext: serviceConfig.requireActorContext
+};
+
 function createRouteRequestContext(headers) {
   const actorRole = normalizeActorRole(headers["x-sns-demo-actor-role"]);
   const actorIdHeader = headers["x-sns-demo-actor-id"];
@@ -31,22 +48,6 @@ function normalizeHeaders(headers) {
 }
 
 export async function handler(event) {
-  const serviceConfig = createServiceConfig();
-  const dependencies =
-    serviceConfig.persistenceBackend === "dynamodb"
-      ? createDynamoBackedSnsRouteHandlerDependencies({
-          tableName: serviceConfig.dynamoTableName
-        })
-      : createFileBackedSnsRouteHandlerDependencies({
-          filePath: serviceConfig.storageFilePath
-        });
-  const policy = {
-    timelineEndpoint: serviceConfig.timelineEndpoint,
-    postsEndpoint: serviceConfig.postsEndpoint,
-    allowGuestTimelineRead: serviceConfig.allowGuestTimelineRead,
-    writesEnabled: serviceConfig.writesEnabled,
-    requireActorContext: serviceConfig.requireActorContext
-  };
   const headers = normalizeHeaders(event.headers);
   const method = event.requestContext?.http?.method ?? event.httpMethod ?? "GET";
   const path = event.rawPath ?? event.path ?? "/";

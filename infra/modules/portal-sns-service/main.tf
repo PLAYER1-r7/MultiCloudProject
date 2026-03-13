@@ -143,24 +143,12 @@ resource "aws_lambda_permission" "invoke_function_url" {
   function_url_auth_type = "NONE"
 }
 
-resource "terraform_data" "invoke_via_function_url_permission" {
-  input = aws_lambda_function.service.function_name
+resource "aws_lambda_permission" "invoke_function" {
+  statement_id           = "FunctionURLAllowInvokeFunction"
+  action                 = "lambda:InvokeFunction"
+  function_name          = aws_lambda_function.service.function_name
+  principal              = "*"
+  invoked_via_function_url = true
 
-  provisioner "local-exec" {
-    command = <<-EOF
-      if ! aws lambda get-policy --function-name ${aws_lambda_function.service.function_name} 2>/dev/null | grep -q FunctionURLAllowInvokeFunction; then
-        aws lambda add-permission \
-          --function-name ${aws_lambda_function.service.function_name} \
-          --statement-id FunctionURLAllowInvokeFunction \
-          --action lambda:InvokeFunction \
-          --principal '*' \
-          --invoked-via-function-url >/dev/null
-      fi
-    EOF
-  }
-
-  depends_on = [
-    aws_lambda_function_url.service,
-    aws_lambda_permission.invoke_function_url
-  ]
+  depends_on = [aws_lambda_function_url.service]
 }
