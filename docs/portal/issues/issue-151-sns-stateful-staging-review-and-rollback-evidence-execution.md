@@ -61,9 +61,12 @@ Acceptance Criteria
 
 - staging deploy now records an SNS runtime config snapshot and rewrites runtime-config.js inside the deploy artifact so the reviewed staging surface can advertise the intended HTTP service path
 - SNS staging review now fails closed unless staging is configured for HTTP service mode with a declared service base URL, and the surface reachability review verifies that the visible runtime markers match that reviewed service URL
-- live staging review run and rollback-target evidence remain pending until the updated workflows are executed against a real staging SNS service target
+- the reviewed staging SNS HTTP service target is now managed from OpenTofu staging infrastructure as Lambda Function URL + DynamoDB timeline persistence, with direct GET, HEAD, POST, and readback probes succeeding after the backend cutover
+- portal-staging-deploy run 23041594174 completed successfully after the Terraform-backed SNS backend was applied and the reviewed runtime config remained aligned with the declared HTTP service URL
+- portal-sns-staging-review run 23041628020 completed successfully against that updated deploy evidence path, refreshing the stateful staging review evidence on the persistent backend rather than the earlier `/tmp` fallback
+- current live-state check: the staging CloudFront runtime config now advertises the reviewed Lambda Function URL rather than the simulated-route fallback, so the public staging surface is aligned with the service-backed evidence path
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: Terraform-backed staging deploy, staging review, and live runtime evidence captured locally
 
 # Dependencies
 

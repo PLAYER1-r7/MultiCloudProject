@@ -47,6 +47,10 @@ jobs:
       PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID }}
       PRODUCTION_BASE_URL: ${{ vars.PRODUCTION_BASE_URL }}
       PRODUCTION_SMOKE_PATHS: ${{ vars.PRODUCTION_SMOKE_PATHS != '' && vars.PRODUCTION_SMOKE_PATHS || '/,/overview,/guidance' }}
+      PRODUCTION_SNS_SERVICE_MODE: ${{ vars['PRODUCTION_SNS_SERVICE_MODE'] }}
+      PRODUCTION_SNS_SERVICE_BASE_URL: ${{ vars['PRODUCTION_SNS_SERVICE_BASE_URL'] }}
+      PRODUCTION_SNS_PERSISTENCE_MODE: ${{ vars['PRODUCTION_SNS_PERSISTENCE_MODE'] }}
+      PRODUCTION_SNS_WRITE_SURFACE_ENABLED: ${{ vars['PRODUCTION_SNS_WRITE_SURFACE_ENABLED'] }}
     steps:
       - name: Verify promotion source runs
         uses: actions/github-script@v7
@@ -121,6 +125,26 @@ jobs:
           cp build-evidence/portal-build-evidence.md production-source-build-evidence.md
           cp staging-evidence/staging-monitoring-record.md production-staging-verification-evidence.md
 
+      - name: Write production runtime config overlay
+        run: |
+          {
+            echo 'window.__PORTAL_RUNTIME_CONFIG__ = {'
+            echo '  ...(window.__PORTAL_RUNTIME_CONFIG__ || {}),'
+            if [[ -n "${PRODUCTION_SNS_SERVICE_MODE:-}" ]]; then
+              printf '  VITE_PUBLIC_SNS_SERVICE_MODE: "%s",\n' "$PRODUCTION_SNS_SERVICE_MODE"
+            fi
+            if [[ -n "${PRODUCTION_SNS_SERVICE_BASE_URL:-}" ]]; then
+              printf '  VITE_PUBLIC_SNS_SERVICE_BASE_URL: "%s",\n' "$PRODUCTION_SNS_SERVICE_BASE_URL"
+            fi
+            if [[ -n "${PRODUCTION_SNS_PERSISTENCE_MODE:-}" ]]; then
+              printf '  VITE_PUBLIC_SNS_PERSISTENCE_MODE: "%s",\n' "$PRODUCTION_SNS_PERSISTENCE_MODE"
+            fi
+            if [[ -n "${PRODUCTION_SNS_WRITE_SURFACE_ENABLED:-}" ]]; then
+              printf '  VITE_PUBLIC_SNS_WRITE_SURFACE_ENABLED: "%s",\n' "$PRODUCTION_SNS_WRITE_SURFACE_ENABLED"
+            fi
+            echo '};'
+          } > portal-dist/runtime-config.js
+
       - name: Validate production settings
         env:
           AWS_ROLE_TO_ASSUME_PRODUCTION: ${{ secrets.AWS_ROLE_TO_ASSUME_PRODUCTION }}
@@ -189,6 +213,10 @@ jobs:
           - Bucket: ${PRODUCTION_SITE_BUCKET_NAME:-not configured}
           - CloudFront distribution: ${PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID:-not configured}
           - Base URL: ${PRODUCTION_BASE_URL:-not configured}
+          - SNS service mode: ${PRODUCTION_SNS_SERVICE_MODE:-not configured}
+          - SNS service base URL: ${PRODUCTION_SNS_SERVICE_BASE_URL:-not configured}
+          - SNS persistence mode: ${PRODUCTION_SNS_PERSISTENCE_MODE:-not configured}
+          - SNS write surface enabled: ${PRODUCTION_SNS_WRITE_SURFACE_ENABLED:-not configured}
           - Smoke paths: ${PRODUCTION_SMOKE_PATHS}
           - Release owner: ${release_owner}
           - Deploy operator: ${deploy_operator}
@@ -272,6 +300,10 @@ jobs:
             echo "- Source build run ID: ${{ inputs.source_build_run_id }}"
             echo "- Source build commit SHA: ${{ inputs.source_build_commit_sha }}"
             echo "- Staging verification run ID: ${{ inputs.staging_deploy_run_id }}"
+            echo "- SNS service mode: ${PRODUCTION_SNS_SERVICE_MODE:-not configured}"
+            echo "- SNS service base URL: ${PRODUCTION_SNS_SERVICE_BASE_URL:-not configured}"
+            echo "- SNS persistence mode: ${PRODUCTION_SNS_PERSISTENCE_MODE:-not configured}"
+            echo "- SNS write surface enabled: ${PRODUCTION_SNS_WRITE_SURFACE_ENABLED:-not configured}"
             echo "- Rollback target reference: ${{ inputs.rollback_target_reference }}"
             echo "- Deployment record artifact: ${DEPLOYMENT_RECORD_ARTIFACT_NAME}"
             echo ""
