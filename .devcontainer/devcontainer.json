@@ -27,6 +27,9 @@
   ],
   "containerEnv": {
     "AWS_PAGER": "",
+    "GIT_PAGER": "cat",
+    "GH_PAGER": "cat",
+    "PAGER": "cat",
     "OPENTOFU_IN_AUTOMATION": "1"
   },
   "remoteEnv": {
