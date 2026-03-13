@@ -34,6 +34,8 @@ This directory is reserved for the production entrypoint of the portal delivery 
   - `PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID`
   - `PRODUCTION_BASE_URL`
   - `PRODUCTION_SMOKE_PATHS`
+  - `PRODUCTION_SNS_SERVICE_MODE`
+  - `PRODUCTION_SNS_SERVICE_BASE_URL`
 - Required dispatch inputs for `portal-production-deploy`:
   - `source_build_run_id`
   - `source_build_commit_sha`
@@ -59,6 +61,7 @@ This directory is reserved for the production entrypoint of the portal delivery 
 
 - Do not execute a production apply path or `portal-production-deploy` run unless the production footprint still fits the USD 15/month ceiling or the ceiling is explicitly revised
 - Do not execute a production apply path or `portal-production-deploy` run unless the production gate inputs are recorded and the production environment approval boundary is satisfied
+- Do not switch `PRODUCTION_SNS_SERVICE_MODE` to `http` until the reviewed production apply exposes a `sns_service_function_url` output and that URL is copied into `PRODUCTION_SNS_SERVICE_BASE_URL`
 - Do not treat staging success as implicit approval to create production resources or a production GitHub Actions environment
 - Do not promote a production candidate unless the rollback target artifact, its supporting release evidence, and the post-rollback verification owner are all recorded in the same operator review path
 - Do not set production aliases or a production `acm_certificate_arn` until the approved custom-domain path, the reviewed us-east-1 ACM certificate ARN, and the external DNS validation record plan are all recorded
@@ -69,10 +72,12 @@ This directory is reserved for the production entrypoint of the portal delivery 
 
 - Select the staging-validated promotion candidate explicitly before any production action starts
 - Select and record the last known-good rollback target artifact from the same reviewed evidence path before promotion starts
+- Apply the production environment after review so the `portal_sns_service` resources exist and record the resulting `sns_service_function_url` plus timeline table name in the same operator path before changing runtime variables
 - Prepare the reviewed us-east-1 ACM certificate ARN, the external DNS validation record plan, and the approved production aliases before any custom-domain apply or cutover starts
 - Dispatch `portal-production-deploy` with the selected source build run id, staging verification run id, rollback target reference, and verification owner after approval is granted
 - Record the approver, deploy operator, verification owner, notification route, production aliases, and reviewed certificate ARN in the same production review path
 - Set `PRODUCTION_BASE_URL` to the approved production custom-domain URL and `PRODUCTION_SMOKE_PATHS` to the release smoke list before custom-domain verification starts
+- Set `PRODUCTION_SNS_SERVICE_BASE_URL` to the reviewed `sns_service_function_url` output and switch `PRODUCTION_SNS_SERVICE_MODE=http` only after the production frontend origin is aligned with `production_base_url`
 - Coordinate external DNS validation and custom-domain cutover as explicit operator-managed steps after the production artifact is published
 - Verify the production custom-domain reachability, smoke paths, and rollback readiness evidence after cutover, using the same review discipline as staging
 
@@ -207,3 +212,10 @@ This directory is reserved for the production entrypoint of the portal delivery 
 
 - This repository does not yet treat external alert products, 24x7 on-call staffing, dashboard depth, or numeric SLO/SLI thresholds as part of the first production monitoring baseline
 - The current production monitoring baseline is limited to operator-facing deploy evidence, custom-domain reachability, smoke-path verification, and supporting distribution or DNS diagnostics
+
+## SNS Service Resources
+
+- Lambda function name pattern: `multicloudproject-portal-sns-production`
+- DynamoDB table pattern: `multicloudproject-portal-sns-production-timeline`
+- Function URL output is expected to feed `PRODUCTION_SNS_SERVICE_BASE_URL` after the reviewed production apply
+- The Lambda package is built from `apps/portal-web/src` through the `portal-sns-service` module archive step

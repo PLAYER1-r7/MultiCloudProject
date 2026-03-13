@@ -7,3 +7,5 @@ site_bucket_name    = ""
 aliases             = []
 # Use a reviewed us-east-1 ACM certificate ARN only after external DNS validation records are approved.
 acm_certificate_arn = ""
+# Use the reviewed HTTPS frontend origin for SNS service CORS once the production cutover path is fixed.
+production_base_url = "https://www.aws.ashnova.jp"

@@ -51,3 +51,9 @@ variable "common_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "production_base_url" {
+  description = "Reviewed HTTPS base URL for the production portal surface. Leave empty to derive it from the first alias or CloudFront domain output."
+  type        = string
+  default     = ""
+}

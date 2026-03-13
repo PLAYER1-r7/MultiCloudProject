@@ -114,11 +114,11 @@ resource "aws_lambda_function" "service" {
 
   environment {
     variables = {
-      SNS_SERVICE_ALLOW_ORIGIN         = var.allow_origin
-      SNS_SERVICE_PERSISTENCE_BACKEND  = "dynamodb"
-      SNS_SERVICE_DYNAMODB_TABLE_NAME  = aws_dynamodb_table.timeline.name
-      SNS_SERVICE_TIMELINE_ENDPOINT    = "/api/sns/timeline"
-      SNS_SERVICE_POSTS_ENDPOINT       = "/api/sns/posts"
+      SNS_SERVICE_ALLOW_ORIGIN        = var.allow_origin
+      SNS_SERVICE_PERSISTENCE_BACKEND = "dynamodb"
+      SNS_SERVICE_DYNAMODB_TABLE_NAME = aws_dynamodb_table.timeline.name
+      SNS_SERVICE_TIMELINE_ENDPOINT   = "/api/sns/timeline"
+      SNS_SERVICE_POSTS_ENDPOINT      = "/api/sns/posts"
     }
   }
 
@@ -136,10 +136,10 @@ resource "aws_lambda_function_url" "service" {
 }
 
 resource "aws_lambda_permission" "invoke_function_url" {
-  statement_id          = "FunctionURLAllowPublicAccess"
-  action                = "lambda:InvokeFunctionUrl"
-  function_name         = aws_lambda_function.service.function_name
-  principal             = "*"
+  statement_id           = "FunctionURLAllowPublicAccess"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.service.function_name
+  principal              = "*"
   function_url_auth_type = "NONE"
 }
 
@@ -148,7 +148,7 @@ resource "aws_lambda_permission" "invoke_function" {
   action                 = "lambda:InvokeFunction"
   function_name          = aws_lambda_function.service.function_name
   principal              = "*"
-  invoked_via_function_url = true
+  function_url_auth_type = "NONE"
 
   depends_on = [aws_lambda_function_url.service]
 }
