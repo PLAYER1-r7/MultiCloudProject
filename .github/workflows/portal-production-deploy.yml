@@ -127,20 +127,24 @@ jobs:
 
       - name: Write production runtime config overlay
         run: |
+          json_string() {
+            python3 -c 'import json, sys; print(json.dumps(sys.argv[1]))' "$1"
+          }
+
           {
             echo 'window.__PORTAL_RUNTIME_CONFIG__ = {'
             echo '  ...(window.__PORTAL_RUNTIME_CONFIG__ || {}),'
             if [[ -n "${PRODUCTION_SNS_SERVICE_MODE:-}" ]]; then
-              printf '  VITE_PUBLIC_SNS_SERVICE_MODE: "%s",\n' "$PRODUCTION_SNS_SERVICE_MODE"
+              printf '  VITE_PUBLIC_SNS_SERVICE_MODE: %s,\n' "$(json_string "$PRODUCTION_SNS_SERVICE_MODE")"
             fi
             if [[ -n "${PRODUCTION_SNS_SERVICE_BASE_URL:-}" ]]; then
-              printf '  VITE_PUBLIC_SNS_SERVICE_BASE_URL: "%s",\n' "$PRODUCTION_SNS_SERVICE_BASE_URL"
+              printf '  VITE_PUBLIC_SNS_SERVICE_BASE_URL: %s,\n' "$(json_string "$PRODUCTION_SNS_SERVICE_BASE_URL")"
             fi
             if [[ -n "${PRODUCTION_SNS_PERSISTENCE_MODE:-}" ]]; then
-              printf '  VITE_PUBLIC_SNS_PERSISTENCE_MODE: "%s",\n' "$PRODUCTION_SNS_PERSISTENCE_MODE"
+              printf '  VITE_PUBLIC_SNS_PERSISTENCE_MODE: %s,\n' "$(json_string "$PRODUCTION_SNS_PERSISTENCE_MODE")"
             fi
             if [[ -n "${PRODUCTION_SNS_WRITE_SURFACE_ENABLED:-}" ]]; then
-              printf '  VITE_PUBLIC_SNS_WRITE_SURFACE_ENABLED: "%s",\n' "$PRODUCTION_SNS_WRITE_SURFACE_ENABLED"
+              printf '  VITE_PUBLIC_SNS_WRITE_SURFACE_ENABLED: %s,\n' "$(json_string "$PRODUCTION_SNS_WRITE_SURFACE_ENABLED")"
             fi
             echo '};'
           } > portal-dist/runtime-config.js

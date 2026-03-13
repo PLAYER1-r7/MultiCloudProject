@@ -76,7 +76,7 @@ const glossaryDictionary = [
   { term: 'task contract', ja: 'タスク契約', note: '対象、目的、スコープ、検証計画、リスクを明文化した作業契約。' },
 ];
 
-function escapeHtml(value) {
+export function escapeHtml(value) {
   return value
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')

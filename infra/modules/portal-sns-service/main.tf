@@ -80,7 +80,7 @@ resource "aws_dynamodb_table" "timeline" {
 }
 
 resource "aws_iam_role" "lambda" {
-  name               = "MultiCloudProjectPortalSnsLambdaRole"
+  name               = "${local.function_name}-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
   tags               = var.tags
 }

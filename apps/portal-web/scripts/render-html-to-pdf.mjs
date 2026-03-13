@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { escapeHtml } from './render-markdown-to-pdf.mjs';
 
 const [, , inputArg, outputArg] = process.argv;
 
@@ -34,7 +35,7 @@ try {
     printBackground: true,
     displayHeaderFooter: true,
     headerTemplate:
-      `<div style="width:100%;padding:0 10mm;font-size:8px;color:#5b6578;font-family:sans-serif;">${headerTitle}</div>`,
+      `<div style="width:100%;padding:0 10mm;font-size:8px;color:#5b6578;font-family:sans-serif;">${escapeHtml(headerTitle)}</div>`,
     footerTemplate:
       '<div style="width:100%;padding:0 10mm;font-size:8px;color:#5b6578;font-family:sans-serif;display:flex;justify-content:space-between;"><span>MultiCloudProject 参考資料</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>',
     margin: {
