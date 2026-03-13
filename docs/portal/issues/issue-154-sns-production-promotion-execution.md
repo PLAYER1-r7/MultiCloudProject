@@ -34,10 +34,10 @@ Scope
 - Restricted paths: docs/portal/issues/issue-152-sns-production-promotion-and-operational-hardening-contract.md, docs/portal/issues/issue-155-sns-production-runtime-config-and-public-verification-execution.md, docs/portal/issues/issue-156-sns-production-rollback-hardening-and-recovery-evidence-execution.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: production promotion source evidence が build/staging chain 単位で明文化されている
-- [ ] AC-2: runtime overlay input gate と service target declaration が読み取れる
-- [ ] AC-3: approver boundary、rollback target reference、pre-deploy fail conditions が読み取れる
-- [ ] AC-4: public verification and broader hardening が non-goals として切り分けられている
+- [x] AC-1: production promotion source evidence が build/staging chain 単位で明文化されている
+- [x] AC-2: runtime overlay input gate と service target declaration が読み取れる
+- [x] AC-3: approver boundary、rollback target reference、pre-deploy fail conditions が読み取れる
+- [x] AC-4: public verification and broader hardening が non-goals として切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-154-sns-production-promotion-execution.md
@@ -58,21 +58,21 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] promotion source evidence を fixed judgment にする
-- [ ] approver boundary を fixed judgment にする
-- [ ] runtime overlay input gate を fixed judgment にする
-- [ ] rollback target declaration を fixed judgment にする
-- [ ] pre-deploy fail conditions を fixed judgment にする
-- [ ] non-goals を明文化する
+- [x] promotion source evidence を fixed judgment にする
+- [x] approver boundary を fixed judgment にする
+- [x] runtime overlay input gate を fixed judgment にする
+- [x] rollback target declaration を fixed judgment にする
+- [x] pre-deploy fail conditions を fixed judgment にする
+- [x] non-goals を明文化する
 
 # Definition of Done
 
-- [ ] reviewed build/staging chain を production candidate として読める
-- [ ] production runtime overlay inputs と service target declaration を読める
-- [ ] rollback target reference と pre-deploy stop condition を読める
-- [ ] promotion evidence record に approver / verification owner / source evidence が同居する形を読める
-- [ ] public verification and broader hardening と混線せず読める
-- [ ] feature expansion が non-goal として切り分けられている
+- [x] reviewed build/staging chain を production candidate として読める
+- [x] production runtime overlay inputs と service target declaration を読める
+- [x] rollback target reference と pre-deploy stop condition を読める
+- [x] promotion evidence record に approver / verification owner / source evidence が同居する形を読める
+- [x] public verification and broader hardening と混線せず読める
+- [x] feature expansion が non-goal として切り分けられている
 
 # Promotion Source Baseline
 
