@@ -147,12 +147,29 @@ jobs:
         env:
           AWS_ROLE_TO_ASSUME_PRODUCTION: ${{ secrets.AWS_ROLE_TO_ASSUME_PRODUCTION }}
         run: |
+          case "$PRODUCTION_SNS_SERVICE_MODE" in
+            simulated-route|http) ;;
+            *)
+              echo "Unsupported PRODUCTION_SNS_SERVICE_MODE: $PRODUCTION_SNS_SERVICE_MODE" >&2
+              exit 1
+              ;;
+          esac
+          case "$PRODUCTION_SNS_PERSISTENCE_MODE" in
+            browser-local-storage|memory) ;;
+            *)
+              echo "Unsupported PRODUCTION_SNS_PERSISTENCE_MODE: $PRODUCTION_SNS_PERSISTENCE_MODE" >&2
+              exit 1
+              ;;
+          esac
           test -f portal-dist/index.html
           test -f production-source-build-evidence.md
           test -f production-staging-verification-evidence.md
           test -n "$PRODUCTION_SITE_BUCKET_NAME"
           test -n "$AWS_ROLE_TO_ASSUME_PRODUCTION"
           test -n "${{ inputs.rollback_target_reference }}"
+          if [[ "$PRODUCTION_SNS_SERVICE_MODE" == 'http' ]]; then
+            test -n "$PRODUCTION_SNS_SERVICE_BASE_URL"
+          fi
 
       - name: Show deploy inputs
         run: |
@@ -165,6 +182,10 @@ jobs:
           echo "distribution_id=${PRODUCTION_CLOUDFRONT_DISTRIBUTION_ID:-<none>}"
           echo "base_url=${PRODUCTION_BASE_URL:-<none>}"
           echo "smoke_paths=$PRODUCTION_SMOKE_PATHS"
+          echo "sns_service_mode=$PRODUCTION_SNS_SERVICE_MODE"
+          echo "sns_service_base_url=${PRODUCTION_SNS_SERVICE_BASE_URL:-<none>}"
+          echo "sns_persistence_mode=$PRODUCTION_SNS_PERSISTENCE_MODE"
+          echo "sns_write_surface_enabled=$PRODUCTION_SNS_WRITE_SURFACE_ENABLED"
           echo "release_owner=$release_owner"
           echo "deploy_operator=$deploy_operator"
           echo "verification_owner=$verification_owner"
