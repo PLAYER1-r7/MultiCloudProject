@@ -19,6 +19,18 @@ on:
         description: "Run URL or evidence reference for the last known-good rollback target artifact"
         required: true
         type: string
+      approver:
+        description: "Named approver for the production promotion record"
+        required: true
+        type: string
+      dns_certificate_coordination_reference:
+        description: "Reviewed external DNS and certificate coordination note or record reference"
+        required: true
+        type: string
+      state_locking_checkpoint:
+        description: "Reviewed state-locking checkpoint or confirmation reference for this promotion"
+        required: true
+        type: string
       verification_owner:
         description: "Owner responsible for post-deploy production verification"
         required: false
@@ -51,6 +63,9 @@ jobs:
       PRODUCTION_SNS_SERVICE_BASE_URL: ${{ vars['PRODUCTION_SNS_SERVICE_BASE_URL'] }}
       PRODUCTION_SNS_PERSISTENCE_MODE: ${{ vars['PRODUCTION_SNS_PERSISTENCE_MODE'] }}
       PRODUCTION_SNS_WRITE_SURFACE_ENABLED: ${{ vars['PRODUCTION_SNS_WRITE_SURFACE_ENABLED'] }}
+      PROMOTION_APPROVER: ${{ inputs.approver }}
+      PRODUCTION_DNS_CERTIFICATE_COORDINATION_REFERENCE: ${{ inputs.dns_certificate_coordination_reference }}
+      PRODUCTION_STATE_LOCKING_CHECKPOINT: ${{ inputs.state_locking_checkpoint }}
     steps:
       - name: Verify promotion source runs
         uses: actions/github-script@v7
@@ -147,6 +162,8 @@ jobs:
         env:
           AWS_ROLE_TO_ASSUME_PRODUCTION: ${{ secrets.AWS_ROLE_TO_ASSUME_PRODUCTION }}
         run: |
+          set -euo pipefail
+
           case "$PRODUCTION_SNS_SERVICE_MODE" in
             simulated-route|http) ;;
             *)
@@ -167,6 +184,20 @@ jobs:
           test -n "$PRODUCTION_SITE_BUCKET_NAME"
           test -n "$AWS_ROLE_TO_ASSUME_PRODUCTION"
           test -n "${{ inputs.rollback_target_reference }}"
+          test -n "$PROMOTION_APPROVER"
+          test -n "$PRODUCTION_DNS_CERTIFICATE_COORDINATION_REFERENCE"
+          test -n "$PRODUCTION_STATE_LOCKING_CHECKPOINT"
+
+          for required_reference_name in PROMOTION_APPROVER PRODUCTION_DNS_CERTIFICATE_COORDINATION_REFERENCE PRODUCTION_STATE_LOCKING_CHECKPOINT; do
+            required_reference_value="${!required_reference_name}"
+            case "$(printf '%s' "$required_reference_value" | tr '[:upper:]' '[:lower:]')" in
+              tbd|todo|pending|unknown|n/a)
+                echo "$required_reference_name must not use a placeholder value: $required_reference_value" >&2
+                exit 1
+                ;;
+            esac
+          done
+
           if [[ "$PRODUCTION_SNS_SERVICE_MODE" == 'http' ]]; then
             test -n "$PRODUCTION_SNS_SERVICE_BASE_URL"
           fi
@@ -191,7 +222,10 @@ jobs:
           echo "verification_owner=$verification_owner"
           echo "source_build_run_id=${{ inputs.source_build_run_id }}"
           echo "staging_deploy_run_id=${{ inputs.staging_deploy_run_id }}"
+          echo "approver=$PROMOTION_APPROVER"
           echo "rollback_target_reference=${{ inputs.rollback_target_reference }}"
+          echo "dns_certificate_coordination_reference=$PRODUCTION_DNS_CERTIFICATE_COORDINATION_REFERENCE"
+          echo "state_locking_checkpoint=$PRODUCTION_STATE_LOCKING_CHECKPOINT"
           echo "notification_route=$notification_route"
 
       - name: Configure AWS credentials
@@ -239,6 +273,7 @@ jobs:
           - Smoke paths: ${PRODUCTION_SMOKE_PATHS}
           - Release owner: ${release_owner}
           - Deploy operator: ${deploy_operator}
+          - Approver: ${PROMOTION_APPROVER}
           - Verification owner: ${verification_owner}
           - Notification route: ${notification_route}
           - Source build run ID: ${{ inputs.source_build_run_id }}
@@ -247,6 +282,8 @@ jobs:
           - Staging verification run ID: ${{ inputs.staging_deploy_run_id }}
           - Staging verification run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.staging_deploy_run_id }}
           - Rollback target reference: ${{ inputs.rollback_target_reference }}
+          - External DNS and certificate coordination reference: ${PRODUCTION_DNS_CERTIFICATE_COORDINATION_REFERENCE}
+          - State-locking checkpoint: ${PRODUCTION_STATE_LOCKING_CHECKPOINT}
 
           ### Source build evidence snapshot
 
@@ -323,7 +360,10 @@ jobs:
             echo "- SNS service base URL: ${PRODUCTION_SNS_SERVICE_BASE_URL:-not configured}"
             echo "- SNS persistence mode: ${PRODUCTION_SNS_PERSISTENCE_MODE:-not configured}"
             echo "- SNS write surface enabled: ${PRODUCTION_SNS_WRITE_SURFACE_ENABLED:-not configured}"
+            echo "- Approver: ${PROMOTION_APPROVER}"
             echo "- Rollback target reference: ${{ inputs.rollback_target_reference }}"
+            echo "- External DNS and certificate coordination reference: ${PRODUCTION_DNS_CERTIFICATE_COORDINATION_REFERENCE}"
+            echo "- State-locking checkpoint: ${PRODUCTION_STATE_LOCKING_CHECKPOINT}"
             echo "- Deployment record artifact: ${DEPLOYMENT_RECORD_ARTIFACT_NAME}"
             echo ""
             cat production-deployment-record.md

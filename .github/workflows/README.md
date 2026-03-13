@@ -62,12 +62,16 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
   - required dispatch input `source_build_commit_sha`
   - required dispatch input `staging_deploy_run_id`
   - required dispatch input `rollback_target_reference`
+  - required dispatch input `approver`
+  - required dispatch input `dns_certificate_coordination_reference`
+  - required dispatch input `state_locking_checkpoint`
   - optional dispatch input `verification_owner`
 
 ## Production Cutover Handoff
 
 - Keep certificate issuance execution, external DNS validation, and custom-domain cutover outside workflow automation even after the production deploy baseline exists
 - Before custom-domain cutover, record the reviewed certificate ARN, production aliases, external DNS validation record plan, approver, deploy operator, verification owner, and rollback target in the same operator review path
+- Dispatch `portal-production-deploy` only after the named approver, external DNS and certificate coordination reference, and state-locking checkpoint can be recorded as concrete inputs rather than operator-memory placeholders
 - Set `PRODUCTION_BASE_URL` to the approved production custom-domain URL and `PRODUCTION_SMOKE_PATHS` to the release smoke list before treating custom-domain verification as complete
 - Use `portal-production-deploy` to publish the selected artifact first, then run operator-managed DNS cutover and verify the custom-domain path with the same evidence discipline used for staging
 - DNS provider account details, emergency override handling, and automatic rollback remain out of scope for the current workflow contract
@@ -172,4 +176,5 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
 - The rollback target baseline reuses the staging-first evidence path: operators should identify the last known-good artifact through the run URL, step summary, `portal-build-evidence`, and `portal-staging-monitoring-record`, then apply the same verification discipline after recovery
 - The accepted portability boundary keeps provider-specific commands and secrets inside workflow internals, while smoke paths, release evidence, and release-check wording stay app-level and cloud-neutral
 - The selected state locking strategy is now wired into a production backend configuration, and this repository now includes an approval-gated `portal-production-deploy` baseline that promotes a staging-validated artifact together with its build, staging, and rollback evidence references
+- `portal-production-deploy` now fails closed if the dispatch record does not include a named approver, an external DNS and certificate coordination reference, and a state-locking checkpoint that can be cited in the same promotion evidence path
 - External DNS cutover and certificate validation remain operator-managed steps that follow approval; the repository now records their execution order and environment-variable handoff, but they are not treated as workflow-complete automation in the current phase
