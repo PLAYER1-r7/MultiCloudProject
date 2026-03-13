@@ -167,6 +167,15 @@ production promotion の candidate freeze は、既存の production gate baseli
 - a local targeted plan against a backend-free temporary copy predicts creation of the production SNS Lambda, Function URL permissions, IAM role/policy attachments, and DynamoDB timeline table; no intended destroy action was found for the static delivery path
 - direct backend-backed `tofu init` could not be completed from the current container because the local OpenTofu CLI rejected the production backend argument `use_lockfile = true`; production apply therefore needs an execution environment that is already proven to accept the repository backend configuration or an equivalent reviewed operator path
 
+## Production Apply And Deploy Evidence
+
+- production Terraform apply completed on 2026-03-13 by using OpenTofu `v1.11.5` in a reviewed temporary execution path that accepts the configured S3 backend with `use_lockfile = true`
+- production Terraform output now records `sns_service_function_name=multicloudproject-portal-sns-production`, `sns_service_timeline_table_name=multicloudproject-portal-sns-production-timeline`, and `sns_service_function_url=https://isrvwfbt2ve3rr3d6pk5ddwgle0zonfi.lambda-url.ap-northeast-1.on.aws/`
+- direct AWS verification confirmed the production Lambda function is active, the DynamoDB timeline table is active, and the Function URL is reachable on `GET /api/sns/timeline`
+- the live Function URL now returns `200 OK` with `{"items":[]}` and `access-control-allow-origin: https://www.aws.ashnova.jp`, confirming the reviewed production browser origin is accepted by the service path
+- production runtime variables were updated so `PRODUCTION_SNS_SERVICE_BASE_URL` points to the reviewed Function URL and `PRODUCTION_SNS_SERVICE_MODE=http`, while `PRODUCTION_SNS_PERSISTENCE_MODE=browser-local-storage` and `PRODUCTION_SNS_WRITE_SURFACE_ENABLED=true` were intentionally retained as the current surface labeling baseline
+- `portal-production-deploy` run `23071598026` completed successfully against build run `23064520097` and staging deploy run `23064537933`, and the deployed `runtime-config.js` now advertises the service-backed SNS runtime on the production site
+
 ## Non-Goals
 
 - public verification detail
@@ -180,6 +189,8 @@ production promotion の candidate freeze は、既存の production gate baseli
 - draft wording captures the intended SNS service-backed promotion candidate, approver boundary, runtime overlay gate, and rollback target declaration on one issue path
 - repository baseline already expects source build evidence, staging verification evidence, rollback target reference, and verification owner to travel together in the production record; this draft now narrows that baseline to the SNS production path
 - this child split is now the approved first publication candidate under issue-152 because it adds the distinct pre-deploy promotion execution boundary
+- reviewed production SNS infrastructure is now provisioned and the production frontend runtime has been redeployed with `VITE_PUBLIC_SNS_SERVICE_MODE=http`
+- current production service target is `https://isrvwfbt2ve3rr3d6pk5ddwgle0zonfi.lambda-url.ap-northeast-1.on.aws/`, and `portal-production-deploy` run `23071598026` is the first production deploy record that carries the service-backed runtime overlay
 - GitHub Issue: #138
 - Sync Status: synced to GitHub as open execution-planning issue
 

@@ -86,6 +86,17 @@ Next action: sns-reviewer checks the /sns/ route behavior and handoff package be
 
 ```text
 Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject production SNS apply, runtime cutover, and production deploy evidence checkpoint
+Outcome: Handoff ready
+Actions taken: retried production Terraform execution with OpenTofu v1.11.5 so the configured backend with use_lockfile could be used; applied the production portal_sns_service resources with the reviewed alias and ACM certificate inputs preserved; corrected the shared module permission shape after AWS rejected function_url_auth_type on the lambda:InvokeFunction permission and pushed that fix on main as 15601d2; updated the production GitHub environment variables so PRODUCTION_SNS_SERVICE_BASE_URL points to the reviewed Function URL and PRODUCTION_SNS_SERVICE_MODE=http; dispatched portal-production-deploy with build run 23064520097, staging run 23064537933, rollback reference https://github.com/PLAYER1-r7/MultiCloudProject/actions/runs/22839461795, approver PLAYER1-r7, and the reviewed DNS/state-locking references; waited for production deploy run 23071598026 to complete successfully
+Evidence: production Terraform outputs now include sns_service_function_name multicloudproject-portal-sns-production, sns_service_timeline_table_name multicloudproject-portal-sns-production-timeline, and sns_service_function_url https://isrvwfbt2ve3rr3d6pk5ddwgle0zonfi.lambda-url.ap-northeast-1.on.aws/; AWS verification confirmed the production Lambda function and DynamoDB table are active; the Function URL now returns 200 OK on GET /api/sns/timeline with access-control-allow-origin https://www.aws.ashnova.jp; portal-production-deploy run 23071598026 succeeded and the deployed production runtime-config.js now advertises VITE_PUBLIC_SNS_SERVICE_MODE=http plus the reviewed Function URL
+Risks or blockers: the production service-backed runtime is live, but this checkpoint still does not include separate browser-driven SNS post/readback evidence from the public production surface; local .vscode/settings.json remains untracked and was not part of the reviewed repository changes
+Closure rationale: this checkpoint closes the pre-deploy promotion boundary described in Issue 138 because the reviewed production infrastructure, runtime variable cutover, and production deploy evidence now exist together on the same path; remaining follow-up is user-facing validation depth rather than missing deployment prerequisites
+Next action: record the new apply/deploy evidence in the local issue chain as needed and perform one production browser-level SNS post/readback check if a public user-facing verification record is required beyond deploy smoke evidence
+```
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
 Scope: MultiCloudProject production SNS service-backed infrastructure wiring and apply-readiness checkpoint
 Outcome: Handoff ready
 Actions taken: added production Terraform wiring for portal_sns_service, production-specific outputs, and documented runtime cutover expectations in the production environment README and tfvars example; fixed the shared portal-sns-service module permission shape so current provider validation succeeds; validated staging and production entrypoints locally with backend disabled; inspected the remote production Terraform state and confirmed it still contains only the static delivery resources; committed and pushed the wiring change on main as 4e998db
