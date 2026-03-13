@@ -45,12 +45,13 @@ Acceptance Criteria
 ## Route Scope
 
 - expose GET /api/sns/timeline as the first public read route
-- expose POST /api/sns/posts as the first authenticated write route
+- expose POST /api/sns/posts as the first authenticated write route for the canonical signed-in member state defined in issue-128
 - keep moderation-specific routes out of the first route surface
 
 ## Handler Responsibility
 
 - parse and validate request into the stable contract boundary
+- keep provider-neutral actor id naming stable at the handler contract boundary, while actor id format and uniqueness guarantee remain deferred to the persistence boundary
 - call the intended domain/persistence path rather than local fake state
 - return stable success or fail-closed error outcomes without silent fallback
 

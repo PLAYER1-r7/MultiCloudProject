@@ -44,6 +44,7 @@ Acceptance Criteria
 
 ## Auth Enforcement Boundary
 
+- service-side auth state vocabulary should stay aligned to issue-128: signed-out, signed-in member, and operator
 - guest write must fail closed at the service boundary
 - member valid post may proceed through the intended write path
 - service enforcement must not rely on frontend-only blocking for the declared completed path
@@ -58,6 +59,7 @@ Acceptance Criteria
 
 - keep secret-backed config outside the frontend bundle and repository constants used as public contract values
 - preserve public/private config separation for the first slice
+- keep provider-neutral actor id naming stable at the service contract boundary, while actor id format and uniqueness guarantee remain deferred to the persistence boundary
 - do not force frontend rollout to guess unready service or secret paths
 
 ## Completion Signal Candidate

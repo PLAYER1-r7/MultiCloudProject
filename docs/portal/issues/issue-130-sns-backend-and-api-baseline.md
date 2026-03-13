@@ -100,6 +100,7 @@ Risk and Rollback
 
 ## Authorization Candidate
 
+- downstream auth state vocabulary should stay aligned to issue-128: signed-out, signed-in member, and operator
 - guest: GET timeline only
 - member: GET timeline plus POST create
 - operator: member actions plus moderation-sensitive action only if a later follow-up explicitly adds that API surface
@@ -114,6 +115,7 @@ Risk and Rollback
 
 - request and response shape should evolve by additive or explicitly versioned change, not by silent field repurposing
 - app-facing contract names should remain stable across the first implementation slice
+- provider-neutral actor id naming should remain stable across the first implementation slice, while actor id format and uniqueness guarantee stay deferred to the persistence boundary
 - frontend contract validator and backend implementation should fail review if they drift without an explicit linked issue
 
 ## Execution Boundary Candidate

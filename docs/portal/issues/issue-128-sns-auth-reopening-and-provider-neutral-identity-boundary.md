@@ -106,14 +106,16 @@ Risk and Rollback
 
 ## Session Requirement Candidate
 
+- canonical auth state names for downstream use are signed-out, signed-in member, and operator
 - public timeline read: no session required
 - post create action: authenticated session required
 - moderation action: elevated operator session required
-- portal summary routes: no login gate introduced by this issue
+- portal summary routes: no login gate introduced by this issue; portal-wide protected route expansion remains out of scope for this issue
 
 ## Identity Abstraction Candidate
 
 - app model should expose actor id, actor role, and authentication state without embedding provider brand names
+- actor id format and uniqueness guarantee are intentionally deferred to the persistence issue; this issue only fixes the provider-neutral contract name and its required presence on authenticated actions
 - frontend and API contract should depend on role and session semantics, not on provider-specific token field names
 - later provider selection may map to this abstraction, but should not change the public contract names casually
 
@@ -130,7 +132,7 @@ Risk and Rollback
 
 - persistence issue should inherit the actor and identity assumptions from this issue
 - backend and API baseline issue should inherit the authorization boundary from this issue
-- frontend slice issue should inherit signed-out、signed-in、operator state names from this issue instead of inventing a parallel auth vocabulary
+- frontend slice issue should inherit the canonical signed-out, signed-in member, and operator state names from this issue instead of inventing a parallel auth vocabulary
 
 # Current Draft Focus
 

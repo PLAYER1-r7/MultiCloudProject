@@ -44,6 +44,7 @@ Acceptance Criteria
 
 ## UI Auth Boundary
 
+- UI auth state vocabulary should stay aligned to issue-128: signed-out, signed-in member, and operator
 - guest may read the timeline surface
 - guest may not complete post submission and should see the intended blocked state
 - member may access the first-slice posting path

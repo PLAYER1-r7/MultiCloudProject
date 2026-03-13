@@ -83,6 +83,7 @@ Risk and Rollback
 
 ## UI Auth Boundary
 
+- UI auth state vocabulary should stay aligned to issue-128: signed-out, signed-in member, and operator
 - guest may read the timeline surface
 - guest may not complete post submission and must see the expected blocked state
 - member may access the posting path defined by the first slice
