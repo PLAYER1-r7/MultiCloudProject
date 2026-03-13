@@ -74,7 +74,7 @@ function createRouteRequestContext(request) {
 function createCorsHeaders(config) {
   return {
     "access-control-allow-origin": config.allowOrigin,
-    "access-control-allow-methods": "GET,POST,OPTIONS",
+    "access-control-allow-methods": "GET,POST,OPTIONS,HEAD",
     "access-control-allow-headers": "content-type,x-sns-demo-actor-role,x-sns-demo-actor-id,x-sns-demo-simulate-write-failure",
     vary: "origin"
   };
@@ -91,7 +91,7 @@ async function readRequestBody(request) {
 }
 
 async function writeFetchResponseToNodeResponse(response, nodeResponse, config) {
-  const responseBody = Buffer.from(await response.arrayBuffer());
+  const responseBody = nodeResponse.req?.method === "HEAD" ? Buffer.alloc(0) : Buffer.from(await response.arrayBuffer());
   const responseHeaders = createCorsHeaders(config);
 
   response.headers.forEach((value, key) => {

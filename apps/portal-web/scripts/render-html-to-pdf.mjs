@@ -11,6 +11,7 @@ if (!inputArg || !outputArg) {
 
 const inputPath = path.resolve(process.cwd(), inputArg);
 const outputPath = path.resolve(process.cwd(), outputArg);
+const headerTitle = path.basename(inputPath, path.extname(inputPath));
 
 const browser = await chromium.launch();
 
@@ -33,7 +34,7 @@ try {
     printBackground: true,
     displayHeaderFooter: true,
     headerTemplate:
-      '<div style="width:100%;padding:0 10mm;font-size:8px;color:#5b6578;font-family:sans-serif;">Issue 127 SNS プロダクト境界と運用方針 日本語解説書</div>',
+      `<div style="width:100%;padding:0 10mm;font-size:8px;color:#5b6578;font-family:sans-serif;">${headerTitle}</div>`,
     footerTemplate:
       '<div style="width:100%;padding:0 10mm;font-size:8px;color:#5b6578;font-family:sans-serif;display:flex;justify-content:space-between;"><span>MultiCloudProject 参考資料</span><span><span class="pageNumber"></span> / <span class="totalPages"></span></span></div>',
     margin: {
