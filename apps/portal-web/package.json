@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "sns:http-service": "node --experimental-strip-types ./src/snsHttpService.ts",
     "typecheck": "tsc --noEmit",
+    "render:issue-pdf": "node ./scripts/render-markdown-to-pdf.mjs",
+    "render:closed-issues-pdf": "node ./scripts/render-closed-issues-pdf.mjs",
     "test:routes": "node --experimental-strip-types ./src/main.ts --validate-routes",
     "test:sns-request-response-contract": "node --experimental-strip-types ./src/main.ts --validate-sns-request-response-contract",
     "test:sns-auth-error-contract": "node --experimental-strip-types ./src/main.ts --validate-sns-auth-error-contract",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
+    "markdown-it": "^14.1.1",
     "playwright": "^1.58.2",
     "typescript": "^5.6.3",
     "vite": "^8.0.0"

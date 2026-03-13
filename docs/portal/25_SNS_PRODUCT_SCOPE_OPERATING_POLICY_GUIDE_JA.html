@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Issue 127 SNS プロダクト境界と運用方針 解説書</title>
+    <style>
+      :root {
+        --ink: #172033;
+        --muted: #5b6578;
+        --line: #cfd7e6;
+        --panel: #f5f7fb;
+        --panel-strong: #e7edf8;
+        --accent: #0b6b6b;
+        --accent-soft: #d9f0ed;
+        --warning: #865200;
+        --warning-soft: #fff1d6;
+      }
+
+      @page {
+        size: A4;
+        margin: 15mm 14mm 16mm;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        font-family: "Noto Sans CJK JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+        line-height: 1.64;
+        background:
+          radial-gradient(circle at top right, #dceef3 0, #dceef300 24%),
+          linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+      }
+
+      main {
+        width: 100%;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 16mm 14mm 12mm;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background:
+          linear-gradient(145deg, rgba(11, 107, 107, 0.1), rgba(255, 255, 255, 0.92)),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(240, 246, 255, 0.95));
+        box-shadow: 0 14px 40px rgba(23, 32, 51, 0.08);
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: auto -40px -70px auto;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(11, 107, 107, 0.18), rgba(11, 107, 107, 0));
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Noto Serif CJK JP", "Hiragino Mincho ProN", serif;
+        font-size: 28px;
+        line-height: 1.28;
+      }
+
+      .lead {
+        max-width: 50em;
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .meta-grid,
+      .decision-grid,
+      .card-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .meta-grid {
+        margin-top: 16px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .decision-grid,
+      .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .meta-card,
+      .decision-card,
+      .card,
+      .note,
+      .warning {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .meta-card,
+      .decision-card,
+      .card {
+        padding: 14px 16px;
+      }
+
+      .meta-card strong,
+      .decision-card strong,
+      .card strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 12px;
+        color: var(--accent);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      section {
+        margin-top: 10mm;
+        page-break-inside: auto;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--panel-strong);
+        font-family: "Noto Serif CJK JP", "Hiragino Mincho ProN", serif;
+        font-size: 20px;
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+
+      p,
+      li {
+        font-size: 12.5px;
+      }
+
+      p {
+        margin: 0 0 10px;
+      }
+
+      ul,
+      ol {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        margin-top: 10px;
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      th,
+      td {
+        padding: 9px 10px;
+        border: 1px solid var(--line);
+        vertical-align: top;
+        text-align: left;
+        word-break: break-word;
+      }
+
+      tr,
+      .meta-grid,
+      .decision-grid,
+      .card-grid,
+      .note,
+      .warning {
+        page-break-inside: avoid;
+      }
+
+      h2 + p,
+      h2 + .section-lead,
+      .section-lead + p,
+      .inline-summary,
+      thead {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      .section-stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .section-lead {
+        margin-bottom: 8px;
+        color: var(--muted);
+      }
+
+      .inline-summary {
+        margin-top: 10px;
+        padding: 11px 13px;
+        border-left: 4px solid var(--accent);
+        border-radius: 0 12px 12px 0;
+        background: rgba(217, 240, 237, 0.42);
+        font-size: 12px;
+      }
+
+      th {
+        background: var(--panel);
+      }
+
+      .decision-card {
+        background: linear-gradient(180deg, rgba(217, 240, 237, 0.7), rgba(255, 255, 255, 0.96));
+      }
+
+      .note,
+      .warning {
+        padding: 14px 16px;
+      }
+
+      .note {
+        background: linear-gradient(180deg, rgba(231, 237, 248, 0.85), rgba(255, 255, 255, 0.96));
+      }
+
+      .warning {
+        background: linear-gradient(180deg, rgba(255, 241, 214, 0.92), rgba(255, 255, 255, 0.96));
+        color: var(--warning);
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .page-break {
+        page-break-before: always;
+      }
+
+      .footer {
+        margin-top: 10mm;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .hero,
+        .meta-card,
+        .decision-card,
+        .card,
+        .note,
+        .warning,
+        table {
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Issue 127 日本語解説資料</p>
+        <h1>SNS プロダクト境界と運用方針<br />日本語解説書</h1>
+        <p class="lead">
+          この文書は、Issue 127 で整理された「簡易 SNS の初回リリースで何を決め、何をまだ決めないか」を、実装担当者とレビュー担当者が素早く共有できるように説明用へ再構成した資料である。元の Issue 本文にある作業契約や実務向けチェックリストは参照元として残しつつ、本書では判断の意味と後続課題への影響を読みやすくまとめる。
+        </p>
+        <div class="meta-grid">
+          <div class="meta-card">
+            <strong>対象</strong>
+            SNS 初回リリースの計画と実装準備を担当する人
+          </div>
+          <div class="meta-card">
+            <strong>主題</strong>
+            公開閲覧と認証済み投稿を中心にした狭い初期境界
+          </div>
+          <div class="meta-card">
+            <strong>目的</strong>
+            認証、API、永続化、モデレーションの後続判断を同じ前提にそろえる
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>1. この Issue が必要になった理由</h2>
+        <p class="section-lead">Issue 127 は、SNS を実装する前に製品境界を先に固定するための計画用課題である。</p>
+        <p>
+          現行の portal は、静的配信優先、公開優先、エンドユーザー認証なし、アプリケーション永続化なしを前提とした設計で閉じている。一方、簡易 SNS は「投稿できるか」「誰に見えるか」「削除や非表示をどう扱うか」という判断が先に固定されていないと、認証、API、データ保存、運用ポリシーがそれぞれ別の仮定で進んでしまう。
+        </p>
+        <p>
+          そのため Issue 127 の役割は、SNS 実装そのものではなく、初回リリースの製品境界を先に固定することにある。ここで扱うのは、投稿者の役割モデル、公開範囲、削除方針、最小限のモデレーション線、対象外項目の 5 点であり、認証基盤やデータベース製品の選定はまだ先の話として切り分ける。
+        </p>
+        <div class="note">
+          <strong>読むときの前提</strong>
+          <p>
+            この文書は「何を実装するか」よりも「どこまでを初回リリースに含めるか」を決める資料である。実装詳細の決定資料ではないため、ベンダーやクラウド固有の命名、トークン形式、データベース種別までは踏み込まない。
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2>2. 初回リリースの最終判断</h2>
+        <p class="section-lead">この Issue で固定した判断は、後続 Issue が前提を再定義しないための基準線になる。</p>
+        <div class="decision-grid">
+          <div class="decision-card">
+            <strong>投稿者</strong>
+            投稿できるのは認証済みメンバーのみとし、閲覧者は閲覧専用にとどめる。
+          </div>
+          <div class="decision-card">
+            <strong>公開範囲</strong>
+            読み取りは公開タイムラインを基本とし、限定公開の閲覧分岐は初回リリースに含めない。
+          </div>
+          <div class="decision-card">
+            <strong>削除方針</strong>
+            物理削除を標準にせず、非表示または論理削除相当の扱いを優先する。
+          </div>
+          <div class="decision-card">
+            <strong>最小限のモデレーション線</strong>
+            スパム、攻撃的な文面、明らかな不正入力、過剰投稿への最小介入線を設ける。
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. 役割ごとの境界</h2>
+        <div class="inline-summary">閲覧者は読むだけ、メンバーは投稿できる、運用担当者は最低限のモデレーションを担う。この 3 層で初回リリースの責務差分を固定する。</div>
+        <table>
+          <thead>
+            <tr>
+              <th>役割</th>
+              <th>できること</th>
+              <th>できないこと</th>
+              <th>意味</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>閲覧者</td>
+              <td>公開タイムラインの閲覧</td>
+              <td>投稿、削除、モデレーション対象の操作</td>
+              <td>初回リリースの価値は公開閲覧に置き、導線の摩擦を増やさない</td>
+            </tr>
+            <tr>
+              <td>メンバー</td>
+              <td>認証後の投稿</td>
+              <td>運用担当者権限を要する非表示、全体削除</td>
+              <td>投稿経路だけを保護対象の操作面として扱う</td>
+            </tr>
+            <tr>
+              <td>運用担当者</td>
+              <td>非表示、論理削除相当、最小限のモデレーション操作</td>
+              <td>本格的な審査体制、重い異議申立てフロー</td>
+              <td>初回リリースでは最小限の安全運用線に限定する</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>4. 公開閲覧と認証済み投稿の考え方</h2>
+        <p>
+          この Issue の核は、読む行為と書く行為を明確に切り分けることにある。公開タイムラインはログインなしで読める状態を維持しつつ、投稿は認証済みメンバーだけに許可する。これにより、初回リリースの導線はわかりやすく保たれ、SNS として最低限必要な不正利用対策も投稿経路側に集中させやすくなる。
+        </p>
+        <div class="card-grid">
+          <div class="card">
+            <strong>今回の対象</strong>
+            公開タイムラインの閲覧、認証済みメンバーの投稿、運用担当者による非表示または論理削除相当
+          </div>
+          <div class="card">
+            <strong>今回の対象外</strong>
+            限定公開の閲覧分岐、クローズドグループ、ダイレクトメッセージ、フォロー関係、ランキング
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>5. 削除方針と最小限のモデレーション線</h2>
+        <p>
+          初回リリースの削除方針は、利用者の操作自由度を広げることよりも、運用時に事故を起こしにくいことを優先する。そのため物理削除を通常系にせず、非表示や論理削除相当の扱いを基準に置く。これにより、不適切投稿の非表示、監査のための状態保持、復旧判断の余地を残しやすくなる。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>論点</th>
+              <th>初回リリースの判断</th>
+              <th>理由</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>投稿者本人の編集</td>
+              <td>対象外</td>
+              <td>履歴管理と競合解決を増やすため</td>
+            </tr>
+            <tr>
+              <td>投稿者本人の削除</td>
+              <td>優先度を下げ、運用担当者管理を先行候補とする</td>
+              <td>誤消去と不正利用対応の両面で初期運用を単純化するため</td>
+            </tr>
+            <tr>
+              <td>スパム / 攻撃的な文面</td>
+              <td>最小限のモデレーション線に含める</td>
+              <td>公開タイムラインの品質維持に不可欠なため</td>
+            </tr>
+            <tr>
+              <td>重い異議申立てフロー</td>
+              <td>対象外</td>
+              <td>運用フローが過大になり初回リリースの境界を超えるため</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="warning">
+          <strong>注意点</strong>
+          <p>
+            最小限のモデレーション線を薄くしすぎると公開閲覧の価値が下がり、逆に厚くしすぎると初回リリースの実装範囲が膨らむ。Issue 127 はこの中間点として「最低限の安全運用線」だけを固定している。
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2>6. 初回リリースに含めないもの</h2>
+        <p>
+          対象外項目を明文化する目的は、単に機能を削ることではない。後続 Issue が範囲肥大を起こさず、認証、API、永続化、運用設計を狭い範囲に保つためである。
+        </p>
+        <div class="card-grid">
+          <div class="card">
+            <strong>相互作用機能</strong>
+            いいね、リアクション、返信スレッドの深掘り、フォロー関係
+          </div>
+          <div class="card">
+            <strong>非公開機能</strong>
+            ダイレクトメッセージ、限定公開の閲覧範囲、複雑な権限分岐
+          </div>
+          <div class="card">
+            <strong>コンテンツ拡張</strong>
+            メディア投稿、編集履歴、拡張プロフィール連携
+          </div>
+          <div class="card">
+            <strong>高度な配信</strong>
+            推薦表示、ランキング、リアルタイム通知、マルチクラウドの同時書き込み経路
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>7. この判断が後続課題に与える影響</h2>
+        <p>
+          Issue 127 で境界を固定すると、後続 Issue は「SNS に何が必要か」を毎回再定義せずに済む。特に認証境界の再整理、メッセージのドメインモデル、バックエンドと API の基準線に関する Issue は、この判断を正本として参照する前提で進められる。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>後続テーマ</th>
+              <th>Issue 127 から引き継ぐ前提</th>
+              <th>まだ決めないこと</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>認証</td>
+              <td>公開閲覧、認証済み投稿、運用担当者操作の境界</td>
+              <td>認証基盤の製品選定、トークン詳細</td>
+            </tr>
+            <tr>
+              <td>永続化</td>
+              <td>メッセージ公開範囲、削除の意味づけ、モデレーション対象の状態</td>
+              <td>データベース製品、索引実装の詳細</td>
+            </tr>
+            <tr>
+              <td>API 設計</td>
+              <td>投稿、一覧取得、非表示や削除の最小操作面</td>
+              <td>スキーマの版管理詳細、基盤固有の対応付け</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>8. 実装チーム向けの読み方</h2>
+        <ol>
+          <li>この文書は「機能一覧」ではなく「実装境界」の文書として読む。</li>
+          <li>初回リリースに必要な最小線だけを拾い、魅力的でも対象外の機能は別 Issue に逃がす。</li>
+          <li>公開閲覧を守ることと認証済み投稿の安全性を両立させることを優先する。</li>
+          <li>運用担当者の行為は便利機能ではなく、最小限のモデレーション線として扱う。</li>
+          <li>後続 Issue で前提を変えるなら、Issue 127 を暗黙に上書きせず、別の確定判断として切り出す。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>9. 用語集</h2>
+        <p>
+          本文では可能な限り日本語化したが、Issue 原文や後続 Issue と対応を取りやすくするため、完全には置き換えない用語をここにまとめる。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>原語</th>
+              <th>本文での扱い</th>
+              <th>補足</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Issue</td>
+              <td>Issue のまま表記</td>
+              <td>GitHub 上の管理単位を指すため、識別性を優先して維持する。</td>
+            </tr>
+            <tr>
+              <td>portal</td>
+              <td>portal のまま表記</td>
+              <td>既存アプリ名・配置名として使われているため固有名として残す。</td>
+            </tr>
+            <tr>
+              <td>API</td>
+              <td>API のまま表記</td>
+              <td>一般化した日本語よりも、実装者が認識しやすい略称を優先する。</td>
+            </tr>
+            <tr>
+              <td>auth</td>
+              <td>認証 / 認証基盤</td>
+              <td>文脈に応じて、認証という行為か、認証を担う仕組みかを読み分ける。</td>
+            </tr>
+            <tr>
+              <td>timeline</td>
+              <td>タイムライン</td>
+              <td>投稿一覧が時系列に並ぶ閲覧面を指す語として定着しているため、片仮名表記を用いる。</td>
+            </tr>
+            <tr>
+              <td>soft-delete</td>
+              <td>論理削除相当</td>
+              <td>物理削除せず、状態として削除済みを表す扱いを指す。</td>
+            </tr>
+            <tr>
+              <td>operator</td>
+              <td>運用担当者</td>
+              <td>監視、非表示、最低限の安全運用を担う役割を指す。</td>
+            </tr>
+            <tr>
+              <td>moderation</td>
+              <td>モデレーション</td>
+              <td>不適切投稿への介入、非表示判断、最低限の運用対応を含む。</td>
+            </tr>
+            <tr>
+              <td>abuse</td>
+              <td>不正利用</td>
+              <td>スパム、過剰投稿、攻撃的投稿など、運用上の介入が必要な迷惑行為全般を含む。</td>
+            </tr>
+            <tr>
+              <td>token</td>
+              <td>トークン</td>
+              <td>認証や API 呼び出し時に使う識別情報を指し、ここでは形式や実装詳細は扱わない。</td>
+            </tr>
+            <tr>
+              <td>source of truth</td>
+              <td>正本</td>
+              <td>判断変更時に最初に更新すべき基準文書を指す。</td>
+            </tr>
+            <tr>
+              <td>downstream</td>
+              <td>後続課題</td>
+              <td>Issue 127 の判断を引き継いで進む後続の設計・実装課題を指す。</td>
+            </tr>
+            <tr>
+              <td>fixed judgment</td>
+              <td>確定判断</td>
+              <td>後続課題側で暗黙に変えず、前提として受け継ぐべき判断を指す。</td>
+            </tr>
+            <tr>
+              <td>GitHub</td>
+              <td>GitHub のまま表記</td>
+              <td>サービス固有名のため、日本語化せず識別性を維持する。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>10. 参照元</h2>
+        <ul>
+          <li><a href="issues/issue-127-sns-product-scope-and-operating-policy-judgment.md">Issue 127 原文</a></li>
+          <li><a href="24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md">Simple SNS and Azure Preparation Plan 原文</a></li>
+          <li><a href="issues/issue-128-sns-auth-reopening-and-provider-neutral-identity-boundary.md">Issue 128 認証境界ドラフト</a></li>
+        </ul>
+        <p class="footer">
+          正本は Issue 127 原文とその後続計画系 Issue にある。本書は説明用の解説資料であり、判断変更時は原文側を先に更新してから再生成する。
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
