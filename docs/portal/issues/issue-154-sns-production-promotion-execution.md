@@ -175,6 +175,7 @@ production promotion の candidate freeze は、既存の production gate baseli
 - the live Function URL now returns `200 OK` with `{"items":[]}` and `access-control-allow-origin: https://www.aws.ashnova.jp`, confirming the reviewed production browser origin is accepted by the service path
 - production runtime variables were updated so `PRODUCTION_SNS_SERVICE_BASE_URL` points to the reviewed Function URL and `PRODUCTION_SNS_SERVICE_MODE=http`, while `PRODUCTION_SNS_PERSISTENCE_MODE=browser-local-storage` and `PRODUCTION_SNS_WRITE_SURFACE_ENABLED=true` were intentionally retained as the current surface labeling baseline
 - `portal-production-deploy` run `23071598026` completed successfully against build run `23064520097` and staging deploy run `23064537933`, and the deployed `runtime-config.js` now advertises the service-backed SNS runtime on the production site
+- transient live verification then posted one production SNS item through the reviewed Function URL with member actor context, read the same item back from `GET /api/sns/timeline`, and restored the DynamoDB item to the empty-state baseline immediately after the check; the final live timeline returned `{"items":[]}` again after restoration
 
 ## Non-Goals
 
