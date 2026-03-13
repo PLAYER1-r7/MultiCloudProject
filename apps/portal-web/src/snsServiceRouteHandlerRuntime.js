@@ -2,56 +2,7 @@ export const SNS_TIMELINE_ENDPOINT = "/api/sns/timeline";
 export const SNS_POSTS_ENDPOINT = "/api/sns/posts";
 export const SNS_MAX_MESSAGE_LENGTH = 280;
 
-export type SnsActorRole = "guest" | "member" | "operator";
-
-export type SnsPostPayload = {
-  authorId: string;
-  message: string;
-  replyToPostId?: string;
-};
-
-export type SnsTimelineItem = {
-  id: string;
-  authorId: string;
-  message: string;
-  createdAt: string;
-  replyToPostId?: string;
-};
-
-export type SnsErrorResponse = {
-  errorCode: string;
-  message: string;
-  retryable: boolean;
-};
-
-export type SnsRouteRequestContext = {
-  actorRole: SnsActorRole;
-  actorId?: string;
-  simulateWriteFailure?: boolean;
-};
-
-export type SnsRouteHandlerPolicy = {
-  timelineEndpoint: string;
-  postsEndpoint: string;
-  allowGuestTimelineRead: boolean;
-  writesEnabled: boolean;
-  requireActorContext: boolean;
-};
-
-export type SnsRouteHandlerDependencies = {
-  listTimeline(): Promise<SnsTimelineItem[]>;
-  createPost(payload: SnsPostPayload): Promise<SnsTimelineItem>;
-};
-
-type SnsStoredTimelineItem = SnsTimelineItem & { createdAtMs: number };
-
-type InMemorySnsRouteHandlerOptions = {
-  initialItems?: SnsTimelineItem[];
-  now?: () => string;
-  createId?: () => string;
-};
-
-const defaultSnsRouteHandlerPolicy: SnsRouteHandlerPolicy = {
+const defaultSnsRouteHandlerPolicy = {
   timelineEndpoint: SNS_TIMELINE_ENDPOINT,
   postsEndpoint: SNS_POSTS_ENDPOINT,
   allowGuestTimelineRead: true,
@@ -59,7 +10,7 @@ const defaultSnsRouteHandlerPolicy: SnsRouteHandlerPolicy = {
   requireActorContext: true
 };
 
-function buildJsonResponse(body: unknown, status: number): Response {
+function buildJsonResponse(body, status) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
@@ -68,22 +19,22 @@ function buildJsonResponse(body: unknown, status: number): Response {
   });
 }
 
-function buildErrorResponse(errorCode: string, message: string, retryable: boolean, status: number): Response {
+function buildErrorResponse(errorCode, message, retryable, status) {
   return buildJsonResponse(
     {
       errorCode,
       message,
       retryable
-    } satisfies SnsErrorResponse,
+    },
     status
   );
 }
 
-function getPathname(url: string): string {
+function getPathname(url) {
   return new URL(url, "http://localhost").pathname;
 }
 
-function normalizeStoredItem(item: SnsTimelineItem): SnsStoredTimelineItem {
+function normalizeStoredItem(item) {
   const createdAtMs = Date.parse(item.createdAt);
 
   return {
@@ -92,20 +43,20 @@ function normalizeStoredItem(item: SnsTimelineItem): SnsStoredTimelineItem {
   };
 }
 
-function sortStoredItems(items: SnsStoredTimelineItem[]): SnsStoredTimelineItem[] {
+function sortStoredItems(items) {
   return [...items].sort((left, right) => right.createdAtMs - left.createdAtMs);
 }
 
-function toTimelineItem(item: SnsStoredTimelineItem): SnsTimelineItem {
+function toTimelineItem(item) {
   const { createdAtMs: _createdAtMs, ...timelineItem } = item;
   return timelineItem;
 }
 
-function isValidReplyToPostId(value: unknown): value is string {
+function isValidReplyToPostId(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function validatePostPayload(payload: unknown): SnsPostPayload | SnsErrorResponse {
+function validatePostPayload(payload) {
   if (!payload || typeof payload !== "object") {
     return {
       errorCode: "INVALID_POST_PAYLOAD",
@@ -114,7 +65,7 @@ function validatePostPayload(payload: unknown): SnsPostPayload | SnsErrorRespons
     };
   }
 
-  const candidate = payload as Partial<SnsPostPayload>;
+  const candidate = payload;
   const authorId = typeof candidate.authorId === "string" ? candidate.authorId.trim() : "";
   const message = typeof candidate.message === "string" ? candidate.message.trim() : "";
 
@@ -149,7 +100,7 @@ function validatePostPayload(payload: unknown): SnsPostPayload | SnsErrorRespons
   };
 }
 
-async function parseRequestJson(request: Request): Promise<unknown> {
+async function parseRequestJson(request) {
   try {
     return await request.json();
   } catch {
@@ -157,19 +108,18 @@ async function parseRequestJson(request: Request): Promise<unknown> {
   }
 }
 
-export function createInMemorySnsRouteHandlerDependencies(
-  options: InMemorySnsRouteHandlerOptions = {}
-): SnsRouteHandlerDependencies {
+export function createInMemorySnsRouteHandlerDependencies(options = {}) {
   const now = options.now ?? (() => new Date().toISOString());
-  const createId = options.createId ?? (() => `sns-post-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
+  const createId =
+    options.createId ?? (() => `sns-post-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
   let items = sortStoredItems((options.initialItems ?? []).map(normalizeStoredItem));
 
   return {
-    async listTimeline(): Promise<SnsTimelineItem[]> {
+    async listTimeline() {
       return sortStoredItems(items).map(toTimelineItem);
     },
 
-    async createPost(payload: SnsPostPayload): Promise<SnsTimelineItem> {
+    async createPost(payload) {
       const createdAt = now();
       const storedItem = normalizeStoredItem({
         id: createId(),
@@ -185,12 +135,7 @@ export function createInMemorySnsRouteHandlerDependencies(
   };
 }
 
-export async function handleSnsRouteRequest(
-  request: Request,
-  context: SnsRouteRequestContext,
-  dependencies: SnsRouteHandlerDependencies,
-  policy: SnsRouteHandlerPolicy = defaultSnsRouteHandlerPolicy
-): Promise<Response> {
+export async function handleSnsRouteRequest(request, context, dependencies, policy = defaultSnsRouteHandlerPolicy) {
   const pathname = getPathname(request.url);
 
   if (pathname === policy.timelineEndpoint) {
@@ -199,7 +144,12 @@ export async function handleSnsRouteRequest(
     }
 
     if (context.actorRole === "guest" && !policy.allowGuestTimelineRead) {
-      return buildErrorResponse("SNS_TIMELINE_FORBIDDEN", "Guest timeline read is disabled on the service boundary.", false, 403);
+      return buildErrorResponse(
+        "SNS_TIMELINE_FORBIDDEN",
+        "Guest timeline read is disabled on the service boundary.",
+        false,
+        403
+      );
     }
 
     const items = await dependencies.listTimeline();

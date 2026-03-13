@@ -11,6 +11,7 @@ infra/
     production/
   modules/
     portal-static-site/
+    portal-sns-service/
 ```
 
 ## Current Intent
@@ -18,6 +19,7 @@ infra/
 - `environments/` will hold environment-specific entrypoints
 - `modules/` will hold reusable AWS delivery building blocks
 - Implementation should stay aligned with the OpenTofu policy documented in the planning issues
+- staging now also carries the reviewed SNS Lambda + DynamoDB backend needed by the HTTP-mode SNS review path
 
 ## Staging Variable Checklist
 
