@@ -150,6 +150,23 @@ production promotion の candidate freeze は、既存の production gate baseli
 - external DNS coordination note is still unresolved
 - state-locking checkpoint is still unresolved
 
+## Production Apply Prerequisite Sequence
+
+- apply the reviewed production Terraform entrypoint before any runtime-variable switch from `simulated-route` to `http`
+- use the production wiring now published on `main` to create the dedicated SNS Lambda, Function URL, IAM role/policy, and DynamoDB timeline table for the production environment
+- record the reviewed apply evidence together with the resulting `sns_service_function_url`, `sns_service_function_name`, and `sns_service_timeline_table_name` outputs in the same operator path that already carries the promotion inputs
+- copy the reviewed Function URL into `PRODUCTION_SNS_SERVICE_BASE_URL` only after the apply output is captured and the browser origin used by the portal is aligned with `production_base_url`
+- switch `PRODUCTION_SNS_SERVICE_MODE` to `http` only after the Function URL output is recorded and the runtime overlay review confirms that production is no longer targeting the simulated route
+- keep `PRODUCTION_SNS_PERSISTENCE_MODE` and `PRODUCTION_SNS_WRITE_SURFACE_ENABLED` under the same runtime-overlay review so the first service-backed production path does not mix a real backend URL with stale local-only expectations
+
+## Production Apply Readiness Snapshot
+
+- current production Terraform state still contains only the static delivery resources; it does not yet include `module.portal_sns_service`
+- the published production SNS wiring landed on `main` in commit `4e998db` and adds the production service module plus the production outputs needed for runtime cutover
+- remote state inspection shows the current production footprint is still the static-site baseline, so the service-backed SNS resources should be treated as additive production infrastructure rather than an already-provisioned path
+- a local targeted plan against a backend-free temporary copy predicts creation of the production SNS Lambda, Function URL permissions, IAM role/policy attachments, and DynamoDB timeline table; no intended destroy action was found for the static delivery path
+- direct backend-backed `tofu init` could not be completed from the current container because the local OpenTofu CLI rejected the production backend argument `use_lockfile = true`; production apply therefore needs an execution environment that is already proven to accept the repository backend configuration or an equivalent reviewed operator path
+
 ## Non-Goals
 
 - public verification detail

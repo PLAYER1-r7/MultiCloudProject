@@ -86,6 +86,17 @@ Next action: sns-reviewer checks the /sns/ route behavior and handoff package be
 
 ```text
 Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject production SNS service-backed infrastructure wiring and apply-readiness checkpoint
+Outcome: Handoff ready
+Actions taken: added production Terraform wiring for portal_sns_service, production-specific outputs, and documented runtime cutover expectations in the production environment README and tfvars example; fixed the shared portal-sns-service module permission shape so current provider validation succeeds; validated staging and production entrypoints locally with backend disabled; inspected the remote production Terraform state and confirmed it still contains only the static delivery resources; committed and pushed the wiring change on main as 4e998db
+Evidence: infra/environments/production/main.tf now wires portal_sns_service and derives production_base_url for SNS CORS; infra/environments/production/outputs.tf now exposes sns_service_function_name, sns_service_function_url, and sns_service_timeline_table_name; local validate passed for infra/environments/production and infra/environments/staging after the shared module compatibility fix; remote state inspection showed production still lacks module.portal_sns_service resources; local backend-free targeted planning indicated additive creation of the production SNS Lambda, Function URL, IAM role/policy path, and DynamoDB timeline table with no intended static-site destroy action
+Risks or blockers: production backend initialization from the current container is blocked because the local OpenTofu CLI rejects the configured backend argument use_lockfile = true, so a full backend-backed production plan/apply was not executed here; production runtime variables must not switch to http-mode service usage until the reviewed apply exposes sns_service_function_url and that output is copied into PRODUCTION_SNS_SERVICE_BASE_URL
+Closure rationale: the checkpoint stopped after production wiring was published, local validation passed, and the remaining blocker was narrowed to the backend-compatible execution environment rather than the Terraform graph itself; runtime cutover was intentionally not attempted without reviewed apply evidence
+Next action: run the production plan/apply from a reviewed environment that accepts the repository backend configuration, record the resulting sns_service_function_url plus timeline table output in the production operator path, then update PRODUCTION_SNS_SERVICE_BASE_URL and PRODUCTION_SNS_SERVICE_MODE=http under Issue 138 before attempting the production SNS cutover
+```
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
 Scope: MultiCloudProject GitHub Issue 136-138 review follow-up after ClaudeSonnet comments
 Outcome: Handoff ready
 Actions taken: reviewed GitHub Issues 136 through 138 against the local source records and resolved the two concrete follow-ups raised in review; added an explicit parent-contract sentence to docs/portal/issues/issue-152-sns-production-promotion-and-operational-hardening-contract.md so Issue 136 reads clearly as the GitHub-tracked parent planning contract when viewed in isolation; synchronized that updated body to GitHub Issue 136; added the planning label to GitHub Issue 138 so planning and execution-planning filters stay aligned with Issue 136
