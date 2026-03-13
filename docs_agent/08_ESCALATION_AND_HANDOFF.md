@@ -86,6 +86,39 @@ Next action: sns-reviewer checks the /sns/ route behavior and handoff package be
 
 ```text
 Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject GitHub Issue 136-138 review follow-up after ClaudeSonnet comments
+Outcome: Handoff ready
+Actions taken: reviewed GitHub Issues 136 through 138 against the local source records and resolved the two concrete follow-ups raised in review; added an explicit parent-contract sentence to docs/portal/issues/issue-152-sns-production-promotion-and-operational-hardening-contract.md so Issue 136 reads clearly as the GitHub-tracked parent planning contract when viewed in isolation; synchronized that updated body to GitHub Issue 136; added the planning label to GitHub Issue 138 so planning and execution-planning filters stay aligned with Issue 136
+Evidence: docs/portal/issues/issue-152-sns-production-promotion-and-operational-hardening-contract.md now states that approved child splits must inherit the parent contract entry condition; markdown diagnostics passed for the updated local issue record; GitHub Issue 136 body now contains the parent-contract wording; GitHub Issue 138 labels now include planning, portal, aws, infrastructure, cicd, and sns
+Risks or blockers: no blocking review issue remains in GitHub Issues 136 through 138; later follow-up should avoid drifting Issue 138 beyond the pre-deploy promotion boundary or treating unpublished local drafts as accepted child issues
+Closure rationale: the ClaudeSonnet follow-up was limited to the two reviewable defects found in the GitHub issue presentation layer, so the fix stopped after parent-contract readability and label-filter consistency were restored without expanding execution scope
+Next action: continue using Issue 136 as the GitHub-tracked parent planning contract and Issue 138 as its only approved child execution issue; keep Issues 155 and 156 local-only until a later review explicitly approves another distinct child boundary
+```
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject SNS production-hardening child-split review after creating Issue 138 under Issue 136
+Outcome: Handoff ready
+Actions taken: reviewed whether the local SNS child drafts under Issue 136 added distinct execution boundaries; approved only the pre-deploy promotion gate draft as the first narrow child split; created GitHub Issue 138 from docs/portal/issues/issue-154-sns-production-promotion-execution.md with the required production-delivery labels; synchronized the local SNS planning records and portal status summaries so they now treat Issue 138 as the only published child issue while keeping Issues 155 through 156 unpublished
+Evidence: GitHub Issue 138 is open with the expected labels; docs/portal/issues/issue-152-sns-production-promotion-and-operational-hardening-contract.md records Issue 138 as the first published child split under Issue 136; docs/portal/issues/issue-154-sns-production-promotion-execution.md now reflects the open GitHub issue state; markdown diagnostics passed for the updated local summaries and handoff files
+Risks or blockers: Issues 155 and 156 still have no GitHub issue records and must not be treated as accepted execution issues until a later review confirms they add distinct follow-on boundaries; production-hardening work can now leave Issue 136 only through Issue 138, not through the remaining unpublished drafts
+Closure rationale: only Issue 154 was published because it adds the distinct pre-deploy promotion execution boundary that Issue 136 intentionally left abstract; Issues 155 and 156 were not published because they remain downstream post-deploy boundaries that are not yet justified as immediate child issues
+Next action: use Issue 138 as the only GitHub-tracked child issue under Issue 136 for SNS production promotion preparation; keep Issues 155 and 156 local-only until post-deploy review shows that public verification or rollback hardening needs a separate approved execution issue
+```
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject post-staging SNS and Azure planning queue normalization after creating Issues 136 and 137
+Outcome: Handoff ready
+Actions taken: reviewed the docs_agent issue-decomposition guardrails against the local SNS and Azure planning drafts; created GitHub Issue 136 for the SNS production-hardening contract and GitHub Issue 137 for the March Azure planning-only batch with the required labels; synchronized the local planning records and portal status summaries to those GitHub-tracked issues; kept the deeper SNS production child drafts for Issues 154 through 156 unpublished pending explicit human confirmation
+Evidence: GitHub Issues 136 and 137 are open with the expected labels; docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md and docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md now point to Issues 136 and 137 as the active follow-up queue; docs/portal/issues/issue-152-sns-production-promotion-and-operational-hardening-contract.md and docs/portal/issues/issue-153-azure-planning-only-batch-contract.md are aligned to the open GitHub issue state; markdown diagnostics passed for the updated local records
+Risks or blockers: the local SNS child drafts for Issues 154 through 156 still do not have explicit human approval or GitHub issue records, so they must not be treated as accepted execution issues; production-hardening work must stay inside Issue 136 until a narrower child issue is justified by a distinct execution boundary
+Closure rationale: no additional GitHub child issues were created beyond Issues 136 and 137 because the current planning boundary is already captured there, and publishing Issues 154 through 156 now would extend the chain before explicit approval that the split adds a distinct execution boundary
+Next action: use Issue 136 as the only GitHub-tracked entry point for SNS production-hardening planning until a reviewer explicitly approves a narrower child split; use Issue 137 as the Azure planning-only queue and keep live Azure execution deferred until the April reopen gate is intentionally approved
+```
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
 Scope: MultiCloudProject repository cleanup checkpoint after SNS issue closure and safety-branch dismantling
 Outcome: Handoff ready
 Actions taken: verified that Issues 119 and 120 were already implemented in portal-web, ran the SNS contract validators, synchronized the local issue records and GitHub issue bodies, and closed both issues; dismantled the retained safety snapshot by auditing every remaining bucket, cherry-picked the forward docset and portal-doc updates into main, pushed main, and deleted the temporary re-home branches, worktrees, and final safety snapshot branch
