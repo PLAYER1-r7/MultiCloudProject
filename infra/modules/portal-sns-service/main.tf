@@ -23,6 +23,11 @@ data "archive_file" "lambda_package" {
   }
 
   source {
+    content  = file("${var.lambda_source_dir}/snsServiceConfigRuntime.js")
+    filename = "snsServiceConfigRuntime.js"
+  }
+
+  source {
     content  = file("${var.lambda_source_dir}/snsServicePersistenceRuntime.js")
     filename = "snsServicePersistenceRuntime.js"
   }
