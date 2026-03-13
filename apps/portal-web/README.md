@@ -44,6 +44,7 @@ Initial static-first frontend scaffold for the MultiCloudProject portal.
 ## Notes
 
 - `VITE_BASE_PATH` can be set at build time if the app is hosted below `/`
+- `runtime-config.js` is loaded before the main bundle so deploy workflows can inject environment-specific SNS public config without rebuilding a new artifact
 - Secrets must not be embedded into the frontend
 - This directory is the implementation target introduced by Issue 16
 - `www.aws.ashnova.jp` resolves to the AWS portal variant
