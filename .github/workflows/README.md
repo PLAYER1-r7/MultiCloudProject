@@ -67,6 +67,16 @@ This directory is reserved for Issue 18 and later GitHub Actions workflow implem
   - required dispatch input `state_locking_checkpoint`
   - optional dispatch input `verification_owner`
 
+  Dispatch template for the current SNS production-promotion gate:
+  - `source_build_run_id=23064520097`
+  - `source_build_commit_sha=<main commit SHA from the reviewed build/staging pair>`
+  - `staging_deploy_run_id=23064537933`
+  - `rollback_target_reference=<last-known-good production run URL or equivalent reviewed evidence reference>`
+  - `approver=<named production approver>`
+  - `dns_certificate_coordination_reference=<reviewed DNS/certificate coordination note reference>`
+  - `state_locking_checkpoint=<reviewed production state-locking checkpoint reference>`
+  - `verification_owner=<named post-deploy verification owner or omit to default to repository owner>`
+
 ## Production Cutover Handoff
 
 - Keep certificate issuance execution, external DNS validation, and custom-domain cutover outside workflow automation even after the production deploy baseline exists

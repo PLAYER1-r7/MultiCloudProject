@@ -118,6 +118,28 @@ production promotion の candidate freeze は、既存の production gate baseli
 - the record should be sufficient to reconstruct who approved promotion, what candidate was promoted, what rollback target was declared, and who owns post-deploy verification
 - step-1 style candidate freeze is not complete from local validation alone; the record must point to published `main`-based build and staging evidence
 
+## Dispatch Input Template
+
+- `source_build_run_id`: use the reviewed `portal-build` run id for the candidate commit; current recorded baseline is `23064520097`
+- `source_build_commit_sha`: use the exact `main` commit SHA attached to that reviewed build run and the matching staging deploy run
+- `staging_deploy_run_id`: use the reviewed `portal-staging-deploy` run id for the same commit; current recorded baseline is `23064537933`
+- `rollback_target_reference`: cite the last-known-good production deploy run URL or equivalent reviewed rollback evidence reference; do not use an implicit description such as `latest good build`
+- `approver`: record the single named production approver for this promotion; do not use placeholders such as `tbd` or role-only wording without a name
+- `dns_certificate_coordination_reference`: cite the reviewed external DNS and certificate coordination note, including the operator path that names the current production alias, certificate, and cutover plan
+- `state_locking_checkpoint`: cite the reviewed checkpoint showing the production state-locking path is ready for this promotion window
+- `verification_owner`: record the named owner for post-deploy verification; if omitted, the workflow defaults to the repository owner and the production record will show that default explicitly
+
+## Dispatch Example Shape
+
+- `source_build_run_id=23064520097`
+- `source_build_commit_sha=<main commit SHA from build 23064520097 and staging deploy 23064537933>`
+- `staging_deploy_run_id=23064537933`
+- `rollback_target_reference=https://github.com/PLAYER1-r7/MultiCloudProject/actions/runs/<last-known-good-production-run-id>`
+- `approver=<named production approver>`
+- `dns_certificate_coordination_reference=<reviewed operator note or handoff record reference for external DNS and ACM coordination>`
+- `state_locking_checkpoint=<reviewed checkpoint reference for the production state-locking path>`
+- `verification_owner=<named post-deploy verification owner or empty to use repository owner default>`
+
 ## Pre-Deploy Fail Conditions Candidate
 
 - no single reviewed commit on `main` can be named as the promotion candidate
