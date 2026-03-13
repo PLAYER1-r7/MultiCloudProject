@@ -144,11 +144,10 @@ resource "aws_lambda_permission" "invoke_function_url" {
 }
 
 resource "aws_lambda_permission" "invoke_function" {
-  statement_id           = "FunctionURLAllowInvokeFunction"
-  action                 = "lambda:InvokeFunction"
-  function_name          = aws_lambda_function.service.function_name
-  principal              = "*"
-  function_url_auth_type = "NONE"
+  statement_id  = "FunctionURLAllowInvokeFunction"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.service.function_name
+  principal     = "*"
 
   depends_on = [aws_lambda_function_url.service]
 }
