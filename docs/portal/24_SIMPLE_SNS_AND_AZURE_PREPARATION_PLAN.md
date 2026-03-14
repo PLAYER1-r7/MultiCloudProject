@@ -100,6 +100,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
 - define API boundary: post message、list messages、optional delete or hide action
 - decide persistence family: first implementation の primary store と indexing strategy
 - define retention and deletion policy: soft delete、hard delete、operator purge
+- first release lookup and ordering minimum is message id lookup plus newest-first public timeline readback
 
 ### 4. Frontend Slice
 
@@ -153,7 +154,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
    current derived follow-up: [docs/portal/issues/issue-128-sns-auth-reopening-and-provider-neutral-identity-boundary.md](docs/portal/issues/issue-128-sns-auth-reopening-and-provider-neutral-identity-boundary.md)
 
 3. Message domain model and persistence decision
-   内容: Issue 7 の no-persistence baseline を historical record として残したまま、message entity、retention、delete semantics、indexing needs を決める。
+   内容: Issue 7 の no-persistence baseline を historical record として残したまま、message id、actor reference、body、created_at、status、moderation flags を minimum message record として固定し、retention、soft delete、operator purge、newest-first readback needs を決める。
    current derived follow-up: [docs/portal/issues/issue-129-sns-message-domain-model-and-persistence-decision.md](docs/portal/issues/issue-129-sns-message-domain-model-and-persistence-decision.md)
 
 4. SNS backend and API baseline
