@@ -62,6 +62,9 @@ If blocked: auth -> `17_AUTH_REQUEST_PLAYBOOK.md`; contract or scope -> `03_TASK
 - [ ] If this is a review-remediation or document-only correction pass, a dedicated task contract exists for that remediation scope.
 - [ ] Scope and acceptance criteria fixed.
 - [ ] Required authentication confirmed.
+- [ ] If several references could be checked independently, read-only context gathering was parallelized.
+- [ ] After any parallel read-only context gathering, a concise progress update and next step were stated.
+- [ ] If a file may have changed due to user edits, formatter activity, resumed session state, or a tool warning, the current file contents were reread immediately before editing.
 
 ## During Coding
 
@@ -72,6 +75,8 @@ If blocked: boundary violation -> `15_APP_BOUNDARY_AND_WORKFLOW_EXTRACT.md`; har
 - [ ] If leftover diffs separate into semantic work and formatting-only cleanup, they were split into distinct task scopes before review or close.
 - [ ] Boundary check remains clean.
 - [ ] Rollback path remains available.
+- [ ] During long work, concise delta updates were provided instead of repeating the full plan.
+- [ ] The task was driven through implementation and validation, not stopped at partial analysis unless a real blocker was documented.
 
 ## Before Writing Resolution
 
@@ -114,7 +119,9 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 
 - [ ] Tests recorded.
 - [ ] DoD mandatory gates passed.
+- [ ] If a relevant validation could not be run, that limitation and reason were recorded explicitly.
 - [ ] Unrelated uncommitted changes are not being mixed into the issue close or handoff flow.
+- [ ] If remote issue or PR state diverged from local numbering or status wording, the local source record was corrected first and then treated as the source of truth for later sync.
 - [ ] Local source document, remote issue or PR body, and status wording are aligned.
 - [ ] Review-state sections inside the source document are aligned and do not point to different stages.
 - [ ] If the source document may have changed since the last review pass, approval exchange, or tool warning, the current file was reread before adding Process Review Notes, close approval records, or other final-state edits.
@@ -122,6 +129,7 @@ If blocked: test gate -> `32_TEST_EXECUTION_GATE.md`; DoD gate -> `04_DEFINITION
 - [ ] Remote issue or PR body was not updated with new Final Review Result or equivalent completion wording before the matching commit was published.
 - [ ] If the source document changed after the last remote sync, the remote issue or PR body was synced again before close or handoff.
 - [ ] If the remote body is derived from a repository file, the final sync used a body-file path from that file instead of a manually reconstructed body payload.
+- [ ] If repeated network failures or remote instability affected multi-issue synchronization, the remaining sync was switched to one issue at a time and the handled issue numbers were recorded in handoff evidence.
 - [ ] After the final sync, the published GitHub body was spot-checked for Markdown-sensitive drift such as broken `<...>` literals, malformed tables, or damaged code fences.
 - [ ] Human re-agreement, if obtained, is recorded separately from agent validation and does not imply close approval.
 - [ ] Explicit human approval recorded before issue close or equivalent final-state transition: the approval form (single-issue or sequential-batch), and the verbatim quote or conversation reference that constitutes the approval, are written in Process Review Notes.

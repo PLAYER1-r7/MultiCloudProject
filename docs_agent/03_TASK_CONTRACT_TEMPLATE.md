@@ -7,6 +7,8 @@ Use this template before implementation starts.
 - Copy the fenced template below into the task record before editing starts.
 - Replace every placeholder on the same line; delete lines that are truly not needed.
 - Keep acceptance criteria and validation commands concrete enough that another agent can continue without re-interpreting intent.
+- If several references can be checked independently, record the read-only context gathering in one short line instead of scattering it across the contract.
+- If a file may have changed before editing, reread it and reflect the final edit target in the contract rather than relying on stale notes.
 - If the task changes browser-facing portal copy or another public-facing text surface, state whether the scope is `local-only` or includes live reflection.
 - If the task may create or continue a follow-up issue chain, fill `Terminal condition` before creating the next issue.
 - If reviewer and approval owner boundaries matter for the task, follow `ROLE_HANDOFF_OWNERSHIP.md` while filling `Requester`, `Expected value`, and handoff-related scope notes.
@@ -16,6 +18,7 @@ Use this template before implementation starts.
 
 - If work must start before every detail is known, still create a task contract before the first edit.
 - At minimum, fill `Title`, `Requester`, `Target App`, `Environment`, `Problem to solve`, `In scope`, `Out of scope`, one acceptance criterion, and one validation command.
+- If read-only context gathering was parallelized, note that briefly in `Approach`.
 - If the task changes browser-facing portal copy or another public-facing text surface, also state whether live reflection is in scope and what evidence will prove it.
 - If the work may branch into follow-up issues, also fill `Terminal condition` before the first child is created.
 - Leave unknown values as explicit `TBD` markers rather than skipping the contract.
@@ -54,11 +57,13 @@ Acceptance Criteria
 Implementation Plan
 - Files likely to change: TBD
 - Approach: TBD
+- File reread trigger before edit: TBD
 - Alternative rejected and why: TBD
 
 Validation Plan
 - Commands to run:
 - Expected results: TBD
+- Not run and why: TBD
 - Failure triage path: TBD
 
 Risk and Rollback
@@ -101,11 +106,13 @@ Acceptance Criteria
 Implementation Plan
 - Files likely to change:
 - Approach:
+- File reread trigger before edit:
 - Alternative rejected and why:
 
 Validation Plan
 - Commands to run:
 - Expected results:
+- Not run and why:
 - Failure triage path:
 
 Risk and Rollback
@@ -148,7 +155,7 @@ Use this contract as the source document for the shared execution record used in
 
 - `Scope` in the execution record should come from Objective plus Scope.
 - `Actions taken` should reflect the final Implementation Plan that was actually executed.
-- `Evidence` should be filled from the Validation Plan and actual validation results.
+- `Evidence` should be filled from the Validation Plan, actual validation results, and any explicitly unrun checks.
 - `Risks or blockers` should come from Risk and Rollback plus any new blockers discovered during work.
 - `Next action` should state completion, escalation, handoff, or the next planned implementation step.
 

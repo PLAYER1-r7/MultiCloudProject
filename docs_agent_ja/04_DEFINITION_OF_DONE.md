@@ -13,6 +13,7 @@
 - [ ] 変更要約が明確である。`05_PR_TASK_CONTRACT_TEMPLATE.md` の packaging ルールに従う
 - [ ] リスクとトレードオフが明示されている。`03_TASK_CONTRACT_TEMPLATE.md` の Risk and Rollback セクションに記録する
 - [ ] レビュアー向けの確認ポイントがある。`05_PR_TASK_CONTRACT_TEMPLATE.md` の Reviewer Notes 形式に従う
+- [ ] 証跡に関する記述は、実際のコマンド出力、コミット済み artifact、または特定可能な handoff record に追跡でき、未検証の仮説は仮説として明示されている
 - [ ] 必要な後続作業が記録されている。`08_ESCALATION_AND_HANDOFF.md` の正規 Execution Record にある `Next action` に記録する
 - [ ] タスクが Issue chain を close した、または提案中の child issue を見送った場合は、その stop-condition の根拠を `08_ESCALATION_AND_HANDOFF.md` の正規 Execution Record にある `Closure rationale` へ記録している
 - [ ] browser-facing な portal copy や他の公開向け文面を変更した場合は、live reflection を確認した、または deploy-ready/local-only 作業であることと未反映理由・引き継ぎ先を明記している

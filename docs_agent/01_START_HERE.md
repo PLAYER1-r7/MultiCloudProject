@@ -61,6 +61,22 @@ Use this incident entry rule when choosing the first document:
 - Treat tests, rollback, and handoff as part of delivery.
 - Keep `docs_agent/` and `docs_agent_ja/` synchronized.
 
+## AI Agent Guidance
+
+- Prefer parallel read-only context gathering when several files or references can be checked independently.
+- After parallel context gathering, send a concise progress update that states what was learned and what happens next.
+- Reread the current file immediately before editing if a user, formatter, resumed session, or tool warning suggests the file may have changed.
+- Keep going until the user request is fully resolved or a genuine blocker is identified; do not stop at partial analysis if implementation is still required.
+- During long work, provide short delta updates instead of repeating the full plan.
+- Validate the changed scope before handoff, and if a relevant validation could not be run, state that limitation explicitly.
+
+## Recent Docset Updates
+
+- 2026-03-14: Added AI-agent guidance for parallel read-only context gathering, concise progress updates, pre-edit rereads, and explicit reporting of unrun validation.
+- 2026-03-14: Propagated the same guidance into the autonomous protocol, workflow checklist, task contract template, PR task contract template, and escalation/handoff record rules.
+- 2026-03-14: Added evidence-provenance and assumption-labeling rules so agents distinguish verified facts from hypotheses in delivery and tooling records.
+- 2026-03-14: Added source-of-truth correction and one-issue-at-a-time remote sync guidance for GitHub issue or PR drift under unstable network conditions.
+
 ## Current Repository Checkpoint
 
 - Do not treat this file as the authoritative current project state checkpoint.

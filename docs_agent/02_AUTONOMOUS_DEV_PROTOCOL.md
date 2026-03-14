@@ -39,6 +39,8 @@ flowchart TD
 
 - Identify target app, environment, and objective.
 - Extract explicit constraints and implicit risks.
+- If several references can be checked independently, gather the read-only context in parallel first.
+- After parallel read-only context gathering, send a concise progress update with the current understanding and the next action.
 - If the user asks for "remaining tasks", "next tasks", "what is left", or similar wording without an explicit scope, default the request to the most recent active task contract, issue chain, or current app context rather than expanding to the whole project.
 - If 2 or more plausible scopes exist, do not guess. State the candidate scopes and ask which one the user means before producing a project-wide task inventory.
 - Before expanding a task-list request from the current active scope to repository-wide scope, require explicit wording such as "project-wide", "across the whole repo", or an equivalent confirmation.
@@ -60,22 +62,26 @@ flowchart TD
 ### 3. Implement
 
 - Make small, reversible changes.
+- Reread the current file immediately before editing when another actor, formatter, resumed session, or tool warning may have changed it.
 - Keep a single change within 5 files unless the task contract explicitly scopes a larger surface.
 - Keep net line delta within 200 lines unless the task contract explicitly scopes a larger surface.
 - Multiple files are acceptable only when they form one logically cohesive unit.
 - If remaining diffs split into semantic work and formatting-only cleanup, separate them into different task contracts or issues so review evidence and close approval stay scope-accurate.
 - Avoid unrelated edits.
+- During long implementation passes, send short delta updates instead of restating the full plan.
 
 ### 4. Validate
 
 - Run the smallest test set that proves correctness.
 - Add deeper checks when the blast radius is larger.
 - If a document or issue will be reviewed from GitHub, make sure the review target is the current published state before asking for external review.
+- If a relevant validation could not be executed, record that gap explicitly in the task record or handoff.
 
 ### 5. Package
 
 - Summarize what changed, what was validated, and what remains risky.
 - Align checklist state, status sections, and remote issue state before declaring review completion.
+- If remote issue or PR numbering, status wording, or published body drift disagrees with the local source record, correct and reread the local record first, then treat that repository file as the source of truth for the next sync.
 - Do not mix unrelated uncommitted changes into an issue close or equivalent final-state transition. Separate, stash, or defer them so the close flow stays scoped to the reviewed issue.
 - Commit and push evidence documents before writing a Final Review Result. The review record must reflect the published state, not a local draft.
 - Do not sync a remote issue or PR body with a new Final Review Result, completion wording, or equivalent final-state language until the commit and push that introduced that wording are already published.
@@ -86,12 +92,15 @@ flowchart TD
 - If the source document may have changed since the last review pass, approval request, or tool notice, reread the current file before adding Process Review Notes, close approval records, or any other final-state edits so formatter or human edits are preserved.
 - If the local issue definition changes after the last remote sync, sync the remote issue or PR body again before close or any equivalent final-state transition.
 - When the remote issue or PR body is sourced from a repository file, prefer a file-based sync path such as `gh issue edit --body-file <path>` or the PR equivalent instead of manually re-serializing the body through another API path.
+- If repeated network failures or remote instability make multi-issue synchronization unreliable, stop batch syncing and continue one issue at a time so each retry has a single remote target.
 - After the final sync, verify the published remote body for Markdown-sensitive literals such as `<env>`, inline tables, or fenced blocks. If the published body drifted from the local source of truth, resync from the file before close.
 
 ### 6. Handoff
 
 - Use the PR task contract template.
 - State open questions and reviewer focus areas.
+- Do not stop at partial analysis when implementation or validation is still required; only hand off after the requested scope is completed or a genuine blocker is documented.
+- If one-issue-at-a-time remote retries were required, record the exact issue numbers handled that way in the handoff evidence or actions taken.
 - Do not close an issue or declare final completion without explicit user approval. Approval takes one of two forms:
   - (a) Single-issue approval: the user names or clearly designates the specific issue for close.
   - (b) Sequential-batch authorization: the user explicitly requests that a numbered series of issues be processed in order. In this case, before closing each issue, state "I will now close Issue N (<title>)" and pause one turn to allow the user to intervene. Proceeding without that pause is a protocol violation equivalent to missing approval.

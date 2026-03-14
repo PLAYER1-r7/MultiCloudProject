@@ -8,10 +8,12 @@ Use this template when packaging implementation into a PR or handoff review unit
 - Keep `Planned scope` and `Actual scope` short and comparable.
 - Keep `Summary`, `What Changed`, and `Validation` as the minimum fixed PR-facing sections even when the package is short.
 - Record missing validation explicitly instead of hiding it in prose.
+- If read-only context gathering or file rereads materially shaped the diff, summarize that briefly in `What Changed` or `Reviewer Notes`.
 - In `What Changed`, separate implementation changes, validation additions, and issue or document synchronization instead of collapsing them into one vague bullet.
 - If the task closed an issue chain or refused a proposed child issue, carry the stop-condition basis into `Closure rationale` so the PR package matches the shared execution record.
 - If the example includes reviewer or approval-owner actions, keep their boundary aligned with `ROLE_HANDOFF_OWNERSHIP.md` instead of redefining it in the PR note.
 - If the PR is stacked on top of another unmerged branch, note the temporary base branch and retarget condition in `Reviewer Notes` or `Closure rationale`.
+- Do not package a PR as effectively complete if implementation or validation is still pending and no real blocker exists.
 
 ## Copy-Ready Template
 
@@ -47,6 +49,7 @@ Risk
 Reviewer Notes
 - Review first:
 - Reproduction steps:
+- Reread or context notes:
 - Open questions:
 ```
 
@@ -86,6 +89,7 @@ Risk
 Reviewer Notes
 - Review first: sns-reviewer checks /sns/ cache invalidation and handoff notes
 - Reproduction steps: open staging /sns/ after build output is prepared for deploy-sns-aws.yml
+- Reread or context notes: staging handoff notes were reread before packaging and the smoke checklist remains the current source of truth
 - Open questions: does sns-approval-owner require a separate production approval window
 ```
 
@@ -98,7 +102,7 @@ This PR contract is the review-ready projection of the shared execution record.
 - `Validation` should map directly to `Evidence`.
 - `Risk` should map directly to `Risks or blockers`.
 - `Closure rationale` should map directly to `Closure rationale` when the task closed an issue chain or refused to create a child issue.
-- `Reviewer Notes` should become the reviewer-facing part of `Next action`.
+- `Reviewer Notes` should become the reviewer-facing part of `Next action`, including any context-reread note that matters for review safety.
 
 ## Packaging Rule
 

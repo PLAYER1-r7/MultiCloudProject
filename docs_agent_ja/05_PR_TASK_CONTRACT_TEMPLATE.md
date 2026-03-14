@@ -8,10 +8,12 @@
 - `予定スコープ` と `実績スコープ` は短く、比較しやすい形で書く
 - PR 向けの最小固定セクションとして `概要`、`What Changed`、`検証` を維持する
 - 未実行の検証は本文に埋めず、明示的に残す
+- read-only の文脈収集やファイル再読が差分判断に効いた場合は、その要点を `What Changed` または `レビュアーメモ` に短く残す
 - `What Changed` では、実装変更、検証追加、Issue またはドキュメント同期を曖昧な 1 文に潰さず区別して書く
 - タスクが Issue chain を close した、または提案中の child issue を見送った場合は、共有 Execution Record と一致するよう、その stop-condition の根拠を `Closure rationale` に引き継ぐ
 - reviewer や approval owner の動きが入る記入例では、PR 文書内で責務を再定義せず `ROLE_HANDOFF_OWNERSHIP.md` の境界に合わせる
 - PR が未 merge branch に積み上がる stacked PR の場合は、一時的な base branch と retarget 条件を `レビュアーメモ` または `Closure rationale` に記載する
+- 実装や検証が未完了で本物の blocker もない場合は、PR を完了扱いに近い形で取りまとめない
 
 ## コピー用テンプレート
 
@@ -47,6 +49,7 @@ What Changed
 レビュアーメモ
 - 最初に見てほしい点:
 - 再現手順:
+- 再読または文脈メモ:
 - 未解決事項:
 ```
 
@@ -86,6 +89,7 @@ What Changed
 レビュアーメモ
 - 最初に見てほしい点: sns-reviewer が /sns/ cache invalidation と handoff メモを確認する
 - 再現手順: deploy-sns-aws.yml 向け build 出力準備後に staging の /sns/ を開く
+- 再読または文脈メモ: PR 取りまとめ前に staging handoff メモを読み直し、smoke checklist を正本として維持した
 - 未解決事項: sns-approval-owner に別の本番承認枠が必要か
 ```
 
@@ -98,7 +102,7 @@ What Changed
 - `検証` は `Evidence` にそのまま対応させる
 - `リスク` は `Risks or blockers` にそのまま対応させる
 - `Closure rationale` は、Issue chain を close した、または child issue を見送った場合の `Closure rationale` にそのまま対応させる
-- `レビュアーメモ` はレビュアー向けの `Next action` として扱う
+- `レビュアーメモ` はレビュアー向けの `Next action` として扱い、レビュー安全性に必要な再読メモも含める
 
 ## PR 取りまとめルール
 

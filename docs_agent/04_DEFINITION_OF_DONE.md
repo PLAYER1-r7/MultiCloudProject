@@ -13,6 +13,7 @@
 - [ ] Change summary is clear. Follow the packaging rule in `05_PR_TASK_CONTRACT_TEMPLATE.md`.
 - [ ] Risks and trade-offs are explicit. Record them in the Risk and Rollback section of `03_TASK_CONTRACT_TEMPLATE.md`.
 - [ ] Reviewer instructions are included. Follow the Reviewer Notes format in `05_PR_TASK_CONTRACT_TEMPLATE.md`.
+- [ ] Evidence claims are traceable to actual command output, committed artifacts, or a named handoff record; unverified assumptions are labeled as assumptions.
 - [ ] Follow-up work is logged if needed. Record it in `Next action` of the canonical execution record in `08_ESCALATION_AND_HANDOFF.md`.
 - [ ] If the task closed an issue chain or refused a proposed child issue, the stop-condition basis is recorded in `Closure rationale` of the canonical execution record in `08_ESCALATION_AND_HANDOFF.md`.
 - [ ] If the task changed browser-facing portal copy or another public-facing text surface, live reflection was verified, or the work is explicitly recorded as deploy-ready/local-only with the reason and handoff owner.

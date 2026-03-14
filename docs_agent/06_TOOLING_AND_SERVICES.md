@@ -31,6 +31,8 @@
 ## Operating Rules
 
 - Do not invent config values.
+- Do not present test, command, or runtime results as current facts unless they were observed in this session or are explicitly sourced from a named artifact or handoff record.
+- If a statement is still a hypothesis, label it as an assumption and say what check would confirm it.
 - Prefer existing scripts over manual sequences.
 - Keep manual operations limited and reversible.
 

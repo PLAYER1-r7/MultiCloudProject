@@ -5,6 +5,8 @@
 - Copy the shared payload block first, then set `Outcome` to the correct state.
 - Use `Outcome: Escalation requested` for blocked work and `Outcome: Handoff ready` for completed work that needs review or transfer.
 - Keep the field order unchanged so downstream parsing stays stable.
+- If relevant validation was not run, state that explicitly in `Evidence` or `Risks or blockers` instead of implying completeness.
+- Do not use `Handoff ready` to stop at partial analysis when implementation or validation is still required and no real blocker exists.
 
 ## Canonical Execution Record Format
 
@@ -41,6 +43,8 @@ Use the canonical execution record format and set `Outcome: Escalation requested
 ## Escalation Field Rules
 
 - Put the current blocker and impact in `Risks or blockers`.
+- If read-only context gathering or rereads materially shaped the escalation, summarize that briefly in `Actions taken`.
+- If no relevant validation ran before escalation, say so explicitly in `Evidence`.
 - Put the decision you need from the reviewer or operator in `Next action`.
 - Keep `Actions taken` limited to what was already checked before escalation.
 
@@ -51,7 +55,8 @@ Use the canonical execution record format and set `Outcome: Handoff ready`.
 ## Handoff Field Rules
 
 - Put the updated task contract and change summary in `Actions taken`.
-- Put validation and rollback evidence in `Evidence`.
+- Put validation and rollback evidence in `Evidence`, and list any relevant checks that were not run.
+- If remote issue creation or body synchronization is unstable, process one issue at a time and record the exact issue numbers handled in `Actions taken` or `Evidence`.
 - Put residual risks in `Risks or blockers`.
 - If the work closes or refuses to extend an issue chain, record the stop-condition basis in `Closure rationale`.
 - Put reviewer focus or the next owner action in `Next action`.
@@ -83,6 +88,17 @@ Next action: sns-reviewer checks the /sns/ route behavior and handoff package be
 ```
 
 ## Current Project Handoff Record
+
+```text
+Document: 08_ESCALATION_AND_HANDOFF
+Scope: MultiCloudProject SNS and Azure issue-chain normalization plus GitHub body resync checkpoint after single-issue retry handling
+Outcome: Handoff ready
+Actions taken: reread the updated local AI-agent handoff guide and kept its canonical execution-record shape unchanged; normalized the SNS and Azure local issue records for Issues 135 through 156 into fixed judgment or fixed execution form, including checked acceptance criteria, process review notes, and explicit current-status lines; synchronized the GitHub issue mapping back into the local records after creation output diverged from local numbering; published the approved production child splits, linked GitHub Issue 136 to child Issues 138, 152, and 151 in order, and then refreshed the stale open GitHub issue bodies so they match the local canonical records; when repeated network instability made bulk remote updates unreliable, switched the GitHub body resync to a strict one-issue-at-a-time workflow and completed the remaining open issue updates individually
+Evidence: the local canonical records now align GitHub numbering for SNS and Azure follow-up issues, including 136 to 147 plus 152 to 156; open GitHub issue bodies for Issues 137, 139 through 150, 151, and 152 were resynchronized to the local canonical text; the GitHub parent-child structure now records Issue 136 as parent of Issues 138, 152, and 151; markdown diagnostics had already passed on the local document batches during normalization, and the later remote-only resync changed GitHub issue bodies without further local file edits
+Risks or blockers: the latest remote pass corrected the open issue presentation layer, but any future body drift on closed issues or later-published follow-up issues would still need a separate audit; network instability remains a practical risk for GitHub-side batch updates, so future remote sync should keep using one-issue-at-a-time retries when failures recur
+Closure rationale: this checkpoint stops after the accepted SNS and Azure issue chain was normalized locally, the published GitHub issue mapping was corrected, the approved production child relationships were restored, and the remaining open GitHub bodies were brought back to the local canonical state without extending the execution scope into new implementation work
+Next action: treat the local docs under docs/portal/issues as the source of truth for this chain, start any later GitHub issue audit from those records, and if another remote resync is required under unstable network conditions, continue with one issue at a time rather than batch creation or batch body updates
+```
 
 ```text
 Document: 08_ESCALATION_AND_HANDOFF
