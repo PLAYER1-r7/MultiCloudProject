@@ -32,10 +32,58 @@ Scope
 - Restricted paths: docs/portal/issues/issue-148-sns-service-persistence-expansion-contract.md, docs/portal/issues/issue-149-sns-service-persistence-path-execution.md, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: browser-local critical-path removal が frontend behavior 単位で明文化されている
-- [ ] AC-2: service-backed completion signal と readback markers が読み取れる
-- [ ] AC-3: fallback and error visibility が next slice completion line と結び付いている
-- [ ] AC-4: service persistence implementation detail と moderation UI が non-goals として切り分けられている
+- [x] AC-1: browser-local critical-path removal が frontend behavior 単位で明文化されている
+- [x] AC-2: service-backed completion signal と readback markers が読み取れる
+- [x] AC-3: fallback and error visibility が next slice completion line と結び付いている
+- [x] AC-4: service persistence implementation detail と moderation UI が non-goals として切り分けられている
+
+# Tasks
+
+- [x] browser-local critical-path removal を fixed judgment にする
+- [x] service-backed completion signal と readback markers を fixed judgment にする
+- [x] fallback and error visibility を fixed judgment にする
+- [x] staging runtime cutover evidence を fixed judgment にする
+- [x] execution non-goals を明文化する
+
+# Definition of Done
+
+- [x] browser-local critical-path removal が frontend behavior として読める
+- [x] service-backed completion signal と readback markers が読める
+- [x] fallback and error visibility が読める
+- [x] staging runtime cutover evidence が読める
+- [x] service persistence implementation detail と moderation UI が本 issue から外れている
+
+# Fixed Judgment
+
+## Frontend Cutover Rationale
+
+- Issue 148 の next-slice contract と Issue 149 の service persistence path を visible frontend behavior に落とすため、browser-local critical-path removal と service-backed completion signal を separate child execution unit として固定する
+- この issue は service persistence implementation detail を再議論するものではなく、frontend が service-owned persistence-backed path を source of truth とする cutover boundary を narrow に確定する execution record である
+
+## Cutover Resolution
+
+- frontend success は browser-local state ではなく service-backed readback を source of truth とすることに固定する
+- visible fallback policy は service persistence unavailable 時にも reviewable であり続ける
+- reload-safe review は next-slice completion signal の一部として保持する
+
+## Visibility And Evidence Resolution
+
+- runtime status、completion signal、fallback policy、error code、retryability、readback state は service-backed behavior を反映する visible markers として固定する
+- runtime-config.js first 読み、local HTTP-mode validation rewrite、staging environment の HTTP mode and service base URL、Terraform-managed Lambda Function URL plus DynamoDB staging target、direct probes and live runtime checks はこの execution unit の staging cutover evidence として扱う
+- portal-staging-deploy run `23041594174` と live runtime-config evidence は browser-local source of truth removal が staging surface まで到達した review line を示す
+
+## Non-Goals Resolution
+
+- service persistence implementation detail
+- workflow YAML detail
+- moderation UI
+- multi-cloud variant work
+
+# Process Review Notes
+
+- Issue 148 の frontend cutover path を child execution unit に落とし、browser-local critical path から service-backed completion signal への切替を visible behavior と evidence の両面で固定した
+- current staging runtime evidence が already available であるため、draft ではなく implemented execution record として service-backed cutover line を閉じた
+- next-slice chain では rollback-aware staging review が同じ cutover markers を参照できるよう、runtime status、fallback policy、readback state を reviewable boundary に揃えた
 ```
 
 # Execution Unit
@@ -68,7 +116,7 @@ Acceptance Criteria
 - portal-staging-deploy run 23041594174 completed successfully after the Terraform-backed staging SNS backend was applied, keeping runtime-config.js aligned with the reviewed HTTP service URL on the staging site
 - current live-state check: https://d32v64hg1mmmau.cloudfront.net/runtime-config.js now resolves VITE_PUBLIC_SNS_SERVICE_MODE=http and the reviewed Lambda Function URL as the staging SNS service base URL
 - GitHub Issue: not created in this task
-- Sync Status: Terraform-backed staging deploy and live runtime evidence captured locally
+- Sync Status: local fixed execution record with Terraform-backed staging deploy and live runtime evidence
 
 # Dependencies
 

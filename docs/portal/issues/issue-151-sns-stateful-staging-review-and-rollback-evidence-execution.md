@@ -32,10 +32,55 @@ Scope
 - Restricted paths: docs/portal/issues/issue-148-sns-service-persistence-expansion-contract.md, docs/portal/issues/issue-149-sns-service-persistence-path-execution.md, docs/portal/issues/issue-150-sns-frontend-service-persistence-cutover-execution.md, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: service-persistence-aware staging review boundary が明文化されている
-- [ ] AC-2: rollback trigger と post-rollback verification が読み取れる
-- [ ] AC-3: reload-safe readback review が completion signal と結び付いている
-- [ ] AC-4: automatic rollback orchestration などが non-goals として切り分けられている
+- [x] AC-1: service-persistence-aware staging review boundary が明文化されている
+- [x] AC-2: rollback trigger と post-rollback verification が読み取れる
+- [x] AC-3: reload-safe readback review が completion signal と結び付いている
+- [x] AC-4: automatic rollback orchestration などが non-goals として切り分けられている
+
+# Tasks
+
+- [x] service-persistence-aware staging review boundary を fixed judgment にする
+- [x] rollback trigger を fixed judgment にする
+- [x] post-rollback verification を fixed judgment にする
+- [x] reload-safe readback review と evidence line を fixed judgment にする
+- [x] execution non-goals を明文化する
+
+# Definition of Done
+
+- [x] service-persistence-aware staging review boundary が読める
+- [x] rollback trigger と post-rollback verification が読める
+- [x] reload-safe readback review が completion signal と結び付いて読める
+- [x] automatic rollback orchestration などが本 issue から外れている
+
+# Fixed Judgment
+
+## Stateful Review Rationale
+
+- Issue 148 の next-slice completion line を最後に閉じる child execution unit として、service-persistence-aware staging review、rollback trigger、post-rollback verification を separate review boundary に固定する
+- この issue は production governance redesign や full incident program を扱うものではなく、next slice の stateful staging review and rollback evidence を narrow に確定する execution record である
+
+## Review Boundary Resolution
+
+- staging review は service-owned persistence と reload-safe readback を declared critical path 上で証明することに固定する
+- completion review は service persistence evidence と visible readback evidence が disagreement を起こす場合 fail closed とする
+- stateful staging review line は browser-local baseline ではなく persistent backend review を前提にする
+
+## Rollback And Verification Resolution
+
+- rollback trigger candidate は repeated write failure、timeline read failure、data compatibility break、service misconfiguration に固定する
+- post-rollback verification は guest read、guest write reject、member persisted write or declared maintenance posture、reload-safe readback confirmation を minimum line に固定する
+- automatic rollback orchestration は non-goal とし、trigger and verification judgment を reviewable evidence path に残す
+
+## Evidence And Non-Goals Resolution
+
+- staging deploy runtime config snapshot、fail-closed HTTP service mode verification、Terraform-managed Lambda Function URL plus DynamoDB backend cutover、portal-staging-deploy run `23041594174`、portal-sns-staging-review run `23041628020`、live runtime config alignment はこの execution unit の reviewed staging evidence として固定する
+- non-goals は production governance redesign、full incident program、automatic rollback orchestration、monitoring vendor selection とする
+
+# Process Review Notes
+
+- Issue 148 の rollback-aware validation path を final child execution unit に落とし、service persistence、reload-safe readback、rollback trigger、post-rollback verification を同じ reviewable path に束ねた
+- current staging deploy and review evidence が persistent backend path 上で揃っているため、draft ではなく completed execution record として扱える状態に整えた
+- later production-hardening contract が同じ staging-complete baseline を参照できるよう、next-slice completion line を fail-closed review rule で明文化した
 ```
 
 # Execution Unit
@@ -66,7 +111,7 @@ Acceptance Criteria
 - portal-sns-staging-review run 23041628020 completed successfully against that updated deploy evidence path, refreshing the stateful staging review evidence on the persistent backend rather than the earlier `/tmp` fallback
 - current live-state check: the staging CloudFront runtime config now advertises the reviewed Lambda Function URL rather than the simulated-route fallback, so the public staging surface is aligned with the service-backed evidence path
 - GitHub Issue: not created in this task
-- Sync Status: Terraform-backed staging deploy, staging review, and live runtime evidence captured locally
+- Sync Status: local fixed execution record with Terraform-backed staging deploy, staging review, and live runtime evidence
 
 # Dependencies
 

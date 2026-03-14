@@ -34,10 +34,10 @@ Scope
 - Restricted paths: infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: browser-local baseline の次に進む minimum deliverable が app behavior 単位で明文化されている
-- [ ] AC-2: service persistence、frontend cutover、stateful evidence/rollback の workstream split と dependency order が読み取れる
-- [ ] AC-3: completion signal と fail conditions が stateful deploy and rollback-aware evidence path と結び付いている
-- [ ] AC-4: first slice と区別される non-goals が切り分けられている
+- [x] AC-1: browser-local baseline の次に進む minimum deliverable が app behavior 単位で明文化されている
+- [x] AC-2: service persistence、frontend cutover、stateful evidence/rollback の workstream split と dependency order が読み取れる
+- [x] AC-3: completion signal と fail conditions が stateful deploy and rollback-aware evidence path と結び付いている
+- [x] AC-4: first slice と区別される non-goals が切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-148-sns-service-persistence-expansion-contract.md, docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md, docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md
@@ -58,19 +58,58 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] next-slice deliverable を fixed judgment にする
-- [ ] workstream split and dependency order を fixed judgment にする
-- [ ] completion signal と fail condition を fixed judgment にする
-- [ ] rollback-aware validation and evidence path を fixed judgment にする
-- [ ] next-slice non-goals を明文化する
+- [x] next-slice deliverable を fixed judgment にする
+- [x] workstream split and dependency order を fixed judgment にする
+- [x] completion signal と fail condition を fixed judgment にする
+- [x] rollback-aware validation and evidence path を fixed judgment にする
+- [x] next-slice non-goals を明文化する
 
 # Definition of Done
 
-- [ ] service-owned timeline read と member post-readback の minimum path が読める
-- [ ] browser-local persistence を critical path から外す cutover boundary が読める
-- [ ] stateful deploy and rollback-aware evidence path が downstream issue で参照できる
-- [ ] first slice completion record と next-slice expansion boundary が混線せず読める
-- [ ] moderation UI、search、multi-cloud write、Azure live execution が next slice から外れている
+- [x] service-owned timeline read と member post-readback の minimum path が読める
+- [x] browser-local persistence を critical path から外す cutover boundary が読める
+- [x] stateful deploy and rollback-aware evidence path が downstream issue で参照できる
+- [x] first slice completion record と next-slice expansion boundary が混線せず読める
+- [x] moderation UI、search、multi-cloud write、Azure live execution が next slice から外れている
+
+# Fixed Judgment
+
+## Next Slice Rationale
+
+- Issue 135 から Issue 147 までの first slice は historical completion record として保持しつつ、browser-local persistence を source of truth にしたままでは次段の stateful boundary を定義できないため、この issue で service persistence expansion の next-slice contract を固定する
+- この issue は full SNS backend program を展開するものではなく、service-owned persistence、frontend cutover、stateful staging review、rollback-aware evidence を one-cloud first の narrow next slice として束ねる planning boundary である
+- downstream の Issue 149、Issue 150、Issue 151 はこの issue の next-slice completion signal を継承し、done line を再定義しない
+
+## Deliverable Resolution
+
+- next slice の canonical deliverable は guest can read timeline through service-owned persistence-backed path、guest write stays fail closed、member valid post is persisted outside browser-local storage、successful post is visible again after reload or fresh-session review through the service-owned readback path、rollback-aware validation can distinguish service persistence failure from frontend-only success state の 5 点に固定する
+- browser-local persistence は historical baseline として残すが、declared next-slice critical path の source of truth には含めない
+
+## Workstream And Dependency Resolution
+
+- workstream split は service persistence path、frontend cutover path、stateful validation and rollback path の 3 系列に固定する
+- canonical dependency order は 1) stable service persistence boundary and deploy-safe config path 2) minimum persistence-backed read and write path 3) frontend cutover away from browser-local critical-path dependence 4) stateful validation and rollback-aware staging evidence update 5) follow-on hardening の順とする
+- next slice は one-cloud execution path only を前提にし、frontend contract names は cloud-neutral のまま維持する
+
+## Completion And Fail Condition Resolution
+
+- completion signal は GET と POST が service-owned persistence に支えられ、guest read succeeds、guest write is rejected with the stable auth/error contract、member valid write succeeds and readback survives reload or fresh-session review、browser-local persistence is no longer the source of truth on the critical path、stateful validation and rollback-aware staging evidence pass の全充足とする
+- fail condition は timeline read or post-readback が still browser-local persistence に依存する、valid member post appears successful only before reload、rollback or staging review cannot distinguish service persistence failure from frontend-only success state、frontend deployment points at an unready or secret-leaking service boundary、のいずれかが残る場合とする
+
+## Rollback-Aware Evidence Resolution
+
+- validation baseline は request/response contract、auth-error contract、surface reachability、auth-post-readback を継続 mandatory gate としつつ、service-owned persistence and reload-safe readback を追加で証明する形に固定する
+- evidence path は local observation ではなく rollback-aware staging review を正規 completion path とし、repeated write failure、timeline read failure、data compatibility break、service misconfiguration を rollback trigger candidate として扱える状態を前提にする
+- first slice と next slice の completion record は分離し、historical browser-local baseline を next-slice success の根拠に使わない
+
+## Next Slice Non-Goals Resolution
+
+- moderation dashboard or operator console completion
+- operator hide/delete UI
+- advanced timeline query, filtering, or search
+- replies, reactions, follows, DMs, media upload
+- multi-cloud write path or Azure live execution
+- deep monitoring automation and automatic rollback orchestration
 
 # Slice Intent
 
@@ -168,6 +207,12 @@ the slice is not complete if any of the following remain true.
 - service persistence、frontend cutover、stateful evidence sub-issues should derive their completion signal from this issue rather than redefining done independently
 - later feature expansion should use this issue to decide whether work belongs in next-slice scope or follow-on scope
 
+# Process Review Notes
+
+- first slice historical completion line を reopen せずに、browser-local baseline の次段として service-owned persistence と rollback-aware evidence を持つ next slice を fresh contract として固定した
+- issue-129 の persistence judgment、issue-130 の API baseline、issue-132 の stack split、issue-133 の stateful ops baseline、issue-147 の completion review を再解釈せずに継承し、next-slice done line を narrow に束ねた
+- current local execution record では derived Issue 149、Issue 150、Issue 151 がこの contract を実行済みであるため、parent contract も completed derived chain と整合する fixed judgment record に揃えた
+
 # Derived Execution Follow-Ups
 
 - docs/portal/issues/issue-149-sns-service-persistence-path-execution.md
@@ -180,7 +225,7 @@ the slice is not complete if any of the following remain true.
 - derived execution chain is now complete on a Terraform-managed staging backend consisting of Lambda Function URL plus DynamoDB timeline persistence
 - reviewed staging evidence passed through `portal-staging-deploy` run `23041594174` and `portal-sns-staging-review` run `23041628020` after the OpenTofu-backed cutover
 - GitHub Issue: not created in this task
-- Sync Status: local docs updated to reflect completed derived execution status
+- Sync Status: local fixed judgment record updated to reflect completed derived execution status
 
 # Dependencies
 

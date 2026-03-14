@@ -32,10 +32,56 @@ Scope
 - Restricted paths: docs/portal/issues/issue-148-sns-service-persistence-expansion-contract.md, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: service-managed timeline read and post create path が明文化されている
-- [ ] AC-2: persistence failure の fail-closed error surface が読み取れる
-- [ ] AC-3: browser-local critical-path removal boundary が読み取れる
-- [ ] AC-4: frontend cutover and workflow detail が non-goals として切り分けられている
+- [x] AC-1: service-managed timeline read and post create path が明文化されている
+- [x] AC-2: persistence failure の fail-closed error surface が読み取れる
+- [x] AC-3: browser-local critical-path removal boundary が読み取れる
+- [x] AC-4: frontend cutover and workflow detail が non-goals として切り分けられている
+
+# Tasks
+
+- [x] service-managed read/write path を fixed judgment にする
+- [x] fail-closed persistence error surface を fixed judgment にする
+- [x] browser-local critical-path removal boundary を fixed judgment にする
+- [x] local execution evidence line を fixed judgment にする
+- [x] execution non-goals を明文化する
+
+# Definition of Done
+
+- [x] service-managed timeline read and post create path が読める
+- [x] persistence failure の fail-closed error surface が読める
+- [x] browser-local critical path removal boundary が読める
+- [x] local HTTP execution evidence line が読める
+- [x] frontend cutover detail と workflow detail が本 issue から外れている
+
+# Fixed Judgment
+
+## Service Persistence Path Rationale
+
+- Issue 148 の next-slice contract を最初の child execution unit に落とすため、GET timeline と POST create の service-managed persistence path を browser-local state から分離して固定する
+- この issue は frontend cutover detail や workflow YAML を扱うものではなく、service-owned read/write path と persistence-aware fail-closed behavior を narrow に確定する execution boundary である
+
+## Service Path Resolution
+
+- GET /api/sns/timeline は declared next slice で service-owned persistence から read する path に固定する
+- POST /api/sns/posts は declared next slice で service-owned persistence を通じて record create を行う path に固定する
+- browser-local storage は declared critical path の source of truth に残さない
+
+## Error And Removal Resolution
+
+- persistence failure は stable fail-closed error surface を通じて visible であることに固定する
+- write success は persistence success 前に主張せず、readback も fake state に silently fallback しない
+- browser-local critical-path removal は service-owned persistence が next-slice critical path を担って初めて成立する
+
+## Evidence And Non-Goals Resolution
+
+- local execution note にある HTTP service boundary、stable route contract reuse、cross-origin service fetch validation は this execution unit の local evidence line として固定する
+- non-goals は frontend cutover detail、workflow YAML detail、multi-cloud persistence、moderation expansion とする
+
+# Process Review Notes
+
+- Issue 148 の next-slice contract を service persistence child に落とし、service-owned read/write、fail-closed persistence error、browser-local critical-path removal を first implementation line に固定した
+- local HTTP-mode execution evidence が既に存在するため、draft ではなく implemented execution record として扱える状態に揃えた
+- current next-slice chain では frontend cutover と staging review がこの service-owned persistence path を前提に進むため、child execution の done line をここで閉じた
 ```
 
 # Execution Unit
@@ -76,7 +122,7 @@ Acceptance Criteria
 	- `cd apps/portal-web && npm run test:sns-http-surface-reachability`
 	- `cd apps/portal-web && npm run test:sns-http-auth-post-readback`
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local fixed execution record
 
 # Dependencies
 
