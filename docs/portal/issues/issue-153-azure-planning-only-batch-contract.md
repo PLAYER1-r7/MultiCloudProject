@@ -34,10 +34,10 @@ Scope
 - Restricted paths: apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: March 中に扱う planning-only deliverable が明文化されている
-- [ ] AC-2: cost guardrail と April reopen gate が読み取れる
-- [ ] AC-3: IaC/workflow、identity/secret、observability/rollback portability の planning boundary が読み取れる
-- [ ] AC-4: live Azure execution が non-goal として明確に切り分けられている
+- [x] AC-1: March 中に扱う planning-only deliverable が明文化されている
+- [x] AC-2: cost guardrail と April reopen gate が読み取れる
+- [x] AC-3: IaC/workflow、identity/secret、observability/rollback portability の planning boundary が読み取れる
+- [x] AC-4: live Azure execution が non-goal として明確に切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-153-azure-planning-only-batch-contract.md, docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md, docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md
@@ -58,19 +58,47 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] March planning-only deliverable を fixed judgment にする
-- [ ] cost guardrail and April reopen gate を fixed judgment にする
-- [ ] IaC/workflow portability boundary を fixed judgment にする
-- [ ] identity/secret and observability/rollback portability を fixed judgment にする
-- [ ] live Azure non-goals を明文化する
+- [x] March planning-only deliverable を fixed judgment にする
+- [x] cost guardrail and April reopen gate を fixed judgment にする
+- [x] IaC/workflow portability boundary を fixed judgment にする
+- [x] identity/secret and observability/rollback portability を fixed judgment にする
+- [x] live Azure non-goals を明文化する
 
 # Definition of Done
 
-- [ ] March 中にやる planning-only work とやらない live work が読める
-- [ ] cost ceiling と April reopen gate が読める
-- [ ] IaC/workflow and evidence portability boundary が読める
-- [ ] identity/secret と observability/rollback の portability scope が読める
-- [ ] live Azure environment creation や resource spend が non-goal として切り分けられている
+- [x] March 中にやる planning-only work とやらない live work が読める
+- [x] cost ceiling と April reopen gate が読める
+- [x] IaC/workflow and evidence portability boundary が読める
+- [x] identity/secret と observability/rollback の portability scope が読める
+- [x] live Azure environment creation や resource spend が non-goal として切り分けられている
+
+# Fixed Judgment
+
+## Azure Planning Batch Rationale
+
+- March 中の focus は SNS production-hardening と cost discipline の維持にあるため、Azure は live execution を始めず planning-only batch として fixed judgment 化する
+- この issue は Azure implementation を reopen するものではなく、cost guardrail、April reopen gate、IaC and workflow portability、identity and secret portability、observability and rollback portability を reviewable planning boundary に固定する parent planning record である
+
+## Deliverable Resolution
+
+- March batch の canonical deliverable は clear cost guardrail and defer-until-April judgment、planning-level IaC topology and workflow/evidence outline、identity and secret portability boundary、observability and rollback portability outline、documented April reopen gate の 5 点に固定する
+- live resource apply、preview or production environment creation、cloud spend expansion は this batch の deliverable に含めない
+
+## Cost And Portability Resolution
+
+- dependency order は 1) March cost guardrail and April reopen conditions 2) planning-only IaC topology and workflow/evidence boundary 3) identity and secret portability assumptions 4) observability and rollback portability assumptions 5) explicit defer of all live Azure execution の順に固定する
+- portability boundary は app-side contract に provider-specific naming を prematurely leak させず、existing build, deploy, verification, rollback record model と接続できる planning line を残すことに固定する
+
+## Reopen Gate And Non-Goals Resolution
+
+- April reopen gate は cost ceiling、execution focus、portability assumptions、evidence model が reviewable であることを go or no-go 条件として読む planning gate に固定する
+- non-goals は Azure live resource apply、Azure preview or production environment creation、live traffic cutover、SNS backend implementation on Azure、provider-final selection execution beyond planning-level comparison とする
+
+# Process Review Notes
+
+- loose Azure defer notes を March planning-only batch として束ね直し、April reopen までに固定すべき cost and portability judgment を 1 issue で読めるようにした
+- current SNS production-hardening track と混線しないよう、Azure work は live execution を含まない parent planning record に留めた
+- later Azure IaC、workflow、portability follow-up が同じ reopen gate を参照できるよう、cost guardrail、evidence model、provider-neutral contract posture を parent line で閉じた
 
 # Batch Intent
 
@@ -139,10 +167,11 @@ the batch is not complete if any of the following remain true.
 
 # Current Status
 
+- local fixed judgment recorded
 - local draft created and published to GitHub as Issue #137
 - this record is now the accepted GitHub-tracked planning queue entry for the March Azure planning-only batch
 - GitHub Issue: #137
-- Sync Status: synced to GitHub as open planning issue
+- Sync Status: synced to GitHub as open fixed planning issue
 
 # Dependencies
 

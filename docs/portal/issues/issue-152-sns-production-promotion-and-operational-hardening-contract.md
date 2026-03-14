@@ -34,10 +34,10 @@ Scope
 - Restricted paths: apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: production promotion batch の minimum deliverable が app behavior and evidence 単位で明文化されている
-- [ ] AC-2: promotion gate、verification path、rollback posture、operational hardening boundary の dependency order が読み取れる
-- [ ] AC-3: production runtime-config guardrail と public verification boundary が completion signal と結び付いている
-- [ ] AC-4: new SNS feature expansion や Azure work が non-goals として切り分けられている
+- [x] AC-1: production promotion batch の minimum deliverable が app behavior and evidence 単位で明文化されている
+- [x] AC-2: promotion gate、verification path、rollback posture、operational hardening boundary の dependency order が読み取れる
+- [x] AC-3: production runtime-config guardrail と public verification boundary が completion signal と結び付いている
+- [x] AC-4: new SNS feature expansion や Azure work が non-goals として切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-152-sns-production-promotion-and-operational-hardening-contract.md, docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md, docs/portal/18_CLOUD_STATUS_AND_REMAINING_TASKS.md
@@ -58,19 +58,49 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] production batch deliverable を fixed judgment にする
-- [ ] promotion gate and dependency order を fixed judgment にする
-- [ ] public verification and runtime-config guardrail を fixed judgment にする
-- [ ] rollback-aware hardening boundary を fixed judgment にする
-- [ ] next-batch non-goals を明文化する
+- [x] production batch deliverable を fixed judgment にする
+- [x] promotion gate and dependency order を fixed judgment にする
+- [x] public verification and runtime-config guardrail を fixed judgment にする
+- [x] rollback-aware hardening boundary を fixed judgment にする
+- [x] next-batch non-goals を明文化する
 
 # Definition of Done
 
-- [ ] production promotion に必要な source build、staging verification、runtime-config guardrail が読める
-- [ ] public verification boundary と rollback posture が読める
-- [ ] post-promotion operational hardening の minimum line が読める
-- [ ] completed staging slice と fresh production batch が混線せず読める
-- [ ] auth/product expansion、multi-cloud write、Azure implementation が non-goals として切り分けられている
+- [x] production promotion に必要な source build、staging verification、runtime-config guardrail が読める
+- [x] public verification boundary と rollback posture が読める
+- [x] post-promotion operational hardening の minimum line が読める
+- [x] completed staging slice と fresh production batch が混線せず読める
+- [x] auth/product expansion、multi-cloud write、Azure implementation が non-goals として切り分けられている
+
+# Fixed Judgment
+
+## Production Batch Rationale
+
+- Issue 148 から Issue 151 までで staging-reviewed complete に到達した service-backed SNS slice を historical baseline として保持しつつ、production promotion を ad hoc execution にしないため、この issue で post-staging production batch の planning boundary を固定する
+- この issue は SNS product scope の拡張や Azure execution を始めるものではなく、promotion gate、runtime-config guardrail、public verification、rollback-aware operational hardening を narrow next batch として束ねる parent planning record である
+
+## Deliverable Resolution
+
+- next batch の canonical deliverable は reviewed build と matching staging evidence chain を entry condition にした production promotion、explicit and fail-closed runtime overlay、public verification of SNS runtime markers and major route integrity、rollback target reference and trigger line、minimum operational hardening checklist の 5 点に固定する
+- completed staging slice は historical execution record のまま残し、production batch はその上に積む fresh planning line として扱う
+
+## Dependency And Verification Resolution
+
+- dependency order は 1) reviewed build and staging evidence freeze 2) production runtime overlay and target declaration validation 3) explicit rollback target and trigger declaration 4) production promotion execution 5) public verification of runtime markers and major SNS route integrity 6) post-promotion hardening follow-up review の順に固定する
+- production completion signal は runtime-config overlay が explicit and reviewable であり、public surface が intended SNS mode と service target posture を示し、rollback-aware verification line が同じ evidence path に残ることと結び付ける
+
+## Rollback And Hardening Resolution
+
+- rollback posture は last-known-good target reference、declared rollback trigger conditions、post-rollback verification line を minimum line に固定する
+- operational hardening は runtime-config drift detection、read failure or write failure observation、rollback reference freshness の narrow follow-up に限定し、deeper alerting or automation には広げない
+
+## Production Non-Goals Resolution
+
+- auth reopening and provider selection
+- new SNS feature expansion such as replies, reactions, moderation UI, or search
+- multi-cloud active-active write path
+- Azure live implementation
+- deep incident automation or automatic remediation orchestration
 
 # Batch Intent
 
@@ -168,6 +198,12 @@ the batch is not complete if any of the following remain true.
 - runtime-config guardrail and public verification follow-ups should derive their completion signal from this issue rather than redefining done independently
 - later SNS feature expansion should use this issue to decide whether work belongs in production-hardening scope or a separate feature track
 
+# Process Review Notes
+
+- staging-complete next slice を reopen せず、production promotion と operational hardening を fresh parent contract として切り出し直した
+- reviewed build、staging deploy、staging review の evidence chain を production entry condition に固定し、runtime-config guardrail と public verification を same batch の completion line に結び付けた
+- first approved child split である issue-154 が pre-deploy promotion gate を継承できるよう、promotion gate、rollback posture、post-promotion hardening の責務境界を parent record で閉じた
+
 # Local Draft Follow-Ups
 
 - docs/portal/issues/issue-154-sns-production-promotion-execution.md is the first approved child split because it adds a distinct pre-deploy execution boundary under this contract
@@ -175,13 +211,14 @@ the batch is not complete if any of the following remain true.
 
 # Current Status
 
+- local fixed judgment recorded
 - local draft refined after issue-148 through issue-151 completed as the staging-backed slice and published to GitHub as Issue #136
 - staging-backed reference currently points to Lambda Function URL plus DynamoDB timeline persistence with reviewed runs `23041594174` and `23041628020`
 - post-merge confirmation on `main` currently points to `portal-build` run `23064520097` and downstream `portal-staging-deploy` run `23064537933`
 - the first child split for the pre-deploy promotion gate has now been published to GitHub as Issue #138; later child drafts remain local working material only until further review approves them
 - production execution has not started in this issue; this record remains planning-only while GitHub Issue #136 is open
 - GitHub Issue: #136
-- Sync Status: synced to GitHub as open planning issue; first child split published as Issue #138 and deeper follow-on drafts remain local-only
+- Sync Status: synced to GitHub as open fixed planning issue; first child split published as Issue #138 and deeper follow-on drafts remain local-only
 
 # Dependencies
 
