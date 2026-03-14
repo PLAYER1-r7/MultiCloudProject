@@ -101,6 +101,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
 - decide persistence family: first implementation の primary store と indexing strategy
 - define retention and deletion policy: soft delete、hard delete、operator purge
 - first release lookup and ordering minimum is message id lookup plus newest-first public timeline readback
+- keep the minimum app-facing API surface aligned to `POST /api/sns/posts` and `GET /api/sns/timeline` with fail-closed error visibility
 
 ### 4. Frontend Slice
 
@@ -158,7 +159,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
    current derived follow-up: [docs/portal/issues/issue-129-sns-message-domain-model-and-persistence-decision.md](docs/portal/issues/issue-129-sns-message-domain-model-and-persistence-decision.md)
 
 4. SNS backend and API baseline
-   内容: write API、read API、authorization、schema evolution、single-cloud first execution boundary を固定する。
+   内容: `POST /api/sns/posts` と `GET /api/sns/timeline` を minimum app-facing surface として固定し、authorization、stable error code、schema evolution、single-cloud first execution boundary を決める。
    current derived follow-up: [docs/portal/issues/issue-130-sns-backend-and-api-baseline.md](docs/portal/issues/issue-130-sns-backend-and-api-baseline.md)
 
 5. SNS security, abuse control, and moderation baseline

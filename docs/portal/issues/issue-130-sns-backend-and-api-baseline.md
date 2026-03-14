@@ -34,10 +34,10 @@ Scope
 - Restricted paths: apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: first release write API と read API の app-facing surface が明文化されている
-- [ ] AC-2: guest、member、operator の authorization boundary が API 単位で読み取れる
-- [ ] AC-3: schema evolution と error surface の最小 rule が明文化されている
-- [ ] AC-4: single-cloud first execution boundary と non-goals が切り分けられている
+- [x] AC-1: first release write API と read API の app-facing surface が明文化されている
+- [x] AC-2: guest、member、operator の authorization boundary が API 単位で読み取れる
+- [x] AC-3: schema evolution と error surface の最小 rule が明文化されている
+- [x] AC-4: single-cloud first execution boundary と non-goals が切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-130-sns-backend-and-api-baseline.md, docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md
@@ -58,19 +58,19 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] write API baseline を fixed judgment にする
-- [ ] read API baseline を fixed judgment にする
-- [ ] authorization boundary を fixed judgment にする
-- [ ] schema evolution and error surface rule を fixed judgment にする
-- [ ] single-cloud first execution boundary を fixed judgment にする
+- [x] write API baseline を fixed judgment にする
+- [x] read API baseline を fixed judgment にする
+- [x] authorization boundary を fixed judgment にする
+- [x] schema evolution and error surface rule を fixed judgment にする
+- [x] single-cloud first execution boundary を fixed judgment にする
 
 # Definition of Done
 
-- [ ] first release write and read API surface が downstream issue で参照できる
-- [ ] guest、member、operator の authorization boundary が API 単位で読める
-- [ ] schema evolution と error surface の最小 rule が読める
-- [ ] single-cloud first execution boundary が first implementation slice の前提として読める
-- [ ] service product choice と implementation work が本 issue の out-of-scope として切り分けられている
+- [x] first release write and read API surface が downstream issue で参照できる
+- [x] guest、member、operator の authorization boundary が API 単位で読める
+- [x] schema evolution と error surface の最小 rule が読める
+- [x] single-cloud first execution boundary が first implementation slice の前提として読める
+- [x] service product choice と implementation work が本 issue の out-of-scope として切り分けられている
 
 # Discussion Seed
 
@@ -89,6 +89,59 @@ Risk and Rollback
 - guest は read-only、member は create post 可、operator の moderation-sensitive write は first release baseline では optional follow-up とする
 - invalid payload と write failure は app-facing error surface として fail-closed に扱う
 - first implementation slice は single-cloud first とし、cross-cloud multi-write or active-active routing は non-goal にする
+
+# Fixed Judgment
+
+## Backend Baseline Rationale
+
+- issue-127、issue-128、issue-129 で fixed judgment 化した product、auth、persistence boundary は、app-facing backend/API contract を持たないままでは implementation slice に落とせないため、この issue で single contract baseline に束ねる
+- この issue は compute service や storage product を選ぶためのものではなく、frontend、service stack、monitoring/test が共有する app-facing API surface と authorization rule を固定するための narrow planning boundary として扱う
+- apps/portal-web の existing contract validator が already expecting している `/api/sns/posts`、`/api/sns/timeline`、auth error surface は baseline input として尊重し、conflicting vocabulary を新設しない
+
+## Write API Resolution
+
+- first release write API の canonical minimum surface は `POST /api/sns/posts` に固定する
+- request minimum field は `authorId` と `message` を required、`replyToPostId` を optional とし、message maximum length は 280 を baseline にする
+- create post は authenticated write path として扱い、silent success や implicit fallback を許容しない
+- moderation-specific write API は first release minimum surface に含めず、later follow-up issue が必要性を明示した場合に追加する
+
+## Read API Resolution
+
+- first release read API の canonical minimum surface は `GET /api/sns/timeline` に固定する
+- read response は top-level collection field `items` を返し、minimum item field は `id`、`authorId`、`message`、`createdAt` に固定する
+- timeline ordering は `createdAt-desc` の newest-first を canonical rule とし、public timeline readback はこの ordering を崩さない
+- first release baseline では advanced query、search、personalized feed、private audience segmentation を read API surface に含めない
+
+## Authorization Boundary Resolution
+
+- downstream auth state vocabulary は issue-128 に揃えて `signed-out`、`signed-in member`、`operator` を canonical state とする
+- guest は `GET /api/sns/timeline` のみ許可し、`POST /api/sns/posts` は 403 fail-closed rejection を返す
+- member は `GET /api/sns/timeline` と `POST /api/sns/posts` を許可する
+- operator は member action を含むが、moderation-sensitive write API は later follow-up が追加するまで first release baseline に含めない
+
+## Error Surface And Schema Evolution Resolution
+
+- invalid payload rejection は stable app-facing error として `INVALID_POST_PAYLOAD` を維持し、missing `authorId`、empty `message`、message-too-long を minimum rejected case にする
+- guest blocked post は `SNS_POST_FORBIDDEN`、write failure は `SNS_POST_WRITE_FAILED`、fail-closed auth family は `SNS_AUTH_CONTEXT_MISSING`、`SNS_ACTOR_MISMATCH`、`SNS_WRITE_DISABLED` を stable error code として扱う
+- app-facing write failure surface は `errorCode`、`message`、`retryable` を minimum visible field とし、fail-closed completion visibility は `errorCode`、`retryable`、`readbackState`、`completionSignal`、`fallbackPolicy` を含める
+- request/response shape は additive change または explicit versioning によってのみ拡張し、silent field repurposing や implicit contract drift を許容しない
+- provider-neutral actor id naming は issue-128 の contract に揃えて安定維持し、actor id format and uniqueness guarantee は issue-129 の persistence boundary に委ねる
+
+## Execution Boundary Resolution
+
+- first implementation slice は one-cloud execution path only を canonical rule とする
+- frontend route naming、API path naming、auth vocabulary、message contract naming は cloud-neutral のまま維持し、single-cloud first execution でも provider brand を app-facing contract に露出しない
+- cross-cloud replicated writes、active-active read/write routing、queue or event fan-out architecture は first release backend/API baseline の non-goal に残す
+
+## First Release Backend API Non-Goals Resolution
+
+- compute or storage product selection
+- OpenAPI generation or schema registry tooling
+- moderation-specific write API in the minimum surface
+- queue/event architecture
+- notification side effects
+- cross-cloud active-active write routing
+- advanced query, search, recommendation, or personalized feed API
 
 # Initial Boundary Candidates
 
@@ -136,17 +189,23 @@ Risk and Rollback
 - frontend slice issue should inherit the API names, authorization model, and error surface from this issue
 - monitoring, rollback, and test baseline issue should inherit the fail-closed error surface and API critical path from this issue
 
+# Process Review Notes
+
+- issue-128 の auth vocabulary と issue-129 の persistence vocabulary を backend/API contract へ束ね、apps/portal-web の contract validator が already expecting する minimum surface と整合させた
+- downstream issue が service product choice より先に drift した API vocabulary を持ち込まないよう、endpoint、request field、response field、error code、authorization matrix を canonical baseline として明示した
+- first release では create post と public timeline read の narrow surface を維持し、moderation-specific write と cross-cloud routing は non-goal に残した
+
 # Current Draft Focus
 
-- product、auth、persistence で決めた boundary を backend and API baseline に束ねる
-- service choice より先に app-facing contract を固定する
-- first release を create post plus public timeline read の narrow API scope に抑える
+- product、auth、persistence で決めた boundary を backend and API baseline の fixed judgment に束ねた
+- service choice より先に app-facing contract を固定した
+- first release を create post plus public timeline read の narrow API scope に抑えた
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed planning record
 
 # Dependencies
 
