@@ -34,10 +34,10 @@ Scope
 - Restricted paths: apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: auth/API/database を含む first release monitoring signal が明文化されている
-- [ ] AC-2: SNS critical-path test baseline が pre-deploy and post-deploy の両方で読み取れる
-- [ ] AC-3: rollback trigger と post-rollback verification が stateful failure mode を含めて明文化されている
-- [ ] AC-4: tool choice や automation detail が non-goals として切り分けられている
+- [x] AC-1: auth/API/database を含む first release monitoring signal が明文化されている
+- [x] AC-2: SNS critical-path test baseline が pre-deploy and post-deploy の両方で読み取れる
+- [x] AC-3: rollback trigger と post-rollback verification が stateful failure mode を含めて明文化されている
+- [x] AC-4: tool choice や automation detail が non-goals として切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-133-sns-stateful-monitoring-rollback-and-test-baseline.md, docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md
@@ -58,19 +58,19 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] stateful monitoring signal を fixed judgment にする
-- [ ] SNS critical-path test baseline を fixed judgment にする
-- [ ] stateful rollback trigger を fixed judgment にする
-- [ ] post-rollback verification and evidence path を fixed judgment にする
-- [ ] first release non-goals を fixed judgment にする
+- [x] stateful monitoring signal を fixed judgment にする
+- [x] SNS critical-path test baseline を fixed judgment にする
+- [x] stateful rollback trigger を fixed judgment にする
+- [x] post-rollback verification and evidence path を fixed judgment にする
+- [x] first release non-goals を fixed judgment にする
 
 # Definition of Done
 
-- [ ] auth/API/database failure mode を含む monitoring baseline が downstream issue で参照できる
-- [ ] pre-deploy and post-deploy の SNS critical-path test が読める
-- [ ] rollback trigger と operator judgment が stateful failure mode を含めて読める
-- [ ] post-rollback verification が API/auth/persistence path まで含めて読める
-- [ ] tooling choice と automation detail が本 issue の out-of-scope として切り分けられている
+- [x] auth/API/database failure mode を含む monitoring baseline が downstream issue で参照できる
+- [x] pre-deploy and post-deploy の SNS critical-path test が読める
+- [x] rollback trigger と operator judgment が stateful failure mode を含めて読める
+- [x] post-rollback verification が API/auth/persistence path まで含めて読める
+- [x] tooling choice と automation detail が本 issue の out-of-scope として切り分けられている
 
 # Discussion Seed
 
@@ -89,6 +89,47 @@ Risk and Rollback
 - rollback baseline は artifact restore だけでなく service config rollback、known-good schema or data-compatibility judgment、secret rotation path を含む
 - post-rollback verification は route reachability に加えて API health、auth boundary、timeline read、member post failure absence を確認する
 - first release では provider-native alert product、deep load testing、automatic rollback orchestration は non-goal にする
+
+# Fixed Judgment
+
+## Stateful Ops Rationale
+
+- Issue 12、Issue 13、Issue 14 の static-first baseline は historical record として維持しつつ、SNS first stateful slice に必要な auth/API/persistence failure mode を追加する narrow planning boundary として扱う
+- この issue は monitoring vendor、test framework、automation product を選ぶものではなく、release gate と recovery judgment が参照すべき stateful signal、critical-path test、rollback trigger、post-rollback verification を固定する
+- static reachability だけが green でも SNS stateful path が broken なら release-ready と扱わないことを明示する
+
+## Monitoring Signal Resolution
+
+- first release monitoring baseline は public route reachability に加えて `GET /api/sns/timeline` availability、member write path success or stable fail-closed error、guest write reject、invalid payload reject、service-side error visibility、persistence restore evidence を mandatory signal とする
+- auth boundary break、repeated write failure、repeated timeline read failure、secret-backed service outage は static page health とは別の stateful blocker として扱う
+- signal naming や dashboard implementation は後続 issue に委ねるが、監視対象の failure mode 自体はこの issue の contract として固定する
+
+## Critical-Path Test Resolution
+
+- pre-deploy baseline は request/response contract validation、auth-error contract validation、SNS surface reachability の 3 つを minimum gate とする
+- post-deploy baseline は guest timeline read、guest write reject、member valid write、member invalid payload reject、post-readback consistency を minimum critical path とする
+- production readiness と staging completion は stateful critical-path failure が 1 件でも残る場合に block される
+
+## Rollback Trigger Resolution
+
+- rollback trigger candidate は repeated write failure、repeated timeline read failure、auth boundary break、data-compatibility break、secret-backed service misconfiguration に固定する
+- rollback action は artifact restore だけでなく service config restore、known-good compatibility judgment、secret rotation or invalidation を含み得る
+- database-destructive rollback は default path にせず、compatibility-preserving restore または hide/fail-closed posture を優先する
+
+## Post-Rollback Verification And Evidence Resolution
+
+- post-rollback verification minimum は public route reachability、guest timeline read success、guest write reject、member valid write success or intentional maintenance disable、post-readback consistency、critical path 上の uncontrolled server error absence とする
+- evidence path は informal local note ではなく staging-oriented execution evidence を正規経路とし、owner と verification responsibility を同じ operator path で追えるようにする
+- rollback success は static page recovery だけでは足りず、API/auth/persistence path まで復旧確認できたときに成立する
+
+## First Release Stateful Ops Non-Goals Resolution
+
+- monitoring vendor selection
+- load-test product selection
+- dashboard construction
+- automatic rollback orchestration
+- provider-native alerting detail
+- 24x7 on-call staffing design
 
 # Initial Boundary Candidates
 
@@ -135,17 +176,23 @@ Risk and Rollback
 - future CI/CD or deploy issue should inherit the pre-deploy and post-deploy SNS verification sequence from this issue
 - future runbook work should inherit rollback trigger and post-rollback verification from this issue without reopening API or auth boundary
 
+# Process Review Notes
+
+- Issue 12、Issue 13、Issue 14 の static-first baseline を historical record として保持したまま、SNS stateful path に必要な monitoring/test/rollback contract だけを narrow scope で固定した
+- issue-130 の API boundary、issue-131 の security floor、issue-132 の stack split と整合するよう、guest read、member write、invalid payload reject、post-readback consistency を stateful critical path に揃えた
+- current SNS planning chain では tooling choice より failure mode、rollback trigger、post-rollback verification の固定を優先し、execution issue が同じ operational contract を参照できる状態に整えた
+
 # Current Draft Focus
 
-- static-first baseline を壊さずに stateful SNS failure mode を追加する
-- auth/API/database critical path を release blocker と recovery judgment に接続する
-- tooling choice より先に operational contract を固定する
+- static-first baseline を壊さずに stateful SNS failure mode を fixed judgment として追加した
+- auth/API/database critical path を release blocker と recovery judgment に接続した
+- tooling choice より先に operational contract を固定した
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed planning record
 
 # Dependencies
 

@@ -34,10 +34,10 @@ Scope
 - Restricted paths: apps/, infra/, .github/workflows/, historical closed issue records except reference reading
 
 Acceptance Criteria
-- [ ] AC-1: unrelated feature が原則として触ってよい shared-touch zone と、触ってはいけない SNS-owned no-touch zone が明文化されている
-- [ ] AC-2: shared-layer change 時に必要な SNS critical-path regression gate が明文化されている
-- [ ] AC-3: route、auth、API client、form、layout、state management、error handling の regression target が具体化されている
-- [ ] AC-4: exception process と non-goals があり、broad platform-wide freeze に膨らんでいない
+- [x] AC-1: unrelated feature が原則として触ってよい shared-touch zone と、触ってはいけない SNS-owned no-touch zone が明文化されている
+- [x] AC-2: shared-layer change 時に必要な SNS critical-path regression gate が明文化されている
+- [x] AC-3: route、auth、API client、form、layout、state management、error handling の regression target が具体化されている
+- [x] AC-4: exception process と non-goals があり、broad platform-wide freeze に膨らんでいない
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-134-sns-implementation-protection-and-change-isolation-baseline.md, docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md
@@ -58,19 +58,19 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] SNS-owned boundary を fixed judgment にする
-- [ ] shared-layer touch rule を fixed judgment にする
-- [ ] SNS critical-path regression target を具体化する
-- [ ] exception process を fixed judgment にする
-- [ ] first release non-goals を明文化する
+- [x] SNS-owned boundary を fixed judgment にする
+- [x] shared-layer touch rule を fixed judgment にする
+- [x] SNS critical-path regression target を具体化する
+- [x] exception process を fixed judgment にする
+- [x] first release non-goals を明文化する
 
 # Definition of Done
 
-- [ ] no-touch zone と shared-touch zone が current chain 前提で読める
-- [ ] shared-layer 変更時に必須の regression gate が読める
-- [ ] route、auth、API client、form、layout、state management、error handling に対する concrete regression target が読める
-- [ ] unrelated feature work が SNS internals を変更する場合の exception process が読める
-- [ ] broad platform-wide freeze ではなく SNS protection baseline に留まっている
+- [x] no-touch zone と shared-touch zone が current chain 前提で読める
+- [x] shared-layer 変更時に必須の regression gate が読める
+- [x] route、auth、API client、form、layout、state management、error handling に対する concrete regression target が読める
+- [x] unrelated feature work が SNS internals を変更する場合の exception process が読める
+- [x] broad platform-wide freeze ではなく SNS protection baseline に留まっている
 
 # Protection Intent
 
@@ -95,6 +95,47 @@ Risk and Rollback
 - shared-touch zone を変更する場合は impact statement と SNS critical-path regression evidence を必須にする
 - unrelated feature が SNS-owned zone を変更する場合は linked exception issue と explicit regression evidence を必須にする
 - first release では codeowners automation や broad platform freeze ではなく、reviewable gate and evidence rule に留める
+
+# Fixed Judgment
+
+## Protection Rationale
+
+- current SNS planning chain が揃っても、shared auth、layout、API client、form primitive の変更から SNS critical path を守る no-touch zone と regression gate が未固定なら downstream 実装は breakage を review で止めにくい
+- historical reference の Issue 112 は再利用せず、Issue 127 から Issue 133 の updated boundary を前提に fresh protection contract として固定する
+- この issue は broad platform freeze や automation enforcement を決めるものではなく、current chain 向けの ownership boundary、shared-touch rule、regression target、exception process を固定する narrow planning boundary として扱う
+
+## Ownership Boundary Resolution
+
+- SNS route entry、post form behavior、timeline readback contract、auth-to-post boundary、API request/response and stable error contract、domain service and persistence adapter contract、moderation-sensitive state transition は SNS-owned no-touch zone とする
+- unrelated feature work は上記 zone を原則として直接編集してはならず、refactor や rename であっても behavior change を伴うなら no-touch zone 変更として扱う
+- shared auth abstraction、layout shell、API client/fetch wrapper、error/loading primitive、form primitive、state container/cache wrapper、SNS が利用する design token は shared-touch zone とし、変更自体は許容するが gate を必須にする
+
+## Shared-Layer Gate Resolution
+
+- auth abstraction change、route/guard change、layout/navigation change、API client change、form primitive change、state/cache change、error/loading primitive or token change は SNS critical-path regression gate を mandatory にする
+- regression gate は contract test、integration test、manual major-flow check の組み合わせでよいが zero-check で通さない
+- shared-touch zone の変更で SNS contract や post-readback behavior まで波及する場合は no-touch zone 変更へ昇格する
+
+## Regression Target Resolution
+
+- concrete regression target は route/entry surface、authentication/authorization surface、posting flow surface、timeline/readback surface、API/client contract surface、shared primitive surface の 6 系列に固定する
+- minimum target matrix はこの issue の regression matrix を canonical baseline とし、auth abstraction change なら guest blocked post と member post availability、route change なら entry reachability と guard behavior、API client change なら post/readback mapping と auth header continuity を確認する
+- Issue 133 の stateful operational baseline を満たす critical path が regression target の中心であり、static route smoke だけで SNS unaffected を確定しない
+
+## Exception Process Resolution
+
+- unrelated feature が SNS-owned no-touch zone を変更する場合は linked issue、理由、impacted regression target、evidence、temporary workaround か lasting contract update かの記録を必須にする
+- `ついでに直す` は exception reason として認めず、intentional SNS behavior change なら unrelated feature issue ではなく SNS-related issue として扱う
+- exception は approval shortcut ではなく evidence obligation を強める rule として扱う
+
+## First Release Protection Non-Goals Resolution
+
+- full codeowners system implementation
+- complete CI policy implementation
+- broad freeze on shared-layer refactors
+- test framework selection execution
+- full visual regression platform adoption
+- Azure-specific protection design
 
 # Change-Isolation Baseline
 
@@ -274,17 +315,23 @@ Exception rule:
 - future CI or regression issue should inherit the regression target matrix and evidence checklist from this issue
 - unrelated feature planning can use this issue to decide whether a change stays in shared-touch zone or requires SNS exception handling
 
+# Process Review Notes
+
+- historical Issue 112 をそのまま current chain に流用せず、Issue 127 から Issue 133 の boundary を前提に fresh protection contract を固定した
+- issue-130 の API/auth boundary、issue-133 の stateful critical path と整合するよう、no-touch zone、shared-touch zone、critical regression target を current SNS chain 向けに具体化した
+- current SNS planning chain では automation enforcement より reviewable rule、evidence checklist、exception obligation の固定を優先し、later unrelated feature work が同じ protection contract を参照できる状態に整えた
+
 # Current Draft Focus
 
-- current SNS planning chain を前提に no-touch zone と shared-touch zone を固定する
-- stateful SNS critical path を shared-layer regression gate に接続する
-- evidence obligation を fixed しつつ implementation automation は non-goal に残す
+- current SNS planning chain を前提に no-touch zone と shared-touch zone を fixed judgment として固定した
+- stateful SNS critical path を shared-layer regression gate に接続した
+- evidence obligation を fixed しつつ implementation automation は non-goal に残した
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed planning record
 
 # Historical Reference
 
