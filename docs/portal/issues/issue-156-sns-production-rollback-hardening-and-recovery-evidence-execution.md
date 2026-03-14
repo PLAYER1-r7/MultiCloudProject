@@ -173,12 +173,13 @@ production recovery evidence は issue-154 の promotion record と issue-155 �
 # Current Status
 
 - local fixed judgment recorded
-- local draft created as the third derived execution issue from issue-152
+- local fixed execution record published as the third derived execution issue from issue-152
 - draft wording requires either completed production verification evidence or an explicit incomplete-verification / maintenance-state handoff before the recovery issue can start
 - current issue wording follows the historical production rollback baseline: last-known-good target, same evidence path, operator-reviewed post-rollback verification, and recorded drift-check evidence
-- this child split is still blocked pending explicit human confirmation and GitHub issue creation; do not treat this file as an accepted execution issue yet
-- GitHub Issue: not created in this task
-- Sync Status: local fixed execution record, hold for publication
+- this child split is now the accepted GitHub-tracked execution queue entry for the production rollback and recovery evidence boundary
+- GitHub Issue: #151
+- GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/151
+- Sync Status: synced to GitHub as open fixed execution issue
 
 # Historical References
 

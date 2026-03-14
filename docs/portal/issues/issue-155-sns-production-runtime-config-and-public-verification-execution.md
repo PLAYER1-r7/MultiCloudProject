@@ -169,12 +169,13 @@ public verification は issue-154 で固定した promoted production candidate 
 # Current Status
 
 - local fixed judgment recorded
-- local draft created as the second derived execution issue from issue-152
+- local fixed execution record published as the second derived execution issue from issue-152
 - draft wording requires successful production deploy evidence for the named candidate before public verification can start, and preserves same issue path / same rollout batch discipline
 - current issue wording follows the same narrow major-route proof used by earlier portal live-reflection records while adding explicit deploy-ready or handoff fallback for incomplete verification
-- this child split is still blocked pending explicit human confirmation and GitHub issue creation; do not treat this file as an accepted execution issue yet
-- GitHub Issue: not created in this task
-- Sync Status: local fixed execution record, hold for publication
+- this child split is now the accepted GitHub-tracked execution queue entry for the production public verification boundary
+- GitHub Issue: #152
+- GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/152
+- Sync Status: synced to GitHub as open fixed execution issue
 
 # Dependencies
 

@@ -207,7 +207,8 @@ the batch is not complete if any of the following remain true.
 # Local Draft Follow-Ups
 
 - docs/portal/issues/issue-154-sns-production-promotion-execution.md is the first approved child split because it adds a distinct pre-deploy execution boundary under this contract
-- docs/portal/issues/issue-155-sns-production-runtime-config-and-public-verification-execution.md and docs/portal/issues/issue-156-sns-production-rollback-hardening-and-recovery-evidence-execution.md remain intentionally unpublished until later review confirms they add distinct follow-on execution boundaries
+- docs/portal/issues/issue-155-sns-production-runtime-config-and-public-verification-execution.md has now been published to GitHub as Issue #152 for the public verification child boundary
+- docs/portal/issues/issue-156-sns-production-rollback-hardening-and-recovery-evidence-execution.md has now been published to GitHub as Issue #151 for the rollback and recovery evidence child boundary
 
 # Current Status
 
@@ -215,10 +216,10 @@ the batch is not complete if any of the following remain true.
 - local draft refined after issue-148 through issue-151 completed as the staging-backed slice and published to GitHub as Issue #136
 - staging-backed reference currently points to Lambda Function URL plus DynamoDB timeline persistence with reviewed runs `23041594174` and `23041628020`
 - post-merge confirmation on `main` currently points to `portal-build` run `23064520097` and downstream `portal-staging-deploy` run `23064537933`
-- the first child split for the pre-deploy promotion gate has now been published to GitHub as Issue #138; later child drafts remain local working material only until further review approves them
+- the pre-deploy promotion gate child split is published as Issue #138, the public verification child split is published as Issue #152, and the rollback/recovery child split is published as Issue #151
 - production execution has not started in this issue; this record remains planning-only while GitHub Issue #136 is open
 - GitHub Issue: #136
-- Sync Status: synced to GitHub as open fixed planning issue; first child split published as Issue #138 and deeper follow-on drafts remain local-only
+- Sync Status: synced to GitHub as open fixed planning issue; production child splits published as Issues #138, #152, and #151
 
 # Dependencies
 
