@@ -34,10 +34,62 @@ Scope
 - Restricted paths: docs/portal/issues/issue-137-sns-frontend-integration-execution.md, docs/portal/issues/issue-136-sns-service-and-data-path-execution.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: contract wiring scope が app behavior 単位で明文化されている
-- [ ] AC-2: route/surface scope と visible SNS surface preservation が読み取れる
-- [ ] AC-3: local demo dependence を completion path から外す signal が読み取れる
-- [ ] AC-4: UI behavior detail や follow-on UI が non-goals として切り分けられている
+- [x] AC-1: contract wiring scope が app behavior 単位で明文化されている
+- [x] AC-2: route/surface scope と visible SNS surface preservation が読み取れる
+- [x] AC-3: local demo dependence を completion path から外す signal が読み取れる
+- [x] AC-4: UI behavior detail や follow-on UI が non-goals として切り分けられている
+
+# Tasks
+
+- [x] contract wiring scope を fixed judgment にする
+- [x] route and surface scope を fixed judgment にする
+- [x] visible SNS surface preservation を fixed judgment にする
+- [x] local demo dependence exclusion を fixed judgment にする
+- [x] surface non-goals を明文化する
+
+# Definition of Done
+
+- [x] stable contract wiring scope が読める
+- [x] existing SNS route と visible surface を first integration target に保つ範囲が読める
+- [x] local demo dependence を completion path から外す条件が読める
+- [x] UI behavior detail や richer UI が本 issue から外れている
+
+# Fixed Judgment
+
+## Surface Wiring Rationale
+
+- Issue 137 の frontend parent execution を code change に落とす最初の unit として、stable contract wiring と route or surface preservation を auth/error/readback behavior から切り分けて固定する
+- この issue は guest/member behavior や readback rendering detail を扱うものではなく、existing SNS route と visible surface を real service-backed path へ接続する narrow execution boundary である
+
+## Contract Wiring Resolution
+
+- declared critical path 上の local-only SNS demo dependence は stable service-backed contract へ置き換えることに固定する
+- app-facing contract names は backend baseline に揃え、frontend-only API vocabulary は first slice で導入しない
+- wiring unit は service-backed contract path への接続自体を責務とし、guest/member behavior detail は後続 child issue に委譲する
+
+## Route Surface Preservation Resolution
+
+- existing SNS route と visible entry surface は first integration target として維持する
+- surface scope は first slice に必要な timeline read と posting entry behavior までに限定する
+- moderation UI や richer social surface への拡張はこの issue に含めない
+
+## Completion Resolution
+
+- completion signal は declared SNS surface が intended service-backed contract path を読む、declared completed route or surface に local-only demo success が残らない、surface scope が first-slice visible path に留まる、の全充足とする
+- surface wiring 完了を auth/error/readback rendering 完了と混同しない
+
+## Surface Non-Goals Resolution
+
+- guest/member behavior detail beyond surface wiring
+- error banner or readback rendering detail
+- moderation UI or richer social surface expansion
+- visual redesign
+
+# Process Review Notes
+
+- Issue 137 の frontend integration execution を surface wiring unit に落とし、existing SNS route と visible surface を stable contract へ接続する boundary を先に固定した
+- issue-136 の service-backed path と整合するよう contract-name continuity を保ち、local demo dependence を surface completion から外した
+- current frontend chain では後続の auth/error/readback behavior issue と fallback prohibition issue が同じ wired surface を前提に進められる状態に整えた
 ```
 
 # Execution Unit
@@ -74,9 +126,9 @@ Acceptance Criteria
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Dependencies
 

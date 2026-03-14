@@ -34,10 +34,63 @@ Scope
 - Restricted paths: docs/portal/issues/issue-137-sns-frontend-integration-execution.md, docs/portal/issues/issue-138-sns-validation-and-evidence-update-execution.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: local-only fallback prohibition が completion-path rule として明文化されている
-- [ ] AC-2: contract-confirmed completion signal が読み取れる
-- [ ] AC-3: fail conditions が fake success、UI-only block、unready service guess を含めて読み取れる
-- [ ] AC-4: validation implementation や broader UX redesign が non-goals として切り分けられている
+- [x] AC-1: local-only fallback prohibition が completion-path rule として明文化されている
+- [x] AC-2: contract-confirmed completion signal が読み取れる
+- [x] AC-3: fail conditions が fake success、UI-only block、unready service guess を含めて読み取れる
+- [x] AC-4: validation implementation や broader UX redesign が non-goals として切り分けられている
+
+# Tasks
+
+- [x] local-only fallback prohibition を fixed judgment にする
+- [x] contract-confirmed completion signal を fixed judgment にする
+- [x] fake success と UI-only block を fail condition として固定する
+- [x] unready service guess を fail condition として固定する
+- [x] frontend completion non-goals を明文化する
+
+# Definition of Done
+
+- [x] local-only fallback prohibition が completion-path rule として読める
+- [x] contract-confirmed completion signal が読める
+- [x] fake success、UI-only block、unready service guess を含む fail conditions が読める
+- [x] validation implementation や broader UX redesign が本 issue から外れている
+
+# Fixed Judgment
+
+## Frontend Completion Rationale
+
+- Issue 137 の local-only fallback prohibition を frontend child unit に落とし、wired surface と UI behavior が揃ったあとに何をもって completed path と呼べるかを fail-closed に固定する
+- この issue は validation suite update を実装するものではなく、frontend done judgment の completion signal と fail conditions を narrow に確定する execution boundary である
+
+## Fallback Prohibition Resolution
+
+- local-only fake state は declared completed critical path を支えてはならない
+- guest-write protection は UI-only block logic だけでは completed path の根拠にならず、service contract alignment を伴う必要がある
+- service-backed path が unavailable or unconfirmed なときに frontend は pretend success を表示してはならない
+
+## Completion Signal Resolution
+
+- completed path とは frontend が intended service contract に配線されていること、visible success が contract-backed path の intended outcome 確認後にのみ表示されること、frontend 側で secret leakage や unready-service guesswork を必要としないことを意味する
+- frontend completion signal は wired surface、visible critical behavior、fallback prohibition が同時に満たされることで成立する
+
+## Fail Condition Resolution
+
+- timeline success が declared critical path で fake local state に依存する場合は fail とする
+- guest write が UI controls の非表示だけで blocked に見え、service path が未確認なら fail とする
+- intended readback path の確認前に success が描画される場合は fail とする
+- frontend が unready service boundary へユーザーを向けたまま slice complete を主張する場合は fail とする
+
+## Frontend Completion Non-Goals Resolution
+
+- validation suite update implementation
+- backend auth enforcement redesign
+- broader UX polish or redesign
+- monitoring or alert routing work
+
+# Process Review Notes
+
+- Issue 137 の completion rule を child execution unit に分離し、fake success、UI-only block、unready service guess を明示的な fail condition として固定した
+- issue-138 の validation/evidence update が同じ fail conditions を参照できるよう、frontend 側で completed path と名乗れる条件を contract-confirmed basis に揃えた
+- current frontend chain では fallback prohibition を独立した reviewable boundary にしたことで、surface wiring と UI behavior の完了判定が甘くならない状態に整えた
 ```
 
 # Execution Unit
@@ -74,9 +127,9 @@ Acceptance Criteria
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Dependencies
 

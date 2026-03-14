@@ -34,10 +34,64 @@ Scope
 - Restricted paths: docs/portal/issues/issue-137-sns-frontend-integration-execution.md, docs/portal/issues/issue-141-sns-service-auth-error-and-config-boundary-execution.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: guest/member boundary が UI behavior 単位で明文化されている
-- [ ] AC-2: stable error display と readback rendering が読み取れる
-- [ ] AC-3: contract-confirmed success を待つ completion signal が読み取れる
-- [ ] AC-4: richer UI and follow-on UX が non-goals として切り分けられている
+- [x] AC-1: guest/member boundary が UI behavior 単位で明文化されている
+- [x] AC-2: stable error display と readback rendering が読み取れる
+- [x] AC-3: contract-confirmed success を待つ completion signal が読み取れる
+- [x] AC-4: richer UI and follow-on UX が non-goals として切り分けられている
+
+# Tasks
+
+- [x] guest/member UI boundary を fixed judgment にする
+- [x] stable error display を fixed judgment にする
+- [x] post-readback rendering を fixed judgment にする
+- [x] contract-confirmed completion signal を fixed judgment にする
+- [x] UI behavior non-goals を明文化する
+
+# Definition of Done
+
+- [x] guest blocked と member valid post path が UI behavior として読める
+- [x] stable error display と readback rendering が読める
+- [x] contract-confirmed success を待つ completion signal が読める
+- [x] richer UX が本 issue から外れている
+
+# Fixed Judgment
+
+## UI Behavior Rationale
+
+- Issue 137 の frontend parent execution と Issue 142 の wired surface を visible critical path に落とすため、guest/member boundary、stable error display、post-readback rendering を separate child unit として固定する
+- この issue は richer UX や operator-specific UI depth を扱うものではなく、first-slice critical path の UI auth/error/readback behavior を service contract に従って成立させる narrow execution boundary である
+
+## UI Auth Boundary Resolution
+
+- UI auth state vocabulary は Issue 128 に揃えて signed-out、signed-in member、operator とする
+- guest は timeline surface を読めるが、post submission completion path には入らず intended blocked state を見る
+- member は first-slice posting path を利用でき、operator-specific UI depth はこの pass の対象外とする
+
+## Error Display Resolution
+
+- invalid payload は stable fail-closed error behavior として surface に見えることを固定する
+- write failure は silent success へ degrade させず、visible error outcome として残す
+- UI は contract-backed path が intended result を確認する前に success を宣言しない
+
+## Readback And Completion Resolution
+
+- successful post は intended readback path 経由で再描画され、backend-defined slice behavior に従う
+- completion signal は guest blocked state visible、member valid post and post-readback rendering visible、invalid payload and write failure visible through stable error path、success declaration が contract-confirmed path に従属する、の全充足とする
+- alternate projection、search result、moderation view はこの pass に要求しない
+
+## UI Behavior Non-Goals Resolution
+
+- operator workflow UI depth
+- moderation UI
+- search/filter/sort UI
+- replies, reactions, follows, DMs, media upload
+- broader visual redesign
+
+# Process Review Notes
+
+- Issue 137 の user-visible critical path を child execution unit に落とし、guest blocked、member valid post、stable error、post-readback rendering を first-slice UI behavior の done line に固定した
+- issue-141 の backend enforcement contract と整合するよう、frontend 側では visible outcome と contract-confirmed success の境界を明確にした
+- current frontend chain では validation/evidence issue が同じ visible critical path を参照できるよう、auth/error/readback behavior を reviewable な単位に整理した
 ```
 
 # Execution Unit
@@ -82,9 +136,9 @@ Acceptance Criteria
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Dependencies
 
