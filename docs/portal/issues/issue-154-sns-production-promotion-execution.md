@@ -161,6 +161,7 @@ production promotion の candidate freeze は、既存の production gate baseli
 
 ## Production Apply Readiness Snapshot
 
+- this section is retained as the pre-apply readiness checkpoint captured before live production execution; the current operative state is recorded in `Production Apply And Deploy Evidence` and `Current Status`
 - current production Terraform state still contains only the static delivery resources; it does not yet include `module.portal_sns_service`
 - the published production SNS wiring landed on `main` in commit `4e998db` and adds the production service module plus the production outputs needed for runtime cutover
 - remote state inspection shows the current production footprint is still the static-site baseline, so the service-backed SNS resources should be treated as additive production infrastructure rather than an already-provisioned path
@@ -184,16 +185,21 @@ production promotion の candidate freeze は、既存の production gate baseli
 - automatic rollback orchestration
 - new SNS feature work
 
+# Process Review Notes
+
+- `Production Apply Readiness Snapshot` is intentionally retained as the historical pre-apply checkpoint; current live state is defined by `Production Apply And Deploy Evidence` and `Current Status`
+- `Dispatch Example Shape` remains a template section, while the actual reviewed production values are fixed in the evidence record above
+- CloudSonnet review identified stale open execution-planning wording; the local canonical record now reflects that the issue remains open on GitHub but is close-ready on the basis of completed apply, deploy, and transient verification evidence
+
 # Current Status
 
-- local draft created as the first derived execution issue from issue-152
-- draft wording captures the intended SNS service-backed promotion candidate, approver boundary, runtime overlay gate, and rollback target declaration on one issue path
-- repository baseline already expects source build evidence, staging verification evidence, rollback target reference, and verification owner to travel together in the production record; this draft now narrows that baseline to the SNS production path
-- this child split is now the approved first publication candidate under issue-152 because it adds the distinct pre-deploy promotion execution boundary
+- production promotion source evidence, runtime overlay gate, rollback target reference, and approver / verification ownership requirements are fixed in this canonical execution record
+- repository baseline already expects source build evidence, staging verification evidence, rollback target reference, and verification owner to travel together in the production record; this issue now records the completed SNS production path with the same boundary
 - reviewed production SNS infrastructure is now provisioned and the production frontend runtime has been redeployed with `VITE_PUBLIC_SNS_SERVICE_MODE=http`
 - current production service target is `https://isrvwfbt2ve3rr3d6pk5ddwgle0zonfi.lambda-url.ap-northeast-1.on.aws/`, and `portal-production-deploy` run `23071598026` is the first production deploy record that carries the service-backed runtime overlay
 - GitHub Issue: #138
-- Sync Status: synced to GitHub as open execution-planning issue
+- GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/138
+- Sync Status: synced to GitHub; open but close-ready after CloudSonnet review follow-up
 
 # Dependencies
 
