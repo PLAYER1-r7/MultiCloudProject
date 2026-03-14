@@ -91,6 +91,8 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
 - fix identity abstraction: provider-specific naming を app model に埋め込まない
 - decide session boundary: read public / write authenticated / operator privileged
 - define minimum authorization roles: guest、member、operator
+- downstream canonical auth state names are signed-out、signed-in member、operator
+- app-facing identity surface should stay provider-neutral and expose actor id、actor role、authentication state only
 
 ### 3. Data And API Slice
 
@@ -147,7 +149,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
    current derived follow-up: [docs/portal/issues/issue-127-sns-product-scope-and-operating-policy-judgment.md](docs/portal/issues/issue-127-sns-product-scope-and-operating-policy-judgment.md)
 
 2. End-user authentication reopening and provider-neutral identity boundary
-   内容: Issue 3 の no-auth baseline を historical record として残したまま、SNS 用に auth を再判断する。Cognito、Azure Entra 系、GCP identity 系へ差し替え可能な abstraction を app model 側で固定する。
+   内容: Issue 3 の no-auth baseline を historical record として残したまま、SNS 用に auth を再判断する。guest、member、operator の role boundary、signed-out / signed-in member / operator の canonical state name、provider-neutral actor id abstraction を app model 側で固定する。
    current derived follow-up: [docs/portal/issues/issue-128-sns-auth-reopening-and-provider-neutral-identity-boundary.md](docs/portal/issues/issue-128-sns-auth-reopening-and-provider-neutral-identity-boundary.md)
 
 3. Message domain model and persistence decision

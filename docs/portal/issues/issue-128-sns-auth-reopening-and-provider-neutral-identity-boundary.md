@@ -34,10 +34,10 @@ Scope
 - Restricted paths: apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: guest、member、operator の auth boundary が明文化されている
-- [ ] AC-2: public read、authenticated write、operator action の session requirement が読み取れる
-- [ ] AC-3: provider-specific naming を app model に入れない identity abstraction rule が明文化されている
-- [ ] AC-4: first release auth の non-goals が明文化され、provider selection や implementation work と切り分けられている
+- [x] AC-1: guest、member、operator の auth boundary が明文化されている
+- [x] AC-2: public read、authenticated write、operator action の session requirement が読み取れる
+- [x] AC-3: provider-specific naming を app model に入れない identity abstraction rule が明文化されている
+- [x] AC-4: first release auth の non-goals が明文化され、provider selection や implementation work と切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-128-sns-auth-reopening-and-provider-neutral-identity-boundary.md, docs/portal/24_SIMPLE_SNS_AND_AZURE_PREPARATION_PLAN.md
@@ -58,19 +58,19 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] auth reopening rationale を fixed judgment にする
-- [ ] guest、member、operator の role boundary を fixed judgment にする
-- [ ] session requirement boundary を fixed judgment にする
-- [ ] provider-neutral identity abstraction rule を fixed judgment にする
-- [ ] first release auth non-goals を fixed judgment にする
+- [x] auth reopening rationale を fixed judgment にする
+- [x] guest、member、operator の role boundary を fixed judgment にする
+- [x] session requirement boundary を fixed judgment にする
+- [x] provider-neutral identity abstraction rule を fixed judgment にする
+- [x] first release auth non-goals を fixed judgment にする
 
 # Definition of Done
 
-- [ ] SNS 向け auth reopening が historical no-auth baseline と矛盾なく説明されている
-- [ ] guest、member、operator の責務差分が auth boundary として読める
-- [ ] public read、authenticated write、operator action の session boundary が読める
-- [ ] provider-neutral identity abstraction の rule が downstream issue で参照できる
-- [ ] provider selection と implementation work が本 issue の out-of-scope として切り分けられている
+- [x] SNS 向け auth reopening が historical no-auth baseline と矛盾なく説明されている
+- [x] guest、member、operator の責務差分が auth boundary として読める
+- [x] public read、authenticated write、operator action の session boundary が読める
+- [x] provider-neutral identity abstraction の rule が downstream issue で参照できる
+- [x] provider selection と implementation work が本 issue の out-of-scope として切り分けられている
 
 # Historical Baseline To Preserve
 
@@ -95,6 +95,51 @@ Risk and Rollback
 - moderation-sensitive action は operator session を要求する
 - app model の identity は provider-specific subject naming ではなく、provider-neutral actor id と role mapping を基本にする
 - provider comparison、federation strategy、token claim detail、passwordless UX detail は first release auth planning の non-goal にする
+
+# Fixed Judgment
+
+## Auth Reopening Rationale
+
+- Issue 3 と [docs/portal/05_AUTH_DECISION_DRAFT.md](docs/portal/05_AUTH_DECISION_DRAFT.md) が固定した no-auth baseline は static-first portal の public release に対する historical record として維持する
+- SNS auth reopening はその baseline の否定ではなく、public read と protected write が同居する new user workflow が発生したために追加される narrow planning boundary として扱う
+- この issue が reopen するのは SNS write path と moderation-sensitive action に限られ、portal-wide protected route expansion や static portal baseline の再定義は行わない
+
+## Role Boundary Resolution
+
+- guest は public timeline read のみを行う session-free actor であり、write path と moderation-sensitive action には入らない
+- member は authenticated write actor であり、public timeline read に加えて SNS post create を行える
+- operator は member capability を含んだ elevated actor であり、moderation-sensitive action を行うために operator session を要求する
+- first release auth boundary は guest、member、operator の 3 role に限定し、additional provider-owned role names や tenant-specific role hierarchy は app contract に入れない
+
+## Session Boundary Resolution
+
+- downstream canonical auth state names は `signed-out`、`signed-in member`、`operator` の 3 つに固定する
+- public timeline read は session-free のまま維持し、login gate を導入しない
+- SNS post create は authenticated member session を必須とし、guest write attempt は fail-closed に扱う
+- moderation-sensitive action は operator session を必須とし、member session と同一視しない
+- この issue は SNS write surface の boundary を固定するだけであり、portal summary routes や既存 static route 群を protected route へ拡張しない
+
+## Provider-Neutral Identity Abstraction Resolution
+
+- app model と API contract が露出してよい identity surface は actor id、actor role、authentication state の 3 つに限定する
+- authenticated action では provider-neutral actor id の presence を要求するが、actor id の format、global uniqueness guarantee、storage encoding は後続 persistence issue に委ねる
+- frontend、backend、monitoring、test で参照する contract name は provider brand、provider subject claim、tenant-specific principal naming ではなく actor id と role semantics に揃える
+- later provider selection はこの abstraction に mapping されるべきであり、provider-specific token field name を public contract name として露出しない
+
+## Protected Surface Resolution
+
+- protected surface 候補は SNS post create と moderation-sensitive action に限定する
+- public timeline read と existing portal summary routes は protected surface に含めない
+- operator tooling detail、operator UI shape、provider-hosted login screen、token refresh behavior は first release auth boundary の fixed judgment ではなく後続 implementation issue に委ねる
+
+## First Release Auth Non-Goals Resolution
+
+- actual provider selection
+- Cognito、Azure Entra、GCP identity service の implementation choice
+- OIDC wiring、token issuance、token refresh、secret injection
+- hosted login UX、passwordless UX、social login comparison
+- portal-wide protected route expansion
+- multi-cloud identity federation in the first implementation slice
 
 # Initial Boundary Candidates
 
@@ -134,17 +179,23 @@ Risk and Rollback
 - backend and API baseline issue should inherit the authorization boundary from this issue
 - frontend slice issue should inherit the canonical signed-out, signed-in member, and operator state names from this issue instead of inventing a parallel auth vocabulary
 
+# Process Review Notes
+
+- Issue 3 と [docs/portal/05_AUTH_DECISION_DRAFT.md](docs/portal/05_AUTH_DECISION_DRAFT.md) を historical no-auth baseline として保持したまま、SNS write path に必要な auth reopening boundary のみを narrow scope で固定した
+- downstream issue が provider-specific naming を app contract に持ち込まないよう、actor id、actor role、authentication state を canonical abstraction として明示した
+- current SNS planning chain では provider selection より role and session semantics の固定を優先し、backend/API/persistence/security issue が同じ auth vocabulary を参照できる状態に整えた
+
 # Current Draft Focus
 
-- Issue 3 を historical record として維持したまま SNS write path に必要な auth reopening boundary を切る
-- provider choice より先に role and session semantics を固定する
-- public read plus authenticated write の narrow scope を保つ
+- Issue 3 を historical record として維持したまま SNS write path に必要な auth reopening boundary を fixed judgment として切り出した
+- provider choice より先に role and session semantics を固定した
+- public read plus authenticated write の narrow scope を first release auth boundary として保持した
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed planning record
 
 # Dependencies
 
