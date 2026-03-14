@@ -34,10 +34,10 @@ Scope
 - Restricted paths: docs/portal/issues/issue-135-sns-first-implementation-slice-contract.md, docs/portal/issues/issue-136-sns-service-and-data-path-execution.md, docs/portal/issues/issue-137-sns-frontend-integration-execution.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: validator and suite update scope が first slice completion line に沿って明文化されている
-- [ ] AC-2: request/response、auth/error、surface reachability、auth-post-readback の evidence path が読み取れる
-- [ ] AC-3: staging-oriented completion signal と fail conditions が読み取れる
-- [ ] AC-4: deep coverage expansion や new test family が non-goals として切り分けられている
+- [x] AC-1: validator and suite update scope が first slice completion line に沿って明文化されている
+- [x] AC-2: request/response、auth/error、surface reachability、auth-post-readback の evidence path が読み取れる
+- [x] AC-3: staging-oriented completion signal と fail conditions が読み取れる
+- [x] AC-4: deep coverage expansion や new test family が non-goals として切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-138-sns-validation-and-evidence-update-execution.md
@@ -58,19 +58,53 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] contract validator update scope を fixed judgment にする
-- [ ] browser suite update scope を fixed judgment にする
-- [ ] staging-oriented evidence path を fixed judgment にする
-- [ ] slice completion fail conditions を fixed judgment にする
-- [ ] validation non-goals を明文化する
+- [x] contract validator update scope を fixed judgment にする
+- [x] browser suite update scope を fixed judgment にする
+- [x] staging-oriented evidence path を fixed judgment にする
+- [x] slice completion fail conditions を fixed judgment にする
+- [x] validation non-goals を明文化する
 
 # Definition of Done
 
-- [ ] request/response と auth/error validator が first slice behavior に追随する範囲が読める
-- [ ] surface reachability と auth-post-readback suite が real service-backed path に追随する範囲が読める
-- [ ] staging-oriented evidence path が slice completion signal と結び付いて読める
-- [ ] fail conditions が reviewable evidence 不足も含めて読める
-- [ ] deep coverage expansion や new test family が first pass から外れている
+- [x] request/response と auth/error validator が first slice behavior に追随する範囲が読める
+- [x] surface reachability と auth-post-readback suite が real service-backed path に追随する範囲が読める
+- [x] staging-oriented evidence path が slice completion signal と結び付いて読める
+- [x] fail conditions が reviewable evidence 不足も含めて読める
+- [x] deep coverage expansion や new test family が first pass から外れている
+
+# Fixed Judgment
+
+## Validation Evidence Rationale
+
+- Issue 135 の completion signal と Issue 136、Issue 137 の execution boundary が揃っても、reviewable evidence が local demo assumption のままでは first slice done を閉じられないため、この issue で validation and evidence update の execution line を固定する
+- この issue は new test family を発明するものではなく、existing validator と browser suite を real service-backed slice に追随させ、staging-oriented completion evidence を成立させる narrow execution boundary である
+- slice completion review はこの issue の evidence contract を参照し、backend or frontend issue 側で evidence line を再定義しない
+
+## Contract Validator Resolution
+
+- request/response contract validation と auth-error contract validation は first slice completion の mandatory gate に固定する
+- validator assumptions は local-only demo behavior ではなく declared real service-backed slice behavior に追随させる
+- command surface は可能な限り維持し、最初に entrypoint rename を優先しない
+
+## Browser Suite Resolution
+
+- SNS surface reachability evidence と auth-post-readback evidence は mandatory browser-side gate に固定する
+- browser suites は guest blocked、member success、error visibility、post-readback consistency を real service-backed path で確認する
+- broad cross-feature browser regression pack への拡張はこの issue の completion に含めない
+
+## Evidence Path And Fail Condition Resolution
+
+- completion evidence は contract-side validator output と browser-side repeatable evidence の両方が reviewable であることを必須条件にする
+- staging-oriented execution evidence を正規 completion path とし、local observation のみでは done judgment を認めない
+- fail condition は validator が local-demo behavior しか証明しない、browser suites が fake success state に依存する、guest write reject or member valid post or post-readback consistency に repeatable evidence がない、contract-side and browser-side evidence が揃わないまま completion を主張する、のいずれかが残る場合とする
+
+## Validation Non-Goals Resolution
+
+- new test framework family introduction
+- deep end-to-end pack expansion beyond first slice critical path
+- performance or load testing
+- monitoring alert integration
+- broad CI pipeline redesign
 
 # Execution Unit
 
@@ -115,6 +149,12 @@ Risk and Rollback
 - slice completion review should use this issue as the evidence contract
 - later regression hardening should treat this issue as the first-slice evidence update only, not the final SNS test strategy
 
+# Process Review Notes
+
+- Issue 135 の completion line を reviewable evidence で閉じるため、request/response、auth/error、surface reachability、auth-post-readback の 4 系列を first-slice mandatory gate として固定した
+- issue-136 の backend behavior と issue-137 の user-visible critical path に追随する形で validator と browser suite の update boundary を整理し、local demo assumption が evidence に残らないよう明文化した
+- current SNS execution chain では staging-oriented evidence を正規 completion path とし、repeatable command or suite output を伴わない観測だけでは完了扱いしないことを明確化した
+
 # Derived Execution Follow-Ups
 
 - docs/portal/issues/issue-145-sns-contract-validator-update-execution.md
@@ -123,9 +163,9 @@ Risk and Rollback
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Historical References
 

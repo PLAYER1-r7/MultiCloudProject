@@ -34,10 +34,10 @@ Scope
 - Restricted paths: docs/portal/issues/issue-127-sns-product-scope-and-operating-policy-judgment.md, docs/portal/issues/issue-130-sns-backend-and-api-baseline.md, docs/portal/issues/issue-132-sns-service-stack-and-secret-management-boundary-update.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: service-side minimum read/write path が app behavior 単位で明文化されている
-- [ ] AC-2: minimum persistence behavior と fail-closed auth/error enforcement が読み取れる
-- [ ] AC-3: service config and secret boundary と single-cloud first assumption が読み取れる
-- [ ] AC-4: frontend integration と validation issue が参照すべき completion signal と non-goals が整理されている
+- [x] AC-1: service-side minimum read/write path が app behavior 単位で明文化されている
+- [x] AC-2: minimum persistence behavior と fail-closed auth/error enforcement が読み取れる
+- [x] AC-3: service config and secret boundary と single-cloud first assumption が読み取れる
+- [x] AC-4: frontend integration と validation issue が参照すべき completion signal と non-goals が整理されている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-136-sns-service-and-data-path-execution.md
@@ -58,19 +58,58 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] minimum service route scope を fixed judgment にする
-- [ ] minimum persistence behavior を fixed judgment にする
-- [ ] fail-closed auth/error enforcement を fixed judgment にする
-- [ ] config and secret boundary を fixed judgment にする
-- [ ] service completion signal と non-goals を明文化する
+- [x] minimum service route scope を fixed judgment にする
+- [x] minimum persistence behavior を fixed judgment にする
+- [x] fail-closed auth/error enforcement を fixed judgment にする
+- [x] config and secret boundary を fixed judgment にする
+- [x] service completion signal と non-goals を明文化する
 
 # Definition of Done
 
-- [ ] GET /api/sns/timeline と POST /api/sns/posts の minimum service path が読める
-- [ ] guest write reject と invalid payload reject が service-side rule として読める
-- [ ] minimum message persistence behavior と readback expectation が読める
-- [ ] service config and secret boundary が frontend integration issue に渡せる形で読める
-- [ ] moderation workflow depth、advanced query、multi-cloud write が first pass から外れている
+- [x] GET /api/sns/timeline と POST /api/sns/posts の minimum service path が読める
+- [x] guest write reject と invalid payload reject が service-side rule として読める
+- [x] minimum message persistence behavior と readback expectation が読める
+- [x] service config and secret boundary が frontend integration issue に渡せる形で読める
+- [x] moderation workflow depth、advanced query、multi-cloud write が first pass から外れている
+
+# Fixed Judgment
+
+## Backend Parent Execution Rationale
+
+- Issue 135 で first slice done line は固定されたが、その completion signal を code change に落とすには、frontend より先に service/data path の backend parent execution を固定する必要がある
+- この issue は product scope や API baseline を再議論するものではなく、Issue 130、Issue 131、Issue 132、Issue 135 で決めた backend-facing contract を one-cloud first の execution parent として束ねる narrow execution boundary である
+- downstream の Issue 137 と Issue 138 はこの issue の service completion signal を継承し、backend 側の成立条件を再定義しない
+
+## Minimum Service Route Resolution
+
+- first backend execution path は `GET /api/sns/timeline` と `POST /api/sns/posts` の 2 route に固定し、public read と authenticated write の最小 app behavior をここで成立対象とする
+- timeline route は intended service-backed public read path として扱い、post route は signed-in member の intended write path として扱う
+- moderation-specific write route、operator workflow route、advanced query route はこの parent execution には含めない
+
+## Persistence And Readback Resolution
+
+- backend parent execution は minimum message record persistence と newest-first readback expectation を必須条件として継承する
+- successful member post は intended read path で readback できることを backend core completion に含め、local-only fake state による見かけ上の success を completion に含めない
+- destructive schema churn より compatibility-preserving behavior を優先し、first slice の post-readback consistency を壊す変更は fail と扱う
+
+## Auth Error And Config Resolution
+
+- guest write reject、invalid payload reject、stable fail-closed error contract は service-side mandatory rule とする
+- backend completion は frontend-only blocking に依存せず、service boundary 自体で auth/error が成立していることを前提にする
+- secret-backed config は service side only に固定し、public config と private config の分離を保ったまま one-cloud execution path を成立させる
+
+## Completion Signal Resolution
+
+- completion signal は `GET /api/sns/timeline` reachable、`POST /api/sns/posts` reachable、guest write rejected at service boundary、member valid post succeeds through intended write path、invalid payload reject follows stable contract、post-readback consistency observed through intended read path、critical-path success に local-only fallback が残らない、の全充足とする
+- frontend integration issue はこの backend completion signal に依存して surface を接続し、validation issue は同じ backend behavior を repeatable evidence で確認する
+
+## Backend Parent Non-Goals Resolution
+
+- moderation dashboard or operator console depth
+- advanced timeline query, filtering, or search
+- replies, reactions, follows, DMs, media upload
+- multi-cloud write path or Azure live execution
+- production automation depth or provider comparison reopening
 
 # Execution Unit
 
@@ -124,6 +163,12 @@ Risk and Rollback
 - validation/evidence update issue should use this issue as the source of truth for critical-path backend behavior
 - later service hardening should treat this issue as the first executable backend boundary, not the full SNS backend completion
 
+# Process Review Notes
+
+- Issue 135 の first slice contract を backend parent execution に落とし込み、service route、minimum persistence、fail-closed auth/error、config boundary を single execution line として束ねた
+- issue-130 の API baseline、issue-131 の security floor、issue-132 の stack split を再議論せずに継承する形に寄せ、backend 側の done line が frontend or validation 側に流出しないよう整理した
+- current SNS execution chain では backend parent completion を先に固定し、そのうえで frontend integration と validation evidence が同じ service behavior を参照できる状態に整えた
+
 # Derived Execution Follow-Ups
 
 - docs/portal/issues/issue-139-sns-service-route-and-handler-execution.md
@@ -132,9 +177,9 @@ Risk and Rollback
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Dependencies
 

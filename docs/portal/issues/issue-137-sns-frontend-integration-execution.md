@@ -34,10 +34,10 @@ Scope
 - Restricted paths: docs/portal/issues/issue-135-sns-first-implementation-slice-contract.md, docs/portal/issues/issue-136-sns-service-and-data-path-execution.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: frontend integration scope が app behavior 単位で明文化されている
-- [ ] AC-2: guest/member/operator UI boundary と fail-closed error/readback behavior が読み取れる
-- [ ] AC-3: local-only fallback を許さない completion signal が読み取れる
-- [ ] AC-4: richer UI and follow-on features が non-goals として切り分けられている
+- [x] AC-1: frontend integration scope が app behavior 単位で明文化されている
+- [x] AC-2: guest/member/operator UI boundary と fail-closed error/readback behavior が読み取れる
+- [x] AC-3: local-only fallback を許さない completion signal が読み取れる
+- [x] AC-4: richer UI and follow-on features が non-goals として切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-137-sns-frontend-integration-execution.md
@@ -58,19 +58,59 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] frontend contract wiring scope を fixed judgment にする
-- [ ] guest/member/operator UI boundary を fixed judgment にする
-- [ ] error display and readback behavior を fixed judgment にする
-- [ ] local-only fallback prohibition を fixed judgment にする
-- [ ] frontend completion signal と non-goals を明文化する
+- [x] frontend contract wiring scope を fixed judgment にする
+- [x] guest/member/operator UI boundary を fixed judgment にする
+- [x] error display and readback behavior を fixed judgment にする
+- [x] local-only fallback prohibition を fixed judgment にする
+- [x] frontend completion signal と non-goals を明文化する
 
 # Definition of Done
 
-- [ ] SNS surface が stable app-facing contract に接続される範囲が読める
-- [ ] guest write blocked、member valid post、post-readback rendering が UI behavior として読める
-- [ ] fail-closed error display が local-only demo fallback と混ざらず読める
-- [ ] route/surface scope が narrow first-slice に留まっている
-- [ ] moderation UI、search/filter UI、notification UI が first pass から外れている
+- [x] SNS surface が stable app-facing contract に接続される範囲が読める
+- [x] guest write blocked、member valid post、post-readback rendering が UI behavior として読める
+- [x] fail-closed error display が local-only demo fallback と混ざらず読める
+- [x] route/surface scope が narrow first-slice に留まっている
+- [x] moderation UI、search/filter UI、notification UI が first pass から外れている
+
+# Fixed Judgment
+
+## Frontend Integration Rationale
+
+- Issue 136 で backend parent execution は固定されたため、この issue では existing SNS surface をその stable app-facing contract へ接続する narrow frontend execution を固定する
+- この issue は richer SNS UI や design overhaul を扱うものではなく、guest timeline read、member post、post-readback consistency、fail-closed error visibility を first slice surface behavior として成立させる boundary である
+- validation issue はこの issue の user-visible critical path を evidence 化するため、UI 側 completion signal をここで固定しておく
+
+## Contract Wiring Resolution
+
+- frontend integration scope は existing SNS route and visible surface を first integration target とし、declared critical path 上の local-only demo dependence を stable service-backed contract へ置き換えることに固定する
+- app-facing contract names は current backend baseline に揃え、frontend-only experimental API vocabulary は導入しない
+- surface wiring は backend completion signal に従属し、service path 未成立の状態を UI 側の見せ方で completion 扱いしない
+
+## UI Auth Boundary Resolution
+
+- UI auth state vocabulary は Issue 128 と整合する signed-out、signed-in member、operator に固定する
+- guest は timeline read を許可されるが、write completion path には入らず expected blocked state を見る
+- signed-in member は first slice posting path を利用でき、operator-specific UI depth はこの pass では要求しない
+
+## Error And Readback Resolution
+
+- invalid payload は stable fail-closed error として surface に見えることを mandatory にする
+- write failure は silent success や optimistic disguise に落とさず、user-visible failure として残す
+- successful post は intended readback path 経由で再描画され、UI が contract-backed confirmation 前に success を宣言しない
+
+## Fallback Prohibition And Completion Resolution
+
+- local-only fake state は non-critical development support に限定し、declared completion path では使用しない
+- frontend completion signal は service-backed timeline read visible、guest write blocked with service contract alignment、member valid post and readback visible、invalid payload and write failure visible through stable error path、declared completed path に local-only fake success が残らない、の全充足とする
+- service path unavailable 時は fail closed を優先し、pretend success を completion 代替にしない
+
+## Frontend Non-Goals Resolution
+
+- moderation dashboard or operator workflow UI
+- advanced timeline filtering, search, or sorting UI
+- replies, reactions, follows, DMs, media upload
+- visual redesign beyond minimum first-slice integration need
+- notification or activity UI
 
 # Execution Unit
 
@@ -123,6 +163,12 @@ Risk and Rollback
 - validation/evidence update issue should use this issue as the source of truth for expected UI-side critical-path behavior
 - later UX hardening should treat this issue as first-slice integration only, not as full SNS frontend completion
 
+# Process Review Notes
+
+- Issue 136 の backend completion signal を前提に、frontend 側では contract wiring、guest/member boundary、error visibility、readback rendering だけを first-slice integration として固定した
+- issue-128 の auth boundary と issue-135 の first slice done line を継承し、UI-only auth blocking や local-only fake success が completion に紛れ込まないよう整理した
+- current SNS execution chain では validation/evidence update が同じ user-visible critical path を参照できるよう、surface behavior と fallback prohibition を reviewable な形で固定した
+
 # Derived Execution Follow-Ups
 
 - docs/portal/issues/issue-142-sns-frontend-contract-wiring-and-surface-execution.md
@@ -131,9 +177,9 @@ Risk and Rollback
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Dependencies
 
