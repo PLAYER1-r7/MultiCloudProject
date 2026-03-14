@@ -124,6 +124,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
 - define deploy order between frontend and backend
 - monitoring for API availability、auth failures、write latency、error bursts
 - rollback path for schema changes、auth misconfiguration、bad deploys
+- keep browser-safe public config separate from secret-backed service config, and make the service boundary ready before the frontend depends on it
 
 ### 7. Test Slice
 
@@ -168,7 +169,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
    current derived follow-up: [docs/portal/issues/issue-131-sns-security-abuse-control-and-moderation-baseline.md](docs/portal/issues/issue-131-sns-security-abuse-control-and-moderation-baseline.md)
 
 6. Service stack and secret-management boundary update
-   内容: Issue 9 / Issue 10 を踏まえ、static delivery stack と service stack を分離し、secret injection と deploy order を定義する。
+   内容: Issue 9 / Issue 10 を踏まえ、static delivery stack と service stack の責務を分離し、browser-safe public config と secret-backed service config の契約、secret injection、deploy order を定義する。
    current derived follow-up: [docs/portal/issues/issue-132-sns-service-stack-and-secret-management-boundary-update.md](docs/portal/issues/issue-132-sns-service-stack-and-secret-management-boundary-update.md)
 
 7. Stateful monitoring, rollback, and test baseline
