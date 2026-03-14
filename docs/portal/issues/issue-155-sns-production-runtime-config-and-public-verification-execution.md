@@ -34,10 +34,10 @@ Scope
 - Restricted paths: docs/portal/issues/issue-152-sns-production-promotion-and-operational-hardening-contract.md, docs/portal/issues/issue-154-sns-production-promotion-execution.md, docs/portal/issues/issue-156-sns-production-rollback-hardening-and-recovery-evidence-execution.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: production runtime marker verification boundary が明文化されている
-- [ ] AC-2: major SNS surface verification と guest read/write policy verification が読み取れる
-- [ ] AC-3: persisted-success distinction、incomplete verification 時の deploy-ready / handoff fallback、fail conditions が読み取れる
-- [ ] AC-4: promotion-source freeze and deeper monitoring が non-goals として切り分けられている
+- [x] AC-1: production runtime marker verification boundary が明文化されている
+- [x] AC-2: major SNS surface verification と guest read/write policy verification が読み取れる
+- [x] AC-3: persisted-success distinction、incomplete verification 時の deploy-ready / handoff fallback、fail conditions が読み取れる
+- [x] AC-4: promotion-source freeze and deeper monitoring が non-goals として切り分けられている
 
 Implementation Plan
 - Files likely to change: docs/portal/issues/issue-155-sns-production-runtime-config-and-public-verification-execution.md
@@ -58,22 +58,54 @@ Risk and Rollback
 
 # Tasks
 
-- [ ] runtime marker verification を fixed judgment にする
-- [ ] major SNS surface verification を fixed judgment にする
-- [ ] persisted-success distinction を fixed judgment にする
-- [ ] incomplete verification 時の deploy-ready / handoff fallback を fixed judgment にする
-- [ ] fail conditions を fixed judgment にする
-- [ ] non-goals を明文化する
+- [x] runtime marker verification を fixed judgment にする
+- [x] major SNS surface verification を fixed judgment にする
+- [x] persisted-success distinction を fixed judgment にする
+- [x] incomplete verification 時の deploy-ready / handoff fallback を fixed judgment にする
+- [x] fail conditions を fixed judgment にする
+- [x] non-goals を明文化する
 
 # Definition of Done
 
-- [ ] intended SNS runtime mode と service target posture を public surface 上で読める
-- [ ] major SNS surface integrity と guest read/write policy を読める
-- [ ] member write が in scope の場合に persisted success と frontend-only success state を区別できる
-- [ ] deploy evidence と public verification evidence が同じ issue path に残る形を読める
-- [ ] public verification が incomplete の場合に completed production reflection ではなく deploy-ready または handoff wording に落ちる形を読める
-- [ ] promotion source freeze and deeper monitoring と混線せず読める
-- [ ] feature expansion が non-goal として切り分けられている
+- [x] intended SNS runtime mode と service target posture を public surface 上で読める
+- [x] major SNS surface integrity と guest read/write policy を読める
+- [x] member write が in scope の場合に persisted success と frontend-only success state を区別できる
+- [x] deploy evidence と public verification evidence が同じ issue path に残る形を読める
+- [x] public verification が incomplete の場合に completed production reflection ではなく deploy-ready または handoff wording に落ちる形を読める
+- [x] promotion source freeze and deeper monitoring と混線せず読める
+- [x] feature expansion が non-goal として切り分けられている
+
+# Fixed Judgment
+
+## Public Verification Rationale
+
+- Issue 154 で fixed した production promotion candidate を browser-facing completion line まで閉じるため、この issue で runtime marker verification と major SNS public behavior verification を separate child execution unit に固定する
+- この issue は promotion source freeze や rollback hardening を再定義するものではなく、promoted production surface が intended runtime posture を public host 上で fail-closed に示せるかを narrow に確定する execution record である
+
+## Runtime Marker And Surface Resolution
+
+- public verification は promoted production host 上で intended SNS runtime mode、service base URL posture、major SNS route reachability を確認する line に固定する
+- guest read availability と guest write fail-closed policy は major SNS surface verification の minimum line に固定する
+- runtime marker と visible behavior が disagreement を起こす場合は success を主張せず fail closed とする
+
+## Persisted Success And Fallback Resolution
+
+- member write が in scope の場合、verification は persisted success と frontend-only success state を distinguish できる line に固定する
+- deploy evidence と public verification evidence は同じ issue path に残し、production deploy success だけで completed production reflection を主張しない
+- public verification が incomplete の場合は deploy-ready or handoff wording に落とし、false completed state を作らない
+
+## Verification Non-Goals Resolution
+
+- production candidate selection
+- rollback target declaration
+- deeper monitoring fan-out
+- feature expansion
+
+# Process Review Notes
+
+- Issue 154 の promoted production path から post-deploy public verification responsibility だけを切り出し、runtime marker、major SNS route、persisted-success distinction を same-issue-path discipline で固定した
+- incomplete verification 時に completed wording へ流れないよう、deploy-ready or handoff fallback を execution record の fail-closed rule として明文化した
+- later rollback and hardening path が同じ production host family を参照できるよう、public verification evidence の最小境界を parent-child 関係に沿って閉じた
 
 # Public Verification Baseline
 
@@ -136,12 +168,13 @@ public verification は issue-154 で固定した promoted production candidate 
 
 # Current Status
 
+- local fixed judgment recorded
 - local draft created as the second derived execution issue from issue-152
 - draft wording requires successful production deploy evidence for the named candidate before public verification can start, and preserves same issue path / same rollout batch discipline
 - current issue wording follows the same narrow major-route proof used by earlier portal live-reflection records while adding explicit deploy-ready or handoff fallback for incomplete verification
 - this child split is still blocked pending explicit human confirmation and GitHub issue creation; do not treat this file as an accepted execution issue yet
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft, hold for publication
+- Sync Status: local fixed execution record, hold for publication
 
 # Dependencies
 
