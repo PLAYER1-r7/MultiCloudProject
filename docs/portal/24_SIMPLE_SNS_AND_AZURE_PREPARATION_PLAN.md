@@ -116,6 +116,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
 - content validation and size limits
 - secret and credential handling for auth / API / data store
 - audit trail for moderation-sensitive operations
+- keep the first release security floor aligned to fail-closed invalid payload rejection, basic write throttling, obvious abuse blocking, and operator hide or soft-delete as the primary moderation path
 
 ### 6. Delivery And Operations Slice
 
@@ -163,7 +164,7 @@ first executable slice は multi-cloud 同時実装ではなく、single-cloud �
    current derived follow-up: [docs/portal/issues/issue-130-sns-backend-and-api-baseline.md](docs/portal/issues/issue-130-sns-backend-and-api-baseline.md)
 
 5. SNS security, abuse control, and moderation baseline
-   内容: rate limit、validation、spam handling、operator hide/delete、audit needs を fixed judgment にする。
+   内容: fail-closed validation、basic write throttling、obvious spam blocking、operator hide or soft-delete、security-relevant audit events を fixed judgment にする。
    current derived follow-up: [docs/portal/issues/issue-131-sns-security-abuse-control-and-moderation-baseline.md](docs/portal/issues/issue-131-sns-security-abuse-control-and-moderation-baseline.md)
 
 6. Service stack and secret-management boundary update
