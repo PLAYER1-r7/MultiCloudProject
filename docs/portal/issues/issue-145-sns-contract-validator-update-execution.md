@@ -34,10 +34,62 @@ Scope
 - Restricted paths: docs/portal/issues/issue-138-sns-validation-and-evidence-update-execution.md, docs/portal/issues/issue-119-sns-request-response-contract-command-implementation-split.md, docs/portal/issues/issue-120-sns-auth-error-contract-command-implementation-split.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: request/response と auth/error validator の update scope が明文化されている
-- [ ] AC-2: stable command surface preservation が読み取れる
-- [ ] AC-3: contract-side completion signal と fail conditions が読み取れる
-- [ ] AC-4: browser suite や new validator family が non-goals として切り分けられている
+- [x] AC-1: request/response と auth/error validator の update scope が明文化されている
+- [x] AC-2: stable command surface preservation が読み取れる
+- [x] AC-3: contract-side completion signal と fail conditions が読み取れる
+- [x] AC-4: browser suite や new validator family が non-goals として切り分けられている
+
+# Tasks
+
+- [x] request/response validator update scope を fixed judgment にする
+- [x] auth/error validator update scope を fixed judgment にする
+- [x] stable command surface preservation を fixed judgment にする
+- [x] contract-side completion signal と fail conditions を fixed judgment にする
+- [x] validator non-goals を明文化する
+
+# Definition of Done
+
+- [x] request/response と auth/error validator の update scope が読める
+- [x] stable command surface preservation が読める
+- [x] contract-side completion signal と fail conditions が読める
+- [x] browser suite や new validator family が本 issue から外れている
+
+# Fixed Judgment
+
+## Contract Validator Rationale
+
+- Issue 138 の validation/evidence parent execution を code change に落とす最初の証跡 unit として、contract-side repeatable evidence を request/response と auth/error validator の update に限定して固定する
+- この issue は browser suite や staging review packaging を扱うものではなく、real first-slice behavior に追随する validator assumptions と repeatable command evidence を narrow に確定する execution boundary である
+
+## Validator Scope Resolution
+
+- request/response contract validation と auth-error contract validation は first-slice contract-side evidence の mandatory scope に固定する
+- validator assumptions は local-demo-only behavior ではなく、declared real service-backed backend and frontend slice behavior に追随させる
+- validator update は contract drift を reviewable に保つことを目的とし、visible-path browser behavior そのものは後続 issue に委譲する
+
+## Command Surface Resolution
+
+- stable validator command surface は practical な範囲で維持する
+- behavior alignment 完了前に validator entrypoint rename を優先しない
+- contract evidence は existing command path family で repeatable に取得できる状態を completion 前提とする
+
+## Completion And Fail Condition Resolution
+
+- contract-side completion signal は validator output が declared service-backed slice behavior を証明し、local-demo-only assumptions に依存せず、request/response と auth/error drift が repeatable command output で reviewable であることに固定する
+- fail condition は validator output が still local-demo-only behavior を証明する、request/response or auth/error drift が repeatable output で reviewable でない、stable command path が broken で evidence を繰り返せない、のいずれかが残る場合とする
+
+## Validator Non-Goals Resolution
+
+- browser suite update
+- staging review packaging
+- new validator family introduction
+- broad CI redesign
+
+# Process Review Notes
+
+- Issue 138 の evidence contract を contract-side unit に分離し、request/response と auth/error validator を first-slice repeatable evidence の最小構成として固定した
+- issue-119 と issue-120 の historical command family を踏まえつつ、entrypoint rename より behavior alignment を優先する方針に揃えた
+- current validation chain では browser suite と completion review が同じ contract-side assumptions を参照できるよう、stable command surface と fail conditions を明文化した
 ```
 
 # Execution Unit
@@ -74,9 +126,9 @@ Acceptance Criteria
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Dependencies
 

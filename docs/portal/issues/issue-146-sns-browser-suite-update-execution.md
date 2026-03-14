@@ -34,10 +34,61 @@ Scope
 - Restricted paths: docs/portal/issues/issue-138-sns-validation-and-evidence-update-execution.md, docs/portal/issues/issue-121-sns-auth-post-readback-suite-implementation-split.md, docs/portal/issues/issue-122-sns-surface-reachability-suite-implementation-split.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: surface reachability と auth-post-readback suite の update scope が明文化されている
-- [ ] AC-2: visible critical-path completion signal が読み取れる
-- [ ] AC-3: browser-side fail conditions が読み取れる
-- [ ] AC-4: broad regression expansion や visual platform adoption が non-goals として切り分けられている
+- [x] AC-1: surface reachability と auth-post-readback suite の update scope が明文化されている
+- [x] AC-2: visible critical-path completion signal が読み取れる
+- [x] AC-3: browser-side fail conditions が読み取れる
+- [x] AC-4: broad regression expansion や visual platform adoption が non-goals として切り分けられている
+
+# Tasks
+
+- [x] surface reachability suite update scope を fixed judgment にする
+- [x] auth-post-readback suite update scope を fixed judgment にする
+- [x] visible critical-path completion signal を fixed judgment にする
+- [x] browser-side fail conditions を fixed judgment にする
+- [x] browser suite non-goals を明文化する
+
+# Definition of Done
+
+- [x] surface reachability と auth-post-readback suite の update scope が読める
+- [x] visible critical-path completion signal が読める
+- [x] browser-side fail conditions が読める
+- [x] broad regression expansion や visual platform adoption が本 issue から外れている
+
+# Fixed Judgment
+
+## Browser Suite Rationale
+
+- Issue 138 の validation/evidence parent execution と Issue 145 の contract-side evidence を visible critical path に追随させるため、surface reachability と auth-post-readback suite update を separate child unit として固定する
+- この issue は new browser regression pack を作るものではなく、first-slice visible path に必要な browser-side evidence を narrow に確定する execution boundary である
+
+## Surface Reachability Resolution
+
+- SNS surface reachability evidence は visible first-slice entry surface の mandatory browser-side scope に固定する
+- suite expectation は local-demo-only surface ではなく、declared real service-backed visible path を検証するよう更新する
+
+## Auth Post Readback Resolution
+
+- guest blocked、member success、error visibility、readback consistency evidence は mandatory browser-side critical path に固定する
+- suite expectation は intended real first-slice path を検証するものとし、broad cross-feature browser pack へ拡張しない
+- browser-side evidence は contract-side assumptions と矛盾しないことを前提にする
+
+## Completion And Fail Condition Resolution
+
+- visible critical-path completion signal は browser evidence が declared first-slice surface を証明し、suite success が fake local success state に依存せず、guest blocked、member success、error visibility、readback consistency が repeatable に reviewable であることに固定する
+- fail condition は surface reachability or auth-post-readback suite が still local-demo behavior を前提にする、fake success state 依存で pass する、visible critical path の一部が repeatable evidence 化されていない、のいずれかが残る場合とする
+
+## Browser Suite Non-Goals Resolution
+
+- broad cross-feature browser regression pack
+- visual regression platform adoption
+- performance or load testing
+- CI redesign
+
+# Process Review Notes
+
+- Issue 138 の evidence contract を browser-side unit に分離し、surface reachability と auth-post-readback を first-slice visible path の最小 browser evidence として固定した
+- issue-121 と issue-122 の historical suite family を踏まえつつ、new pack 拡張ではなく real service-backed visible path への expectation update を優先した
+- current validation chain では completion review が同じ visible critical-path evidence を参照できるよう、browser-side fail conditions と non-goals を明文化した
 ```
 
 # Execution Unit
@@ -72,9 +123,9 @@ Acceptance Criteria
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Dependencies
 
