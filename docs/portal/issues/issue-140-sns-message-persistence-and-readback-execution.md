@@ -34,10 +34,65 @@ Scope
 - Restricted paths: docs/portal/issues/issue-129-sns-message-domain-model-and-persistence-decision.md, docs/portal/issues/issue-136-sns-service-and-data-path-execution.md, apps/, infra/, .github/workflows/
 
 Acceptance Criteria
-- [ ] AC-1: minimum message record persistence behavior が app behavior 単位で明文化されている
-- [ ] AC-2: newest-first readback と post-readback consistency expectation が読み取れる
-- [ ] AC-3: compatibility-preserving rule と completion signal が読み取れる
-- [ ] AC-4: search、edit history、analytics projection などが non-goals として切り分けられている
+- [x] AC-1: minimum message record persistence behavior が app behavior 単位で明文化されている
+- [x] AC-2: newest-first readback と post-readback consistency expectation が読み取れる
+- [x] AC-3: compatibility-preserving rule と completion signal が読み取れる
+- [x] AC-4: search、edit history、analytics projection などが non-goals として切り分けられている
+
+# Tasks
+
+- [x] minimum record persistence を fixed judgment にする
+- [x] newest-first readback を fixed judgment にする
+- [x] post-readback consistency expectation を fixed judgment にする
+- [x] compatibility-preserving rule と completion signal を fixed judgment にする
+- [x] persistence non-goals を明文化する
+
+# Definition of Done
+
+- [x] minimum message record persistence behavior が読める
+- [x] newest-first readback と member post 後の intended visibility が読める
+- [x] compatibility-preserving persistence rule が読める
+- [x] local fake timeline state なしの completion signal が読める
+- [x] search、edit history、analytics projection が本 issue から外れている
+
+# Fixed Judgment
+
+## Persistence Readback Rationale
+
+- Issue 136 の backend parent execution と Issue 139 の route surface を real stateful path にするため、minimum persistence and readback behavior を separate unit として固定する
+- この issue は storage engine comparison を再開するものではなく、first slice の member post と timeline readback consistency を成立させる最小 persistence behavior を narrow に確定する execution boundary である
+
+## Minimum Record Resolution
+
+- persistence scope は current planning chain が要求する minimum message record を intended backend path で保存することに固定する
+- newly created message record は intended timeline path から readback 可能であることを必須条件とする
+- first slice compatibility assumption を壊す destructive behavior は completion に含めない
+
+## Readback Resolution
+
+- first slice readback expectation は newest-first timeline behavior に固定する
+- member valid post 後に intended readback visibility が成立することを backend core completion に含める
+- advanced filtering、search、alternate projection はこの pass に要求しない
+
+## Compatibility And Completion Resolution
+
+- compatibility-preserving rule は first-slice readback assumption を壊さず、route and handler unit が stable readback contract を前提にできることに固定する
+- completion signal は valid member post が intended timeline path で readback できる、newest-first ordering expectation が維持される、declared critical path に local fake timeline success が残らない、の全充足とする
+- persistence implementation detail はこの issue で扱ってよいが、storage product comparison reopening は扱わない
+
+## Persistence Non-Goals Resolution
+
+- full retention policy implementation
+- edit history
+- search indexing and advanced query
+- analytics or moderation projections
+- storage engine comparison reopening
+
+# Process Review Notes
+
+- Issue 136 の minimum persistence behavior を child execution unit に落とし、message record、newest-first readback、post-readback consistency を backend core の done line として固定した
+- issue-129 の persistence judgment を継承しつつ、route and handler issue が readback expectation を再定義しないよう、compatibility-preserving rule を execution boundary に寄せた
+- current backend chain では local fake timeline state を readback completion から除外し、frontend と validation が同じ persisted readback behavior を参照できる状態に整えた
 ```
 
 # Execution Unit
@@ -74,9 +129,9 @@ Acceptance Criteria
 
 # Current Status
 
-- local draft created
+- local fixed judgment recorded
 - GitHub Issue: not created in this task
-- Sync Status: local-only draft
+- Sync Status: local-only fixed execution record
 
 # Dependencies
 
