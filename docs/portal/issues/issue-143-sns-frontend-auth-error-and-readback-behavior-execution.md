@@ -137,8 +137,8 @@ Acceptance Criteria
 # Current Status
 
 - local fixed judgment recorded
-- GitHub Issue: not created in this task
-- Sync Status: local-only fixed execution record
+- GitHub Issue: #148
+- Sync Status: synced to GitHub as open execution-planning issue
 
 # Dependencies
 
