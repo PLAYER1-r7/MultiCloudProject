@@ -190,16 +190,18 @@ production promotion の candidate freeze は、既存の production gate baseli
 - `Production Apply Readiness Snapshot` is intentionally retained as the historical pre-apply checkpoint; current live state is defined by `Production Apply And Deploy Evidence` and `Current Status`
 - `Dispatch Example Shape` remains a template section, while the actual reviewed production values are fixed in the evidence record above
 - CloudSonnet review identified stale open execution-planning wording; the local canonical record now reflects that the issue remains open on GitHub but is close-ready on the basis of completed apply, deploy, and transient verification evidence
+- 2026-03-14 に repository owner から close 実行承認を受領したため、本 issue を CLOSED として確定し、GitHub Issue #138 とローカル正本を closed state に同期する
 
 # Current Status
 
+- CLOSED
 - production promotion source evidence, runtime overlay gate, rollback target reference, and approver / verification ownership requirements are fixed in this canonical execution record
 - repository baseline already expects source build evidence, staging verification evidence, rollback target reference, and verification owner to travel together in the production record; this issue now records the completed SNS production path with the same boundary
 - reviewed production SNS infrastructure is now provisioned and the production frontend runtime has been redeployed with `VITE_PUBLIC_SNS_SERVICE_MODE=http`
 - current production service target is `https://isrvwfbt2ve3rr3d6pk5ddwgle0zonfi.lambda-url.ap-northeast-1.on.aws/`, and `portal-production-deploy` run `23071598026` is the first production deploy record that carries the service-backed runtime overlay
 - GitHub Issue: #138
 - GitHub URL: https://github.com/PLAYER1-r7/MultiCloudProject/issues/138
-- Sync Status: synced to GitHub; open but close-ready after CloudSonnet review follow-up
+- Sync Status: synced to GitHub; closed after CloudSonnet review follow-up
 
 # Dependencies
 
